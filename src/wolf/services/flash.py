@@ -1,7 +1,6 @@
 import typing as t
-from winkel.scope import Scope
-from winkel.plugins import ServiceManager, Configuration, factory
-from winkel.meta import HTTPSession
+from wolf.wsgi.request import WSGIRequest
+from wolf.plugins import ServiceManager, Configuration, factory
 
 
 class Message(t.NamedTuple):

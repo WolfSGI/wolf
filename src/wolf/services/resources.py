@@ -4,9 +4,8 @@ import hashlib
 from typing import Sequence
 from pathlib import PurePosixPath, Path
 from pkg_resources import resource_filename
-from winkel.response import Response, FileWrapperResponse
-from winkel.plugins import Mountable, install_method
-from winkel.resources import Resource, known_extensions, NeededResources
+from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
+from wolf.resources import Resource, known_extensions, NeededResources
 from mimetypes import guess_type
 from autoroutes import Routes
 
@@ -150,14 +149,14 @@ class StaticAccessor:
             package_static, resource, restrict=restrict, override=override)
 
 
-class ResourceManager(StaticAccessor, Mountable):
+class ResourceManager(StaticAccessor):
 
     @install_method(object)
     def register_services(self, application):
         application.services.add_instance(self, ResourceManager)
         application.services.add_scoped_by_factory(self.needed_resources)
 
-    def needed_resources(self, scope) -> NeededResources:
+    def needed_resources(self) -> NeededResources:
         return NeededResources(self.path)
 
     def resolve(self, path_info, environ):

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass(kw_only=True)
-class HTTPSessions:
+class HTTPSession:
     store: Store
     secret: str
     samesite: SameSite = SameSite.lax

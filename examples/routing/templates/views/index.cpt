@@ -1,0 +1,23 @@
+<article i18n:domain="example">
+  <h2 i18n:translate="user_title">User overview</h2>
+  <div>
+    <a href="${path_for('folder_create')}">
+      <i class="bi-folder-plus"></i>
+      Add new folder
+    </a>
+  </div>
+  <section tal:condition="not user.folders">
+    Your user doesn't have any folders yet
+  </section>
+  <section tal:condition="user.folders">
+    <h3>Folders</h3>
+    <div class="list-group">
+      <a class="button list-group-item d-flex justify-content-between align-items-start" tal:repeat="folder user.folders"
+         href="${path_for('folder_view', folder_id=folder.id)}">
+        ${folder.name}
+        <span class="badge bg-primary rounded-pill"
+              >${folder.document_count}</span>
+      </a>
+    </div>
+  </section>
+</article>

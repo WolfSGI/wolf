@@ -1,15 +1,12 @@
 import logging
+from dataclasses import dataclass
 from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Mailbox, Maildir
-from functools import cached_property
-from pydantic import computed_field
 from contextlib import contextmanager
-from transaction import TransactionManager
-from winkel.response import Response
-from winkel.plugins import ServiceManager, Configuration, factory
+from wolf.wsgi.response import WSGIResponse
 
 
 logger = logging.getLogger(__name__)
@@ -41,22 +38,16 @@ class Mailman(list[Message]):
         self.append(msg)
 
 
-class PostOffice(ServiceManager, Configuration):
-    __provides__ = [Mailman]
+@dataclass(kw_only=True)
+class PostOffice:
 
     path: Path
 
-    @computed_field
-    @cached_property
-    def mailbox(self) -> Mailbox:
-        return Maildir(self.path)
-
-    @factory('scoped')
-    def mailer_factory(self, scope) -> Mailman:
-        return scope.stack.enter_context(self.mailer(scope))
+    def __post_init__(self):
+        self.mailbox = Maildir(self.path)
 
     @contextmanager
-    def mailer(self, scope):
+    def mailer(self):
         mailman = Mailman()
         try:
             yield mailman
@@ -64,15 +55,6 @@ class PostOffice(ServiceManager, Configuration):
             # maybe log.
             raise
         else:
-            response = scope.get(Response)
-            if response.status >= 400:
-                return
-
-            if TransactionManager in scope:
-                txn = scope.get(TransactionManager)
-                if txn.isDoomed():
-                    return
-
             for message in mailman:
                 self.mailbox.add(message)
         finally:
