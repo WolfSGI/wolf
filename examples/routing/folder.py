@@ -24,20 +24,20 @@ folder_schema = jsonschema_colander.types.Object.from_json(
 @routes.register('/folders/new', name="folder_create")
 class CreateFolder(Form):
 
-    def get_schema(self, scope, *, context=None):
+    def get_schema(self, request, *, context=None):
         return folder_schema()
 
     @trigger('add', 'Add new folder')
     def add(self, request, data, *, context):
-        form = self.get_form(scope, context=context)
+        form = self.get_form(request, context=context)
         appstruct = form.validate(data)
-        sqlsession = request.context.resolve(Session)
-        user = request.context.resolve(User)
+        sqlsession = request.get(Session)
+        user = request.get(User)
         sqlsession.add(Folder(author_id=user.id, **appstruct))
 
-        flash = request.context.resolve(SessionMessages)
+        flash = request.get(SessionMessages)
         flash.add('Folder created.', type="info")
-        return Response.redirect(scope.environ.application_uri)
+        return Response.redirect(request.application_uri)
 
 
 @routes.register('/folders/{folder_id}', name="folder_view")

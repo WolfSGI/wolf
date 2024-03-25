@@ -1,9 +1,10 @@
 import colander
 import deform
-from winkel.routing import Router
-from winkel.services.flash import SessionMessages
-from winkel.form import Form, trigger
-from winkel import Response, Authenticator
+from wolf.form import Form, trigger
+from wolf.identity import Authenticator
+from wolf.routing import Router
+from wolf.services.flash import SessionMessages
+from wolf.wsgi.response import Response
 
 
 routes = Router()
@@ -26,21 +27,21 @@ class LoginSchema(colander.Schema):
 @routes.register('/login')
 class Login(Form):
 
-    def get_schema(self, scope, *, context=None):
+    def get_schema(self, request, *, context=None):
         return LoginSchema()
 
     @trigger('login', 'Login')
-    def save(self, scope, data, *, context):
-        form = self.get_form(scope, context=context)
+    def save(self, request, data, *, context):
+        form = self.get_form(request, context=context)
         appstruct = form.validate(data)
-        authenticator = scope.get(Authenticator)
-        user = authenticator.from_credentials(scope, appstruct)
+        authenticator = request.get(Authenticator)
+        user = authenticator.from_credentials(request, appstruct)
 
-        flash = scope.get(SessionMessages)
+        flash = request.get(SessionMessages)
         if user is not None:
-            authenticator.remember(scope, user)
+            authenticator.remember(request, user)
             flash.add('Logged in.', type="success")
-            return Response.redirect(scope.environ.application_uri)
+            return Response.redirect(request.application_uri)
 
         # Login failed.
         flash.add('Login failed.', type="danger")
@@ -48,9 +49,9 @@ class Login(Form):
 
 
 @routes.register('/logout')
-def logout(scope):
-    authenticator = scope.get(Authenticator)
-    authenticator.forget(scope)
-    flash = scope.get(SessionMessages)
+def logout(request):
+    authenticator = request.get(Authenticator)
+    authenticator.forget(request)
+    flash = request.get(SessionMessages)
     flash.add('Logged out.', type="warning")
-    return Response.redirect(scope.environ.application_uri)
+    return Response.redirect(request.application_uri)

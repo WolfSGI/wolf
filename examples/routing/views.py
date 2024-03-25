@@ -1,30 +1,20 @@
-from winkel.routing import Router
-from winkel.meta import Query
-from winkel import Response, User, html, json, renderer
-from winkel.routing import Application
-from winkel.scope import ondemand
-from winkel.services import Mailman
+from wolf.http.datastructures import Query
+from wolf.identity import User
+from wolf.rendering import html, json, renderer
+from wolf.routing import Router, Application
+from wolf.services.post import Mailman
 
 
 routes = Router()
 
 
-@routes.register('/test/ondemand')
-@html
-@ondemand
-def DI(user: User):
-    import html
-    return html.escape(str(user))
-
-
-
 @routes.register('/')
 @html
 @renderer(template='views/index')
-def index(scope):
-    application = scope.get(Application)
+def index(request):
+    application = request.get(Application)
     return {
-        'user': scope.get(User),
+        'user': request.get(User),
         'path_for': application.router.path_for
     }
 
@@ -32,41 +22,41 @@ def index(scope):
 @routes.register('/test/bare')
 @html
 @renderer
-def bare(scope):
+def bare(request):
     return "This is my bare view"
 
 
 @routes.register('/test/json')
 @json
-def json(scope):
+def json(request):
     return {"key": "value"}
 
 
 def some_pipe(handler):
-    def some_filter(scope):
-        query = scope.get(Query)
+    def some_filter(request):
+        query = request.get(Query)
         if query.get('die'):
             return Response(200, body='ouch, I died')
-        return handler(scope)
+        return handler(request)
     return some_filter
 
 
 @routes.register('/test/filtered', pipeline=(some_pipe,))
 @html
 @renderer
-def filtered(scope):
+def filtered(request):
     return "This is my filtered view"
 
 
 @routes.register('/test/error')
-def test2(scope):
+def test2(request):
     raise NotImplementedError("Damn")
 
 
 @routes.register('/test/mailer')
 @html
-def mail(scope):
-    mailman = scope.get(Mailman)
+def mail(request):
+    mailman = request.get(Mailman)
     mailman.post(
          'test@test.com', ['toto@test.com'], 'Test', 'A text.'
     )

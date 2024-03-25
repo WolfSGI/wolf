@@ -30,9 +30,13 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                     instance: T) -> None:
         self.provides.add(provider.type_)
 
+    def get(self, t: type[T], *, default=None):
+        return self.context.resolve(t)
+
     def set_context(self, context: SyncInjectionContext):
         context.register(Scoped(self.get_cookies))
         context.register(Scoped(self.get_query))
+        context.register(Scoped(self.get_data))
         self.context = context
 
     @immutable_cached_property
@@ -49,6 +53,9 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
             return parser.parse(
                 self.environ['wsgi.input'], self.content_type)
         return Data()
+
+    def get_data(self) -> Data:
+        return self.data
 
     @immutable_cached_property
     def domain(self) -> str:

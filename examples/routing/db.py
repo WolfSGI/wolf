@@ -1,5 +1,4 @@
-from winkel.auth import Source, User
-from winkel.scope import Scope
+from wolf.identity import Source, User
 from sqlmodel import Session
 from sqlalchemy import select
 from models import Person
@@ -7,10 +6,10 @@ from models import Person
 
 class DBSource(Source):
 
-    def find(self, credentials: dict, scope: Scope) -> User | None:
+    def find(self, credentials: dict, request: Request) -> User | None:
         username = credentials.get('username')
         password = credentials.get('password')
-        sqlsession = scope.get(Session)
+        sqlsession = request.get(Session)
         p = sqlsession.exec(
             select(Person).where(
                 Person.email == username,
@@ -19,6 +18,6 @@ class DBSource(Source):
         ).scalar_one_or_none()
         return p
 
-    def fetch(self, uid, scope) -> User | None:
-        sqlsession = scope.get(Session)
+    def fetch(self, uid, request) -> User | None:
+        sqlsession = request.get(Session)
         return sqlsession.get(Person, uid)
