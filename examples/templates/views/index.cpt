@@ -1,0 +1,7 @@
+<article i18n:domain="example">
+  <section>
+    <div>
+      ${value}
+    </div>
+  </section>
+</article>

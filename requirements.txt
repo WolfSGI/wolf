@@ -1,0 +1,5 @@
+-e git+https://github.com/SleighDog/autorouting.git#egg=autorouting
+-e git+https://github.com/ThirVondukr/aioinject.git#egg=aioinject
+-e .
+uvicorn
+http_session_file

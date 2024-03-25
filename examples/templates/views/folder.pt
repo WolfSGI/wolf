@@ -1,0 +1,35 @@
+<article class="container">
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="${scope.environ.application_uri}">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        folder: ${folder.id}
+      </li>
+    </ol>
+  </nav>
+
+  <h2>${folder.name}</h2>
+
+  <div>
+    <a href="${path_for('document_create', folder_id=folder.id)}">
+      <i class="bi-file-plus"></i>
+      Add new document
+    </a>
+  </div>
+
+  <section class="container" tal:condition="not folder.documents">
+    This folder doesn't have any documents yet.
+  </section>
+  <section class="container" tal:condition="folder.documents">
+    <h3>Documents</h3>
+    <div class="list-group">
+      <a class="button list-group-item d-flex justify-content-between align-items-start" tal:repeat="doc folder.documents"
+         href="${path_for('document_view', folder_id=folder.id, document_id=doc.id)}">
+        ${doc.title}
+      </a>
+    </div>
+  </section>
+</article>

@@ -1,0 +1,19 @@
+<article>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="${scope.environ.application_uri}">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="${path_for('folder_view', folder_id=document.folder_id)}">
+          ${document.folder.name}
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        document: ${document.id}
+      </li>
+    </ol>
+  </nav>
+  <h3>${document.title}</h3>
+  <p tal:content="document.text" />
+</article>

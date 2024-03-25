@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <style>
+      main > .container {
+        padding: 75px 15px 0;
+      }
+    </style>
+  </head>
+  <body class="d-flex flex-column h-100">
+    <header>
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+          <div tal:replace="structure slot: actions" />
+        </div>
+      </nav>
+    </header>
+
+    <!-- Begin page content -->
+    <main class="flex-shrink-0">
+      <div class="container">
+        <div tal:replace="structure slot: above_content" />
+        <div class="container" tal:content="structure content" />
+      </div>
+    </main>
+
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+      </div>
+    </footer>
+  </body>
+</html>

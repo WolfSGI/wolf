@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wolf"
+version = "0.1"
+authors = [
+    {name = "Souheil Chelfouh", email = "trollfot@gmail.com"},
+]
+requires-python = ">=3.10"
+classifiers = ["License :: OSI Approved :: MIT License"]
+dependencies = [
+  "autoroutes",
+  "chameleon",
+  "frozendict",
+  "orjson",
+  "prejudice",
+  "aioinject",
+  "wrapt",
+  "itsdangerous",
+  "http_session",
+  "transaction",
+  "vernacular",
+  "content-negotiation",
+  "autorouting",
+  "plum-dispatch",
+  "pyhamcrest",
+  "biscuits >= 0.3.0",
+  "multidict >= 5.1",
+  "multifruits >= 0.1.5",
+  # following the soon-to-be excised from the package
+  "deform",
+  "colander",
+  "pyjwt"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["wolf"]
+namespaces = false
