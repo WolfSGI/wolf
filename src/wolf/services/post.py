@@ -1,17 +1,20 @@
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from contextlib import contextmanager
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
-from contextlib import contextmanager
+from aioinject import Scoped
+from wolf.pluggability import Installable
 
 
 logger = logging.getLogger(__name__)
 
 
 class Mailman(list[Message]):
+
     @staticmethod
     def create_message(origin, targets, subject, text, html=None):
         msg = MIMEMultipart("alternative")
@@ -43,8 +46,11 @@ class PostOffice:
     def __post_init__(self):
         self.mailbox = Maildir(self.path)
 
+    def install(self, application):
+        application.services.register(Scoped(self.mailer))
+
     @contextmanager
-    def mailer(self):
+    def mailer(self) -> Mailman:
         mailman = Mailman()
         try:
             yield mailman

@@ -14,6 +14,7 @@ from wolf.services.auth import SessionAuthenticator
 from wolf.services.flash import Flash
 from wolf.services.sqldb import SQLDatabase
 from wolf.services.translation import TranslationService
+from wolf.services.post import PostOffice
 
 import register, login, views, actions, ui, folder, document, db
 
@@ -52,6 +53,9 @@ app = RoutingApplication(middlewares=[
 
 app.use(
     libraries,
+    PostOffice(
+        path='test.mail'
+    ),
     TranslationService(
         translations=i18Catalog,
         default_domain="routing",

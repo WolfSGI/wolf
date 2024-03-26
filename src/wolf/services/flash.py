@@ -1,7 +1,8 @@
 import typing as t
+from dataclasses import dataclass
 from aioinject import Scoped
 from http_session import Session
-from wolf.pluggability import Installable, install_method
+from wolf.pluggability import Installable
 
 
 class Message(t.NamedTuple):
@@ -13,10 +14,10 @@ class Message(t.NamedTuple):
 
 
 class SessionMessages:
-    key: str = "flashmessages"
 
-    def __init__(self, session: Session):
+    def __init__(self, session: Session, key: str):
         self.session = session
+        self.key = key
 
     def __iter__(self) -> t.Iterable[Message]:
         if self.key in self.session:
@@ -33,7 +34,13 @@ class SessionMessages:
         self.session.save()
 
 
+@dataclass(kw_only=True)
 class Flash(Installable):
-    @install_method(object)
-    def register_services(self, application):
-        application.services.register(Scoped(SessionMessages))
+
+    key: str = "flashmessages"
+
+    def install(self, application):
+        application.services.register(Scoped(self.session_messages))
+
+    def session_messages(self, session: Session) -> SessionMessages:
+        return SessionMessages(session, key=self.key)
