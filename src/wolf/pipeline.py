@@ -1,3 +1,4 @@
+import logging
 from typing import Callable, Sequence
 from functools import update_wrapper
 from wolf.datastructures import PriorityChain

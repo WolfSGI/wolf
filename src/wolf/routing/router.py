@@ -25,14 +25,16 @@ class APIView:
 
 @overload
 def get_routables(
-    view: types.FunctionType | types.CoroutineType, methods: HTTPMethods | None = None
+        view: types.FunctionType | types.CoroutineType,
+        methods: HTTPMethods | None = None
 ):
     if methods is None:
         methods = {"GET"}
     else:
         unknown = set(methods) - METHODS
         if unknown:
-            raise ValueError(f"Unknown HTTP method(s): {', '.join(unknown)}")
+            raise ValueError(
+                f"Unknown HTTP method(s): {', '.join(unknown)}")
     yield view, methods
 
 
@@ -40,9 +42,12 @@ def get_routables(
 def get_routables(view: Type[APIView], methods: HTTPMethods | None = None):
     inst = view()
     if methods is not None:
-        raise AttributeError("Registration of APIView does not accept methods.")
+        raise AttributeError(
+            "Registration of APIView does not accept methods.")
     members = inspect.getmembers(
-        inst, predicate=(lambda x: inspect.ismethod(x) and x.__name__ in METHODS)
+        inst, predicate=(
+            lambda x: inspect.ismethod(x) and x.__name__ in METHODS
+        )
     )
     for name, func in members:
         yield func, [name]
@@ -52,14 +57,16 @@ def get_routables(view: Type[APIView], methods: HTTPMethods | None = None):
 def get_routables(view: Type, methods: HTTPMethods | None = None):
     inst = view()
     if not callable(inst):
-        raise AttributeError(f"Instance of {view!r} needs to be callable.")
+        raise AttributeError(
+            f"Instance of {view!r} needs to be callable.")
 
     if methods is None:
         methods = {"GET"}
     else:
         unknown = set(methods) - METHODS
         if unknown:
-            raise ValueError(f"Unknown HTTP method(s): {', '.join(unknown)}")
+            raise ValueError(
+                f"Unknown HTTP method(s): {', '.join(unknown)}")
     yield inst, methods
 
 
