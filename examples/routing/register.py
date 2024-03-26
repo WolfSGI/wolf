@@ -61,7 +61,7 @@ class Register(Form):
 
     @trigger('login', 'Login')
     def save(self, request, data, *, context):
-        form = self.get_form(scope, context=context)
+        form = self.get_form(request, context=context)
         appstruct = form.validate(data)
 
         sqlsession = request.context.resolve(Session)
