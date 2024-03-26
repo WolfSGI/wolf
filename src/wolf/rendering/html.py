@@ -1,10 +1,14 @@
 import inspect
 import wrapt
+import logging
 from typing import Sequence
 from functools import partial
 from wolf.http.response import Response
 from wolf.ui import UI
 from wolf.resources import Resource, NeededResources
+
+
+logger = logging.getLogger(__name__)
 
 
 def html(wrapped=None, *,
@@ -25,7 +29,7 @@ def html(wrapped=None, *,
         ui = request.get(UI)
         needed_resources = request.get(NeededResources, default=None)
         if needed_resources is None:
-            print('No resource injection.')
+            logger.debug('No resource injection.')
         else:
             if ui.resources:
                 needed_resources.update(ui.resources)

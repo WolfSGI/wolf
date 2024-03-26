@@ -1,5 +1,6 @@
 import typing as t
 from types import TracebackType
+from wolf.http.response import Response
 from wolf.http.types import StatusCode
 
 
@@ -14,4 +15,4 @@ StartResponse = t.Callable[
     t.Optional[t.Callable[[t.ByteString], None]]
 ]
 WSGICallable = t.Callable[[WSGIEnviron, StartResponse], t.Iterable[bytes]]
-Finisher = t.Callable[['Response'], None]
+Finisher = t.Callable[[Response], None]

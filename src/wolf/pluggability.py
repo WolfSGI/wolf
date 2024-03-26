@@ -1,4 +1,8 @@
+import logging
 from wolf.annotations import annotation
+
+
+logger = logging.getLogger(__name__)
 
 
 class install_method(annotation):

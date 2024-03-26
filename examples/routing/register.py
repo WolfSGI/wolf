@@ -4,6 +4,7 @@ from models import Person
 from wolf.form import Form, trigger
 from wolf.routing import Router
 from wolf.services.flash import SessionMessages
+from wolf.wsgi.request import WSGIRequest
 from wolf.wsgi.response import WSGIResponse
 from sqlalchemy.sql import exists
 from sqlmodel import Session
@@ -13,8 +14,8 @@ routes = Router()
 
 
 def UniqueEmail(node, value):
-    scope: Scope = node.bindings['scope']
-    sqlsession = scope.get(Session)
+    request: WSGIRequest = node.bindings['request']
+    sqlsession = request.context.resolve(Session)
     if sqlsession.query(exists().where(Person.email == value)).scalar():
         raise colander.Invalid(node, "Email already in use.")
 
