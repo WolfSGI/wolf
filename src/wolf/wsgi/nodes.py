@@ -5,26 +5,34 @@ from abc import ABC, abstractmethod
 from collections import UserDict
 from wolf.http.exceptions import HTTPError
 from wolf.wsgi.response import WSGIResponse
-from wolf.wsgi.types import WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
+from wolf.wsgi.types import (
+    WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
+)
 
 
-class Node(ABC):
+class Node(ABC, WSGICallable):
+
     @abstractmethod
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         pass
 
-    def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
+    def handle_exception(
+            self,
+            exc_info: ExceptionInfo,
+            environ: WSGIEnviron
+    ) -> WSGICallable | None:
         """This method handles exceptions happening while the
         application is trying to render/process/interpret the request.
         """
-        exctype, exc, traceback = exc_info
-        if isinstance(exc, HTTPError):
-            return WSGIResponse(exc.status, body=exc.body)
+        pass
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
         iterable = None
         try:
             iterable = self.resolve(environ)
+            yield from iterable(environ, start_response)
+        except HTTPError as exc:
+            iterable = WSGIResponse(exc.status, body=exc.body)
             yield from iterable(environ, start_response)
         except Exception:
             iterable = self.handle_exception(sys.exc_info(), environ)
@@ -33,12 +41,12 @@ class Node(ABC):
             yield from iterable(environ, start_response)
         finally:
             if iterable is not None:
-                closer: t.Optional[t.Callable[[], None]] = getattr(
+                close: t.Callable[[], None] | None = getattr(
                     iterable, "close", None
                 )
-                if closer is not None:
+                if close is not None:
                     try:
-                        closer()
+                        close()
                     except Exception:
                         self.handle_exception(sys.exc_info(), environ)
                         raise
