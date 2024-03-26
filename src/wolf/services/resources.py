@@ -9,7 +9,7 @@ from autoroutes import Routes
 from aioinject import Object, Scoped
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.resources import Resource, known_extensions, NeededResources
-from wolf.pluggability import install_method, Installable
+from wolf.pluggability import Installable
 
 
 def generate_sri(filepath: Path):
@@ -153,8 +153,7 @@ class StaticAccessor:
 
 class ResourceManager(Installable, StaticAccessor):
 
-    @install_method(object)
-    def register_services(self, application):
+    def install(self, application):
         application.mounts[self.path] = self
         application.services.register(Object(self, type_=ResourceManager))
         application.services.register(Scoped(self.needed_resources))
@@ -162,8 +161,8 @@ class ResourceManager(Installable, StaticAccessor):
     def needed_resources(self) -> NeededResources:
         return NeededResources(self.path)
 
-    def resolve(self, path_info, environ):
-        match, _ = self.resources.match(path_info)
+    def resolve(self, environ):
+        match, _ = self.resources.match(environ['PATH_INFO'])
         if not match:
             return WSGIResponse(status=404)
 

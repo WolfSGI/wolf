@@ -3,6 +3,7 @@ import functools
 from wolf.ui import UI
 from wolf.http.request import Request
 from wolf.http.response import Response
+from wolf.resources import Resource
 from wolf.services.translation import Locale, Translator
 from chameleon.zpt.template import PageTemplate
 
