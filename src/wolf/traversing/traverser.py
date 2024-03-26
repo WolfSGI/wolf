@@ -33,6 +33,7 @@ def paths(path: str) -> t.Tuple[str, str]:
 
 
 class Node:
+
     def __init__(self, cls, path):
         self.cls = cls
         self.path = path
@@ -44,8 +45,9 @@ class Node:
         if isinstance(other, Node):
             return self.cls == other.cls and self.path == other.path
         elif isclass(other):
-            return other == self.cls
-        raise TypeError(f"Cannot establish equality between {self!r} and {other!r}")
+            return issubclass(other, self.cls)
+        raise TypeError(
+            f"Cannot establish equality between {self!r} and {other!r}")
 
     def __repr__(self):
         return f"{self.cls} -> {self.path}"
@@ -63,8 +65,13 @@ class Traverser(TypedRouters):
         super().__init__()
 
     def add(
-        self, root: t.Type[t.Any], path: str, method, factory: t.Callable, **kwargs
-    ):
+            self,
+            root: t.Type[t.Any],
+            path: str,
+            method,
+            factory: Factory,
+            **kwargs
+    ) -> None:
         sig = signature(factory)
         if sig.return_annotation is empty:
             raise TypeError("Factories need to specify a return type.")
@@ -83,7 +90,7 @@ class Traverser(TypedRouters):
             for matcher in self.lookup(root.__class__):
                 found = matcher.get(stub, method)
                 if found:
-                    obj = found.routed(request, root, found.params)
+                    obj = found.routed(request, root, **found.params)
                     if obj is None:
                         raise LookupError(stub)
                     traversed = Traversed(obj, parent=root, path=stub)

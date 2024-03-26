@@ -64,4 +64,4 @@ class JWTService(Installable):
             public_key_pem = f.read()
 
         manager = JWTManager(private_key_pem, public_key_pem)
-        application.services.register(Object(manager), type_=JWTManager)
+        application.services.register(Object(manager, type_=JWTManager))

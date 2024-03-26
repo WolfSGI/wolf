@@ -1,7 +1,7 @@
 import jsonschema_colander.types
 from sqlmodel import Session
 from wolf.form import Form, trigger
-from wolf.wsgi.app import Root
+from wolf.wsgi.app import Application
 from wolf.routing import Router, Params
 from wolf.services.flash import SessionMessages
 from wolf.identity import User
@@ -44,7 +44,7 @@ class CreateFolder(Form):
 @html
 @renderer(template='views/folder')
 def folder_view(request):
-    application = request.context.resolve(Root)
+    application = request.context.resolve(Application)
     sqlsession = request.context.resolve(Session)
     params = request.context.resolve(Params)
     folder = sqlsession.get(Folder, params['folder_id'])

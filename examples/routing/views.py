@@ -1,7 +1,7 @@
+from wolf.http.app import Application
 from wolf.http.datastructures import Query
 from wolf.identity import User
 from wolf.rendering import html, json, renderer
-from wolf.wsgi.app import Root
 from wolf.routing import Router
 from wolf.decorators import ondemand
 from wolf.services.post import Mailman
@@ -14,7 +14,7 @@ routes = Router()
 @html
 @renderer(template='views/index')
 def index(request):
-    application = request.get(Root)
+    application = request.get(Application)
     return {
         'user': request.get(User),
         'path_for': application.router.path_for
@@ -24,7 +24,7 @@ def index(request):
 @routes.register('/test/ondemand')
 @html
 @ondemand
-def ondemand(root: Root):
+def ondemand(root: Application):
     return f"{root.__class__.__name__}"
 
 

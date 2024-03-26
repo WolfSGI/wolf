@@ -3,7 +3,7 @@ import jsonschema_colander.types
 from sqlmodel import Session
 from wolf.form import Form, trigger
 from wolf.routing import Router, Params
-from wolf.wsgi.app import Root
+from wolf.http.app import Application
 from wolf.services.flash import SessionMessages
 from wolf.identity import User
 from wolf.rendering import html, renderer
@@ -56,7 +56,7 @@ class CreateDocument(Form):
 @html
 @renderer(template='views/document')
 def document_view(request):
-    application = request.get(Root)
+    application = request.get(Application)
     sqlsession = request.get(Session)
     params = request.get(Params)
     document = sqlsession.get(Document, params['document_id'])
