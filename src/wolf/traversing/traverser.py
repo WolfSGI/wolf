@@ -3,8 +3,8 @@ from wrapt import ObjectProxy
 from pathlib import PurePosixPath
 from inspect import signature, _empty as empty, isclass
 from wolf.http.request import Request
-from wolf.datastructures import TypedSet
-from wolf.traversing.typed import TypedRouters
+from wolf.typed.datastructures import TypedSet
+from wolf.typed.router import TypedRouter
 
 
 C = t.TypeVar("C")
@@ -53,11 +53,11 @@ class Node:
         return f"{self.cls} -> {self.path}"
 
 
-class ViewRegistry(TypedRouters):
+class ViewRegistry(TypedRouter):
     pass
 
 
-class Traverser(TypedRouters):
+class Traverser(TypedRouter):
     __slots__ = ("_reverse",)
 
     def __init__(self):

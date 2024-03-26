@@ -1,5 +1,5 @@
 from .traverser import Traversed, ViewRegistry, Traverser
-from .typed import TypedRouters
+from wolf.typed.router import TypedRouter
 from .utils import path_for
 
 
@@ -7,6 +7,6 @@ __all__ = [
     "Traversed",
     "ViewRegistry",
     "Traverser",
-    "TypedRouters",
+    "TypedRouter",
     "path_for",
 ]

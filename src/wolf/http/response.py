@@ -1,4 +1,5 @@
 import orjson
+from pathlib import Path
 from typing import Mapping, Iterable, Iterator, Generic, TypeVar, Callable, AnyStr
 from http import HTTPStatus
 from multidict import CIMultiDict
@@ -54,6 +55,23 @@ class Headers(CIMultiDict[str]):
             yield header, ", ".join(values)
         if "Set-Cookie" not in self and cookies:
             yield "Set-Cookie", ", ".join(cookies)
+
+
+class FileResponse:
+
+    __slots__ = ("status", "block_size", "headers", "filepath")
+
+    def __init__(
+        self,
+        filepath: Path,
+        status: HTTPCode = 200,
+        block_size: int = 4096,
+        headers: HeadersT | None = None,
+    ):
+        self.status = HTTPStatus(status)
+        self.filepath = filepath
+        self.headers = Headers(headers or ())  # idempotent.
+        self.block_size = block_size
 
 
 class Response(Generic[F]):
@@ -115,7 +133,10 @@ class Response(Generic[F]):
 
     @classmethod
     def html(
-        cls, code: HTTPCode = 200, body: AnyStr = b"", headers: HeadersT | None = None
+        cls,
+        code: HTTPCode = 200,
+            body: AnyStr = b"",
+            headers: HeadersT | None = None,
     ) -> "Response":
         if headers is None:
             headers = {"Content-Type": "text/html; charset=utf-8"}

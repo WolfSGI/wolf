@@ -1,12 +1,12 @@
 import typing as t
 from collections import defaultdict
 from autorouting import MatchedRoute
-from wolf.pipeline import aggregate
+from wolf.pipeline import chain_wrap
 from wolf.routing.router import Router, HTTPMethods, get_routables
-from wolf.datastructures import TypedValue
+from wolf.typed.datastructures import TypedValue
 
 
-class TypedRouters(TypedValue[t.Any, Router], defaultdict):
+class TypedRouter(TypedValue[t.Any, Router], defaultdict):
     def __init__(self):
         defaultdict.__init__(self, Router)
 
@@ -30,7 +30,7 @@ class TypedRouters(TypedValue[t.Any, Router], defaultdict):
         def routing(value: t.Any):
             for endpoint, verbs in get_routables(value, methods):
                 if pipeline:
-                    endpoint = aggregate(pipeline, endpoint)
+                    endpoint = chain_wrap(pipeline, endpoint)
                 for verb in verbs:
                     self.add(root, path, verb, endpoint, **kwargs)
             return value
@@ -50,8 +50,8 @@ class TypedRouters(TypedValue[t.Any, Router], defaultdict):
                 path, _ = route_url.resolve(params)
                 return path
 
-    def __or__(self, other: "TypedRouters"):
-        new = TypedRouters()
+    def __or__(self, other: "TypedRouter"):
+        new = TypedRouter()
         for cls, router in self.items():
             new[cls] = router
         for cls, router in other.items():
@@ -61,7 +61,7 @@ class TypedRouters(TypedValue[t.Any, Router], defaultdict):
                 new[cls] = router
         return new
 
-    def __ior__(self, other: "TypedRouters"):
+    def __ior__(self, other: "TypedRouter"):
         for cls, router in other.items():
             if cls in self:
                 self[cls] |= router

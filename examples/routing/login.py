@@ -4,7 +4,6 @@ from wolf.form import Form, trigger
 from wolf.identity import Authenticator
 from wolf.routing import Router
 from wolf.services.flash import SessionMessages
-from wolf.wsgi.response import Response
 
 
 routes = Router()

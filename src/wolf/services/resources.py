@@ -7,6 +7,7 @@ from pkg_resources import resource_filename
 from mimetypes import guess_type
 from autoroutes import Routes
 from aioinject import Object, Scoped
+from wolf.wsgi.nodes import Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.resources import Resource, known_extensions, NeededResources
 from wolf.pluggability import Installable
@@ -159,7 +160,7 @@ class StaticAccessor:
         )
 
 
-class ResourceManager(Installable, StaticAccessor):
+class ResourceManager(Installable, Node, StaticAccessor):
     def install(self, application):
         application.sinks[self.path] = self
         application.services.register(Object(self, type_=ResourceManager))

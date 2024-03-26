@@ -16,7 +16,10 @@ class SQLDatabase(Installable):
 
     def __post_init__(self):
         engine: Engine = create_engine(
-            self.url, echo=self.echo, json_serializer=dumps, json_deserializer=loads
+            self.url,
+            echo=self.echo,
+            json_serializer=dumps,
+            json_deserializer=loads
         )
         for registry in self.models_registries:
             registry.metadata.create_all(engine)

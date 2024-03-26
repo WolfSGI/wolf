@@ -14,5 +14,5 @@ StartResponse = t.Callable[
     [StatusCode, ResponseHeaders, t.Optional[ExceptionInfo]],
     t.Optional[t.Callable[[t.ByteString], None]],
 ]
-WSGICallable = t.Callable[[WSGIEnviron, StartResponse], t.Iterable[bytes]]
+WSGICallable = t.Callable[[WSGIEnviron, StartResponse], t.Iterator[bytes]]
 Finisher = t.Callable[[Response], None]

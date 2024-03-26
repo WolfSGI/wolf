@@ -5,10 +5,10 @@ from autorouting import MatchedRoute
 from wolf.http.exceptions import HTTPError
 from wolf.http.app import Application
 from wolf.wsgi.nodes import Mapping, Node
-from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.wsgi.request import WSGIRequest
 from wolf.wsgi.types import WSGIEnviron, ExceptionInfo, WSGICallable
-from wolf.pipeline import HandlerWrapper, aggregate
+from wolf.pipeline import Wrapper, chain_wrap
 from wolf.routing.router import Router, Params, Extra
 from wolf.traversing.traverser import Traverser, ViewRegistry
 
@@ -19,16 +19,22 @@ logger = logging.getLogger(__name__)
 @dataclass(kw_only=True, repr=False)
 class WSGIApplication(Application, Node):
     services: Container = field(default_factory=Container)
-    middlewares: list[HandlerWrapper] = field(default_factory=list)
+    middlewares: tuple[Wrapper] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
 
     def __post_init__(self):
         self.services.register(Object(self, type_=Application))
 
+    def endpoint(
+            self,
+            request: WSGIRequest
+    ) -> WSGIResponse | FileWrapperResponse:
+        raise NotImplementedError('Override.')
+
     def finalize(self):
         # everything that needs doing before serving requests.
         if self.middlewares:
-            self.endpoint = aggregate(self.middlewares, self.endpoint)
+            self.endpoint = chain_wrap(self.middlewares, self.endpoint)
 
     def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
         typ, err, tb = exc_info
@@ -38,20 +44,14 @@ class WSGIApplication(Application, Node):
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         if self.sinks:
             try:
-                sink = self.sinks.resolve(environ)
+                return self.sinks.resolve(environ)
             except HTTPError as err:
                 if err.status != 404:
                     raise err
-            else:
-                return sink.resolve(environ)
 
         wsgi_request = WSGIRequest(environ)
         with wsgi_request(self.services) as request:
-            try:
-                response = self.endpoint(request)
-            except HTTPError as err:
-                response = request.response_cls(err.status, err.body)
-            return response
+            return self.endpoint(request)
 
 
 @dataclass(kw_only=True, repr=False)
@@ -63,7 +63,10 @@ class RoutingApplication(WSGIApplication):
         self.router.finalize()
         super().finalize()
 
-    def endpoint(self, request: WSGIRequest) -> WSGICallable:
+    def endpoint(
+            self,
+            request: WSGIRequest
+    ) -> WSGIResponse | FileWrapperResponse:
         route: MatchedRoute | None = self.router.get(
             request.path, request.method
         )
@@ -94,7 +97,10 @@ class TraversingApplication(WSGIApplication):
         self.views.finalize()
         super().finalize()
 
-    def endpoint(self, request: WSGIRequest) -> WSGICallable:
+    def endpoint(
+            self,
+            request: WSGIRequest
+    ) -> WSGIResponse | FileWrapperResponse:
         leaf, view_path = self.factories.traverse(
             self, request.path, 'GET', request, partial=True
         )

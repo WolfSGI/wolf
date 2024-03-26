@@ -8,9 +8,7 @@ from wolf.http.datastructures import Data, Cookies, ContentType, Query
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
-from aioinject import (
-    Container, Scoped, Object, SyncInjectionContext, Provider
-)
+from aioinject import Scoped, Object, SyncInjectionContext
 from aioinject.extensions import SyncOnResolveExtension
 
 
@@ -23,7 +21,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
     __slots__ = ('environ', 'context', 'response_cls')
 
     context: SyncInjectionContext | None
-    response_cls: t.ClassVar[type[WSGIResponse]]
+    response_cls: type[WSGIResponse]
 
     def __init__(
             self,

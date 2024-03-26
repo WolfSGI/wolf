@@ -22,7 +22,7 @@ class SessionAuthenticator(Installable, Authenticator):
         application.services.register(Scoped(self.identify))
 
     def identify(self, request: Request) -> User:
-        session = request.get(Session)
+        session = request.context.resolve(Session)
         if (userid := session.get(self.user_key, None)) is not None:
             for source in self.sources:
                 user = source.fetch(userid, request)
@@ -31,9 +31,9 @@ class SessionAuthenticator(Installable, Authenticator):
         return anonymous
 
     def forget(self, request: Request) -> None:
-        session = request.get(Session)
+        session = request.context.resolve(Session)
         session.clear()
 
     def remember(self, request: Request, user: User) -> None:
-        session = request.get(Session)
+        session = request.context.resolve(Session)
         session[self.user_key] = user.id

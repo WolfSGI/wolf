@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from wolf.utils import immutable_cached_property
 from wolf.http.response import Response
 from wolf.http.datastructures import Query, Cookies, ContentType
-from aioinject.context import _BaseInjectionContext
+from aioinject.context import SyncInjectionContext, InjectionContext
 
 
 E = t.TypeVar("E", bound=t.Mapping)
@@ -12,8 +12,8 @@ E = t.TypeVar("E", bound=t.Mapping)
 
 class Request(ABC, t.Generic[E]):
     environ: E
-    response_cls: t.ClassVar[type[Response]]
-    context: _BaseInjectionContext
+    response_cls: type[Response]
+    context: SyncInjectionContext | InjectionContext
 
     @property
     @abstractmethod

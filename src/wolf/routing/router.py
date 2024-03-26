@@ -4,7 +4,7 @@ from typing import Sequence, Any, Type, get_args
 from plum import dispatch, overload
 from autorouting import Router as BaseRouter, MatchedRoute
 from wolf.http.types import HTTPMethod
-from wolf.pipeline import HandlerWrapper, aggregate
+from wolf.pipeline import Wrapper, chain_wrap
 
 
 METHODS = frozenset(get_args(HTTPMethod))
@@ -80,7 +80,7 @@ class Router(BaseRouter):
         self,
         path: str,
         methods: HTTPMethods = None,
-        pipeline: Sequence[HandlerWrapper] | None = None,
+        pipeline: Sequence[Wrapper] | None = None,
         name: str | None = None,
         requirements: dict | None = None,
         priority: int = 0,
@@ -88,7 +88,7 @@ class Router(BaseRouter):
         def routing(value: Any):
             for endpoint, verbs in get_routables(value, methods):
                 if pipeline:
-                    endpoint = aggregate(pipeline, endpoint)
+                    endpoint = chain_wrap(pipeline, endpoint)
                 for verb in verbs:
                     self.add(
                         path,
