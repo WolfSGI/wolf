@@ -138,7 +138,11 @@ class StaticAccessor:
         self.libraries[library.name] = library
 
     def add_static(
-        self, name: str, base_path: str | Path, restrict=("*",), override: bool = False
+            self,
+            name: str,
+            base_path: str | Path,
+            restrict=("*",),
+            override: bool = False,
     ) -> Library:
         library = DiscoveryLibrary(name, base_path, restrict=restrict)
         self.add_library(library, override=override)
@@ -157,7 +161,7 @@ class StaticAccessor:
 
 class ResourceManager(Installable, StaticAccessor):
     def install(self, application):
-        application.mounts[self.path] = self
+        application.sinks[self.path] = self
         application.services.register(Object(self, type_=ResourceManager))
         application.services.register(Scoped(self.needed_resources))
 

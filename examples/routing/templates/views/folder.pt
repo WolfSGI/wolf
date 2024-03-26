@@ -3,7 +3,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <a href="${scope.environ.application_uri}">Home</a>
+        <a href="${request.application_uri}">Home</a>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
         folder: ${folder.id}

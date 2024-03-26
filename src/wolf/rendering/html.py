@@ -31,7 +31,10 @@ def html(wrapped=None, *, resources: Sequence[Resource] | None = None):
                 needed_resources.update(ui.resources)
             if resources:
                 needed_resources.update(resources)
-            content = needed_resources.apply(content, request.application_uri)
+            content = needed_resources.apply(
+                content,
+                request.application_uri
+            )
 
         return request.response_cls.html(body=content)
 

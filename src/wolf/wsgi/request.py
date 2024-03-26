@@ -1,5 +1,6 @@
 import typing as t
 import urllib.parse
+from contextlib import contextmanager
 from pathlib import PurePosixPath
 from wolf.utils import immutable_cached_property
 from wolf.http.request import Request
@@ -7,7 +8,9 @@ from wolf.http.datastructures import Data, Cookies, ContentType, Query
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
-from aioinject import Scoped, Object, SyncInjectionContext, Provider
+from aioinject import (
+    Container, Scoped, Object, SyncInjectionContext, Provider
+)
 from aioinject.extensions import SyncOnResolveExtension
 
 
@@ -16,33 +19,41 @@ NONE_PROVIDED = object()
 
 
 class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
-    context: SyncInjectionContext | None = None
-    provides: set[type]
-    response_cls: t.ClassVar[type[WSGIResponse]] = WSGIResponse
 
-    def __init__(self, environ: WSGIEnviron):
+    __slots__ = ('environ', 'context', 'response_cls')
+
+    context: SyncInjectionContext | None
+    response_cls: t.ClassVar[type[WSGIResponse]]
+
+    def __init__(
+            self,
+            environ: WSGIEnviron,
+            response_cls: type[WSGIResponse] = WSGIResponse
+    ):
+        self.context = None
         self.environ = environ
-        self.provides = set()
+        self.response_cls = response_cls
 
-    def on_resolve(
-        self, context: SyncInjectionContext, provider: Provider[T], instance: T
-    ) -> None:
-        self.provides.add(provider.type_)
+    @contextmanager
+    def __call__(self, container) -> 'WSGIRequest':
+        with container.sync_context() as context:
+            context.register(Scoped(self.get_cookies))
+            context.register(Scoped(self.get_query))
+            context.register(Scoped(self.get_data))
+            context.register(Object(self, type_=Request))
+            self.context = context
+            yield self
+        self.context = None
 
     def get(self, t: type[T], *, default=NONE_PROVIDED):
+        if self.context is None:
+            raise NotImplementedError('Context is unavailable.')
         try:
             return self.context.resolve(t)
         except ValueError:
             if default is NONE_PROVIDED:
                 raise
             return default
-
-    def set_context(self, context: SyncInjectionContext):
-        context.register(Scoped(self.get_cookies))
-        context.register(Scoped(self.get_query))
-        context.register(Scoped(self.get_data))
-        context.register(Object(self, type_=Request))
-        self.context = context
 
     @immutable_cached_property
     def method(self) -> str:
@@ -55,7 +66,10 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
     @immutable_cached_property
     def data(self) -> Data:
         if self.content_type:
-            return parser.parse(self.environ["wsgi.input"], self.content_type)
+            return parser.parse(
+                self.environ["wsgi.input"],
+                self.content_type
+            )
         return Data()
 
     def get_data(self) -> Data:

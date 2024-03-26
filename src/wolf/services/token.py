@@ -1,9 +1,11 @@
 import pathlib
 import jwt
 import logging
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from winkel.plugins import ServiceManager, Configuration, factory
-from winkel.scope import Scope
+from aioinject import Object
+from wolf.pluggability import Installable
+from wolf.http.request import Request
 
 
 logger = logging.getLogger(__name__)
@@ -45,19 +47,21 @@ class JWTManager:
             raise InvalidToken()
 
 
-class JWTService(ServiceManager, Configuration):
+@dataclass(kw_only=True)
+class JWTService(Installable):
     private_key: pathlib.Path
     public_key: pathlib.Path
 
-    @factory("singleton")
-    def jwt_manager(self, scope: Scope) -> JWTManager:
+    def __post_init__(self):
         assert self.private_key.is_file()
         assert self.public_key.is_file()
 
+    def install(self, application):
         with self.private_key.open("rb") as f:
             private_key_pem = f.read()
 
         with self.public_key.open("rb") as f:
             public_key_pem = f.read()
 
-        return JWTManager(private_key_pem, public_key_pem)
+        manager = JWTManager(private_key_pem, public_key_pem)
+        application.services.register(Object(manager), type_=JWTManager)
