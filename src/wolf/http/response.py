@@ -64,7 +64,7 @@ class Response(Generic[F]):
     status: HTTPStatus
     headers: Headers
     body: BodyT | None
-    _finishers: deque[F]
+    _finishers: deque[F] | None
 
     def __init__(self,
                  status: HTTPCode = 200,
@@ -73,10 +73,13 @@ class Response(Generic[F]):
         self.status = HTTPStatus(status)
         self.body = body
         self.headers = Headers(headers or ())  # idempotent.
-        self._finishers = deque()
+        self._finishers = None
 
     def add_finisher(self, task: F):
-        self._finishers.append(task)
+        if self._finishers is None:
+            self._finishers = deque([task])
+        else:
+            self._finishers.append(task)
 
     @property
     def cookies(self):
@@ -90,7 +93,7 @@ class Response(Generic[F]):
                 yield self.body
             elif isinstance(self.body, str):
                 yield self.body.encode()
-            elif isinstance(self.body, t.Iterable):
+            elif isinstance(self.body, Iterator):
                 yield from self.body
             else:
                 raise TypeError(

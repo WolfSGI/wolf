@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 from abc import ABC, abstractmethod
 from collections import UserDict
 from wolf.http.exceptions import HTTPError
-from wolf.wsgi.response import Response
+from wolf.wsgi.response import WSGIResponse
 from wolf.wsgi.types import (
     WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
 )
@@ -24,7 +24,7 @@ class Node(ABC):
         """
         exctype, exc, traceback = exc_info
         if isinstance(exc, HTTPError):
-            return Response(exc.status, body=exc.body)
+            return WSGIResponse(exc.status, body=exc.body)
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
         iterable = None

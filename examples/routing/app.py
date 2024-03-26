@@ -1,8 +1,9 @@
-import http_session_file
 import pathlib
-import vernacular
-from aioinject import Object
 import logging.config
+import vernacular
+import http_session_file
+
+from aioinject import Object
 from wolf.ui import UI
 from wolf.wsgi.app import RoutingApplication
 from wolf.templates import Templates
@@ -12,6 +13,7 @@ from wolf.services.resources import ResourceManager
 from wolf.services.auth import SessionAuthenticator
 from wolf.services.flash import Flash
 from wolf.services.sqldb import SQLDatabase
+from wolf.services.translation import TranslationService
 
 import register, login, views, actions, ui, folder, document, db
 
@@ -22,6 +24,12 @@ libraries = ResourceManager('/static')
 libraries.add_package_static('deform:static')
 libraries.add_static('example', here / 'static', restrict=('*.jpg',))
 libraries.finalize()
+
+
+vernacular.COMPILE = True
+i18Catalog = vernacular.Translations()
+for translation in vernacular.translations(pathlib.Path('translations')):
+    i18Catalog.add(translation)
 
 
 app = RoutingApplication(middlewares=[
@@ -41,8 +49,14 @@ app = RoutingApplication(middlewares=[
     )
 ])
 
+
 app.use(
     libraries,
+    TranslationService(
+        translations=i18Catalog,
+        default_domain="routing",
+        accepted_languages=["fr", "en", "de"]
+    ),
     UI(
         slots=ui.slots,
         subslots=ui.subslots,
