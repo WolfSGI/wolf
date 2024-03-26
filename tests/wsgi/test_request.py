@@ -1,11 +1,11 @@
 import pytest
-from webtest.app import TestRequest
+from webtest.app import TestRequest as EnvironBuilder
 from wolf.http.datastructures import Query, Data, ContentType, Cookies
 from wolf.wsgi.request import WSGIRequest
 
 
 def test_request():
-    environ = TestRequest.blank('/?key=1', method='GET').environ
+    environ = EnvironBuilder.blank('/?key=1', method='GET').environ
     request = WSGIRequest(environ)
     assert isinstance(request, WSGIRequest)
 
@@ -23,7 +23,7 @@ def test_request():
 
 
 def test_request_immutability():
-    environ = TestRequest.blank('/?key=1', method='GET').environ
+    environ = EnvironBuilder.blank('/?key=1', method='GET').environ
     request = WSGIRequest(environ)
     assert request.path == '/'
 
