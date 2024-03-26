@@ -35,6 +35,12 @@ dependencies = [
   "pyjwt"
 ]
 
+[project.optional-dependencies]
+test = [
+    'pytest',
+    'webtest'
+]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["wolf"]
