@@ -3,6 +3,7 @@ from wolf.identity import User
 from wolf.rendering import html, json, renderer
 from wolf.wsgi.app import Root
 from wolf.routing import Router
+from wolf.decorators import ondemand
 from wolf.services.post import Mailman
 
 
@@ -18,6 +19,13 @@ def index(request):
         'user': request.get(User),
         'path_for': application.router.path_for
     }
+
+
+@routes.register('/test/ondemand')
+@html
+@ondemand
+def ondemand(root: Root):
+    return f"{root.__class__.__name__}"
 
 
 @routes.register('/test/bare')

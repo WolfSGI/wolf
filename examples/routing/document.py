@@ -48,7 +48,7 @@ class CreateDocument(Form):
         )
         flash = request.get(SessionMessages)
         flash.add('Folder created.', type="info")
-        return request.response_cls.redirect(request.environ.application_uri)
+        return request.response_cls.redirect(request.application_uri)
 
 
 @routes.register(
