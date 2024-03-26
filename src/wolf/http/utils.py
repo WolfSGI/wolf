@@ -27,7 +27,7 @@ def parse_header(line: str) -> t.Tuple[str, t.Dict[str, str]]:
         i = p.find("=")
         if i >= 0:
             name = p[:i].strip().lower()
-            value = p[i + 1:].strip()
+            value = p[i + 1 :].strip()
             if len(value) >= 2 and value[0] == value[-1] == '"':
                 value = value[1:-1]
                 value = value.replace("\\\\", "\\").replace('\\"', '"')

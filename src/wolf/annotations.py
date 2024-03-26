@@ -3,7 +3,6 @@ from inspect import unwrap, getmembers, isroutine
 
 
 class annotation:
-
     name: t.ClassVar[str] = "__annotations__"
 
     def __init__(self, **values):
@@ -40,7 +39,6 @@ class annotation:
 
 
 class annotation_mapping(annotation):
-
     container: t.ClassVar[t.Type[t.MutableMapping]] = dict
 
     def __init__(self, key: str, **values):
@@ -53,7 +51,7 @@ class annotation_mapping(annotation):
             raise error
         if (annotations := getattr(canonical, self.name, None)) is not None:
             if not isinstance(annotations, self.container):
-                raise TypeError('Unknown type of annotations container.')
+                raise TypeError("Unknown type of annotations container.")
         else:
             annotations = self.container()
             setattr(canonical, self.name, annotations)

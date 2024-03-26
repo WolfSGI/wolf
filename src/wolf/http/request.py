@@ -7,62 +7,52 @@ from wolf.http.datastructures import Query, Cookies, ContentType
 from aioinject.context import _BaseInjectionContext
 
 
-E = t.TypeVar('E', bound=t.Mapping)
+E = t.TypeVar("E", bound=t.Mapping)
 
 
 class Request(ABC, t.Generic[E]):
-
     environ: E
     response_cls: t.ClassVar[type[Response]]
     context: _BaseInjectionContext
 
     @property
     @abstractmethod
-    def method(self) -> str:
-        ...
+    def method(self) -> str: ...
 
     @property
     @abstractmethod
-    def domain(self) -> str:
-        ...
+    def domain(self) -> str: ...
 
     @property
     @abstractmethod
-    def root_path(self) -> str:
-        ...
+    def root_path(self) -> str: ...
 
     @property
     @abstractmethod
-    def path(self) -> str:
-        ...
+    def path(self) -> str: ...
 
     @property
     @abstractmethod
-    def querystring(self) -> str | bytes:
-        ...
+    def querystring(self) -> str | bytes: ...
 
     @property
     @abstractmethod
-    def cookies(self) -> Cookies:
-        ...
+    def cookies(self) -> Cookies: ...
 
     def get_cookies(self) -> Cookies:
         return self.cookies
 
     @property
     @abstractmethod
-    def content_type(self) -> ContentType:
-        ...
+    def content_type(self) -> ContentType: ...
 
     @property
     @abstractmethod
-    def host(self) -> str:
-        ...
+    def host(self) -> str: ...
 
     @property
     @abstractmethod
-    def scheme(self) -> str:
-        ...
+    def scheme(self) -> str: ...
 
     @immutable_cached_property
     def query(self) -> Query:
@@ -74,16 +64,17 @@ class Request(ABC, t.Generic[E]):
     @immutable_cached_property
     def application_uri(self) -> str:
         scheme = self.scheme
-        if ':' in self.host:
-            server, port = self.host.split(':', 1)
+        if ":" in self.host:
+            server, port = self.host.split(":", 1)
         else:
             server = self.host
-            port = '80'
+            port = "80"
 
-        if (self.scheme == 'http' and port == '80') or \
-           (self.scheme == 'https' and port == '443'):
-            return f'{scheme}://{server}{self.root_path}'
-        return f'{scheme}://{server}:{port}{self.root_path}'
+        if (self.scheme == "http" and port == "80") or (
+            self.scheme == "https" and port == "443"
+        ):
+            return f"{scheme}://{server}{self.root_path}"
+        return f"{scheme}://{server}:{port}{self.root_path}"
 
     def uri(self, include_query: bool = True) -> str:
         path_info = urllib.parse.quote(self.path)

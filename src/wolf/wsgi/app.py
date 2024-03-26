@@ -16,14 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 class Mounts(Mapping):
-
     def add(self, app: Node, path: str):
         self[path] = app
 
 
 @dataclass(kw_only=True, repr=False)
 class Root(Node):
-
     services: Container = field(default_factory=Container)
     middlewares: list[HandlerWrapper] = field(default_factory=list)
     mounts: Mounts = field(default_factory=Mounts)
@@ -46,7 +44,7 @@ class Root(Node):
         return WSGIResponse(500, str(err))
 
     def endpoint(self, request: WSGIRequest) -> WSGICallable:
-        raise NotImplementedError('Implement your own.')
+        raise NotImplementedError("Implement your own.")
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         if self.mounts:
@@ -78,10 +76,7 @@ class RoutingApplication(Root):
         super().finalize()
 
     def endpoint(self, request: WSGIRequest) -> WSGICallable:
-        route: MatchedRoute | None = self.router.get(
-            request.path,
-            request.method
-        )
+        route: MatchedRoute | None = self.router.get(request.path, request.method)
         if route is None:
             raise HTTPError(404)
 

@@ -5,20 +5,15 @@ from abc import ABC, abstractmethod
 from collections import UserDict
 from wolf.http.exceptions import HTTPError
 from wolf.wsgi.response import WSGIResponse
-from wolf.wsgi.types import (
-    WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
-)
+from wolf.wsgi.types import WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
 
 
 class Node(ABC):
-
     @abstractmethod
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         pass
 
-    def handle_exception(self,
-                         exc_info: ExceptionInfo,
-                         environ: WSGIEnviron):
+    def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
         """This method handles exceptions happening while the
         application is trying to render/process/interpret the request.
         """
@@ -39,7 +34,7 @@ class Node(ABC):
         finally:
             if iterable is not None:
                 closer: t.Optional[t.Callable[[], None]] = getattr(
-                    iterable, 'close', None
+                    iterable, "close", None
                 )
                 if closer is not None:
                     try:
@@ -50,19 +45,18 @@ class Node(ABC):
 
 
 class Mapping(Node, UserDict[str, WSGICallable]):
-
     def __setitem__(self, path: str, script: WSGICallable):
-        super().__setitem__(str('/' / PurePosixPath(path)), script)
+        super().__setitem__(str("/" / PurePosixPath(path)), script)
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
-        uri = PurePosixPath(environ['PATH_INFO'])
+        uri = PurePosixPath(environ["PATH_INFO"])
         for current in (uri, *uri.parents):
             if (script := self.get(str(current))) is not None:
                 if current.parents:
-                    environ['SCRIPT_NAME'] += str(current)
+                    environ["SCRIPT_NAME"] += str(current)
                 if current != uri:
-                    environ['PATH_INFO'] = f'/{uri.relative_to(current)}'
+                    environ["PATH_INFO"] = f"/{uri.relative_to(current)}"
                 else:
-                    environ['PATH_INFO'] = '/'
+                    environ["PATH_INFO"] = "/"
                 return script
         raise HTTPError(404)

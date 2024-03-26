@@ -4,44 +4,32 @@
 import deform
 import colander
 from abc import ABC, abstractmethod
-from typing import Type
 from wolf.annotations import annotation
 from wolf.http.datastructures import Data
 from wolf.http.exceptions import HTTPError
 from wolf.rendering import html, renderer
 from wolf.resources import NeededResources
 from wolf.routing import APIView
-from wolf.services.resources import ResourceManager
 
 
 class trigger(annotation):
-    name = '__form_trigger__'
+    name = "__form_trigger__"
 
     def __init__(self, name: str, title: str, order: int = 0):
-        self.annotation = {
-            "name": name,
-            "title": title,
-            "order": order
-        }
+        self.annotation = {"name": name, "title": title, "order": order}
 
 
-class Form(APIView):
-
+class Form(ABC, APIView):
     def __init__(self):
         triggers = sorted(
-            tuple(trigger.find(self)),
-            key=lambda x: (x[0]['order'], x[0]['name'])
+            tuple(trigger.find(self)), key=lambda x: (x[0]["order"], x[0]["name"])
         )
-        self.triggers = {
-            (ann['name'], '__trigger__'): func for ann, func in
-            triggers
-        }
+        self.triggers = {(ann["name"], "__trigger__"): func for ann, func in triggers}
         self.buttons = [
             deform.form.Button(
-                value='__trigger__',
-                name=ann['name'],
-                title=ann['title']
-            ) for ann, func in triggers
+                value="__trigger__", name=ann["name"], title=ann["title"]
+            )
+            for ann, func in triggers
         ]
 
     def get_initial_data(self, request, *, context=None):
@@ -53,8 +41,7 @@ class Form(APIView):
 
     def get_form(self, request, *, context=None) -> deform.form.Form:
         schema = self.get_schema(request, context=context).bind(
-            request=request,
-            context=context
+            request=request, context=context
         )
         form = deform.form.Form(schema, buttons=self.buttons)
         initial_data = self.get_initial_data(request, context=context)

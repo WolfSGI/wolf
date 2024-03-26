@@ -19,10 +19,8 @@ anonymous = AnonymousUser()
 
 
 class Source(abc.ABC):
-
     @abc.abstractmethod
-    def find(self,
-             credentials: t.Any, request: Request) -> User | None:
+    def find(self, credentials: t.Any, request: Request) -> User | None:
         pass
 
     @abc.abstractmethod
@@ -31,13 +29,12 @@ class Source(abc.ABC):
 
 
 class DictSource(Source):
-
     def __init__(self, users: dict[str, str]):
         self.users = users
 
     def find(self, credentials: dict, request: Request) -> User | None:
-        username = credentials.get('username')
-        password = credentials.get('password')
+        username = credentials.get("username")
+        password = credentials.get("password")
         if username is not None and username in self.users:
             if self.users[username] == password:
                 user = User()
@@ -52,22 +49,14 @@ class DictSource(Source):
 
 
 class Authenticator(abc.ABC):
+    @abc.abstractmethod
+    def from_credentials(self, request: Request, credentials: dict) -> User | None: ...
 
     @abc.abstractmethod
-    def from_credentials(
-            self,
-            request: Request,
-            credentials: dict) -> User | None:
-        ...
+    def identify(self, request: Request) -> User: ...
 
     @abc.abstractmethod
-    def identify(self, request: Request) -> User:
-        ...
+    def forget(self, request: Request) -> None: ...
 
     @abc.abstractmethod
-    def forget(self, request: Request) -> None:
-        ...
-
-    @abc.abstractmethod
-    def remember(self, request: Request, user: User) -> None:
-        ...
+    def remember(self, request: Request, user: User) -> None: ...

@@ -13,14 +13,13 @@ class Resource(NamedTuple):
     bottom: bool = False
     integrity: str | None = None
     crossorigin: str | None = None
-    dependencies: tuple['Resource'] | None = None
+    dependencies: tuple["Resource"] | None = None
 
     def render(self, application_uri) -> bytes:
         pass
 
     @cache
-    def __lineage__(self) -> tuple['Resource']:
-
+    def __lineage__(self) -> tuple["Resource"]:
         def unfiltered_lineage():
             if not self.dependencies:
                 return
@@ -42,7 +41,6 @@ class Resource(NamedTuple):
 
 
 class JSResource(Resource):
-
     def render(self, application_uri: str = "") -> bytes:
         url = multi_urljoin(self.root or application_uri, self.path)
         value = f'src="{url}"'
@@ -50,11 +48,10 @@ class JSResource(Resource):
             value += f' crossorigin="{self.crossorigin}"'
         if self.integrity:
             value += f' integrity="{self.integrity}"'
-        return f'''<script {value}></script>\r\n'''.encode()
+        return f"""<script {value}></script>\r\n""".encode()
 
 
 class CSSResource(Resource):
-
     def render(self, application_uri: str = "") -> bytes:
         url = multi_urljoin(self.root or application_uri, self.path)
         value = f'href="{url}"'
@@ -62,7 +59,7 @@ class CSSResource(Resource):
             value += f' crossorigin="{self.crossorigin}"'
         if self.integrity:
             value += f' integrity="{self.integrity}"'
-        return f'''<link rel="stylesheet" {value} />\r\n'''.encode()
+        return f"""<link rel="stylesheet" {value} />\r\n""".encode()
 
 
 known_extensions = {
@@ -72,27 +69,31 @@ known_extensions = {
 
 
 class NeededResources(set[JSResource | CSSResource]):
-
     def __init__(self, root: str | PurePosixPath, *args, **kwargs):
         self.root = root
         super().__init__(*args, **kwargs)
 
-    def add_resource(self, path: str, rtype: str, *,
-                     root: str | None = None,
-                     bottom: bool = False,
-                     integrity: str | None = None,
-                     crossorigin: str | None = None):
+    def add_resource(
+        self,
+        path: str,
+        rtype: str,
+        *,
+        root: str | None = None,
+        bottom: bool = False,
+        integrity: str | None = None,
+        crossorigin: str | None = None,
+    ):
         if factory := known_extensions.get(rtype):
             resource = factory(
                 path,
                 root=root,
                 bottom=bottom,
                 integrity=integrity,
-                crossorigin=crossorigin
+                crossorigin=crossorigin,
             )
             self.add(resource)
         else:
-            raise KeyError(f'Unknown resource type: {rtype}.')
+            raise KeyError(f"Unknown resource type: {rtype}.")
 
     def unfold(self) -> list[Resource]:
         seen = set()
@@ -111,8 +112,8 @@ class NeededResources(set[JSResource | CSSResource]):
         if isinstance(body, str):
             body = body.encode()
 
-        top = b''
-        bottom = b''
+        top = b""
+        bottom = b""
         base_uri = multi_urljoin(application_uri, self.root)
         for resource in self.unfold():
             if resource.bottom:
@@ -120,7 +121,7 @@ class NeededResources(set[JSResource | CSSResource]):
             else:
                 top += resource.render(base_uri)
         if top:
-            body = body.replace(b'</head>', top + b'</head>', 1)
+            body = body.replace(b"</head>", top + b"</head>", 1)
         if bottom:
-            body = body.replace(b'</body>', bottom + b'</body>', 1)
+            body = body.replace(b"</body>", bottom + b"</body>", 1)
         return body

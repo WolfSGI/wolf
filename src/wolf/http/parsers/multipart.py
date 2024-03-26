@@ -4,16 +4,15 @@ from multifruits import Parser, extract_filename, parse_content_disposition
 
 
 class Multipart:
-    """Responsible for the parsing of multipart encoded body.
-    """
+    """Responsible for the parsing of multipart encoded body."""
 
     __slots__ = (
-        'form',
-        'files',
-        '_parser',
-        '_current',
-        '_current_headers',
-        '_current_params'
+        "form",
+        "files",
+        "_parser",
+        "_current",
+        "_current_headers",
+        "_current_params",
     )
 
     def __init__(self, content_type: str):
@@ -31,32 +30,31 @@ class Multipart:
 
     def on_headers_complete(self):
         disposition_type, params = parse_content_disposition(
-            self._current_headers.get(b'Content-Disposition'))
+            self._current_headers.get(b"Content-Disposition")
+        )
         if not disposition_type:
-            raise ValueError('Content-Disposition is missing.')
+            raise ValueError("Content-Disposition is missing.")
 
         self._current_params = params
-        if b'Content-Type' in self._current_headers:
+        if b"Content-Type" in self._current_headers:
             self._current = BytesIO()
             self._current.filename = extract_filename(params)
             self._current.size = 0
-            self._current.content_type = self._current_headers[
-                b'Content-Type'
-            ]
+            self._current.content_type = self._current_headers[b"Content-Type"]
             self._current.params = params
         else:
-            self._current = ''
+            self._current = ""
 
     def on_data(self, data: bytes):
-        if b'Content-Type' in self._current_headers:
+        if b"Content-Type" in self._current_headers:
             self._current.write(data)
             self._current.size += len(data)
         else:
             self._current += data.decode()
 
     def on_part_complete(self):
-        name = self._current_params.get(b'name', b'').decode()
-        if b'Content-Type' in self._current_headers:
+        name = self._current_params.get(b"name", b"").decode()
+        if b"Content-Type" in self._current_headers:
             self._current.seek(0)
             if not self._current.filename:
                 if not self._current.getbuffer().nbytes:

@@ -11,12 +11,11 @@ from aioinject import Scoped, Object, SyncInjectionContext, Provider
 from aioinject.extensions import SyncOnResolveExtension
 
 
-T = t.TypeVar('T')
+T = t.TypeVar("T")
 NONE_PROVIDED = object()
 
 
 class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
-
     context: SyncInjectionContext | None = None
     provides: set[type]
     response_cls: t.ClassVar[type[WSGIResponse]] = WSGIResponse
@@ -25,10 +24,9 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         self.environ = environ
         self.provides = set()
 
-    def on_resolve(self,
-                    context: SyncInjectionContext,
-                    provider: Provider[T],
-                    instance: T) -> None:
+    def on_resolve(
+        self, context: SyncInjectionContext, provider: Provider[T], instance: T
+    ) -> None:
         self.provides.add(provider.type_)
 
     def get(self, t: type[T], *, default=NONE_PROVIDED):
@@ -48,17 +46,16 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
 
     @immutable_cached_property
     def method(self) -> str:
-        return self.environ.get('REQUEST_METHOD', 'GET').upper()
+        return self.environ.get("REQUEST_METHOD", "GET").upper()
 
     @immutable_cached_property
     def body(self) -> t.BinaryIO:
-        return self.environ['wsgi.input']
+        return self.environ["wsgi.input"]
 
     @immutable_cached_property
     def data(self) -> Data:
         if self.content_type:
-            return parser.parse(
-                self.environ['wsgi.input'], self.content_type)
+            return parser.parse(self.environ["wsgi.input"], self.content_type)
         return Data()
 
     def get_data(self) -> Data:
@@ -66,11 +63,11 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
 
     @immutable_cached_property
     def domain(self) -> str:
-        return self.environ['HTTP_HOST'].split(':', 1)[0]
+        return self.environ["HTTP_HOST"].split(":", 1)[0]
 
     @immutable_cached_property
     def root_path(self) -> str:
-        return urllib.parse.quote(self.environ.get('SCRIPT_NAME', ''))
+        return urllib.parse.quote(self.environ.get("SCRIPT_NAME", ""))
 
     @immutable_cached_property
     def path(self) -> str:
@@ -80,34 +77,34 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         # We transform it back to UTF-8
         # Note that it's valid for WSGI server to omit the value if it's
         # empty.
-        if path := self.environ.get('PATH_INFO'):
+        if path := self.environ.get("PATH_INFO"):
             # Normalize the slashes to avoid things like '//test'
-            return str(PurePosixPath(path.encode('latin-1').decode('utf-8')))
-        return '/'
+            return str(PurePosixPath(path.encode("latin-1").decode("utf-8")))
+        return "/"
 
     @immutable_cached_property
     def querystring(self) -> Query:
-        return self.environ.get('QUERY_STRING', '')
+        return self.environ.get("QUERY_STRING", "")
 
     @immutable_cached_property
     def cookies(self) -> Cookies:
-        return Cookies.from_string(self.environ.get('HTTP_COOKIE', ''))
+        return Cookies.from_string(self.environ.get("HTTP_COOKIE", ""))
 
     @immutable_cached_property
     def content_type(self) -> ContentType:
-        return ContentType(self.environ.get('CONTENT_TYPE', ''))
+        return ContentType(self.environ.get("CONTENT_TYPE", ""))
 
     @immutable_cached_property
     def scheme(self) -> str:
-        return self.environ.get('wsgi.url_scheme', 'http')
+        return self.environ.get("wsgi.url_scheme", "http")
 
     @immutable_cached_property
     def host(self) -> str:
-        http_host = self.environ.get('HTTP_HOST')
+        http_host = self.environ.get("HTTP_HOST")
         if not http_host:
-            server = self.environ['SERVER_NAME']
-            port = self.environ.get('SERVER_PORT', None)
+            server = self.environ["SERVER_NAME"]
+            port = self.environ.get("SERVER_PORT", None)
             if port is None:
-                port = 80 if self.scheme == 'http' else 443
+                port = 80 if self.scheme == "http" else 443
             http_host = f"{server}:{port}"
         return http_host

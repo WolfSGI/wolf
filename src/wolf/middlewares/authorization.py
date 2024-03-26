@@ -21,7 +21,6 @@ class NoAnonymous:
     def __call__(self, handler):
         @wraps(handler)
         def checker(request: Request, *args, **kwargs) -> Response:
-
             # we skip unnecessary checks if it's not protected.
             path = PurePosixPath(request.path)
             for bypass in self.unprotected:
@@ -32,8 +31,7 @@ class NoAnonymous:
             if user is anonymous:
                 if self.login_url is None:
                     raise HTTPError(403)
-                return request.response_cls.redirect(
-                    request.root_path + self.login_url
-                )
+                return request.response_cls.redirect(request.root_path + self.login_url)
             return handler(request, *args, **kwargs)
+
         return checker

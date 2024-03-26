@@ -1,4 +1,3 @@
-import inspect
 import wrapt
 import logging
 from typing import Sequence
@@ -11,9 +10,7 @@ from wolf.resources import Resource, NeededResources
 logger = logging.getLogger(__name__)
 
 
-def html(wrapped=None, *,
-         resources: Sequence[Resource] | None = None):
-
+def html(wrapped=None, *, resources: Sequence[Resource] | None = None):
     @wrapt.decorator
     def html_wrapper(wrapped, instance, args, kwargs) -> Response:
         content = wrapped(*args, **kwargs)
@@ -22,22 +19,19 @@ def html(wrapped=None, *,
             return content
 
         if not isinstance(content, str):
-            raise TypeError(
-                f'Unable to render type: {type(content)}.')
+            raise TypeError(f"Unable to render type: {type(content)}.")
 
         request = args[0]
         ui = request.get(UI)
         needed_resources = request.get(NeededResources, default=None)
         if needed_resources is None:
-            logger.debug('No resource injection.')
+            logger.debug("No resource injection.")
         else:
             if ui.resources:
                 needed_resources.update(ui.resources)
             if resources:
                 needed_resources.update(resources)
-            content = needed_resources.apply(
-                content, request.application_uri
-            )
+            content = needed_resources.apply(content, request.application_uri)
 
         return request.response_cls.html(body=content)
 

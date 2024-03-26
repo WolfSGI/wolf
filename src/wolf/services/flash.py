@@ -13,7 +13,6 @@ class Message(t.NamedTuple):
 
 
 class SessionMessages:
-
     key: str = "flashmessages"
 
     def __init__(self, session: Session):
@@ -35,8 +34,6 @@ class SessionMessages:
 
 
 class Flash(Installable):
-
     @install_method(object)
     def register_services(self, application):
         application.services.register(Scoped(SessionMessages))
-

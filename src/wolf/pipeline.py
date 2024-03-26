@@ -8,11 +8,7 @@ Handler = Callable[[...], Response]
 HandlerWrapper = Callable[[Handler], Handler]
 
 
-def aggregate(
-        chain: Sequence[HandlerWrapper],
-        endpoint: Handler
-) -> Handler:
-
+def aggregate(chain: Sequence[HandlerWrapper], endpoint: Handler) -> Handler:
     wrapped = endpoint
     for middleware in reversed(chain):
         wrapping = middleware(wrapped)
@@ -22,7 +18,6 @@ def aggregate(
 
 
 class Pipeline(PriorityChain[HandlerWrapper]):
-
     def wrap(self, wrapped: Handler) -> Handler:
         chain = [m[1] for m in self._chain]
         return aggregate(chain, wrapped)

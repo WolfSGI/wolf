@@ -10,12 +10,11 @@ from wolf.http.types import HTTPCode
 
 BodyT = str | bytes | Iterator[bytes]
 HeadersT = Mapping[str, str] | Iterable[tuple[str, str]]
-F = TypeVar('F', bound=Callable)
+F = TypeVar("F", bound=Callable)
 
 
 class Headers(CIMultiDict[str]):
-
-    __slots__ = ('_cookies',)
+    __slots__ = ("_cookies",)
 
     _cookies: Cookies
 
@@ -36,7 +35,7 @@ class Headers(CIMultiDict[str]):
         yield from super().items()
         if self._cookies:
             for cookie in self._cookies.values():
-                yield 'Set-Cookie', str(cookie)
+                yield "Set-Cookie", str(cookie)
 
     def coalesced_items(self) -> Iterable[tuple[str, str]]:
         """Coalescence of headers does NOT garanty order of headers.
@@ -50,26 +49,27 @@ class Headers(CIMultiDict[str]):
         keys = frozenset(self.keys())
         for header in keys:
             values = self.getall(header)
-            if header == 'Set-Cookie' and cookies:
+            if header == "Set-Cookie" and cookies:
                 values = [*values, *cookies]
-            yield header, ', '.join(values)
-        if 'Set-Cookie' not in self and cookies:
-            yield 'Set-Cookie', ', '.join(cookies)
+            yield header, ", ".join(values)
+        if "Set-Cookie" not in self and cookies:
+            yield "Set-Cookie", ", ".join(cookies)
 
 
 class Response(Generic[F]):
-
-    __slots__ = ('status', 'body', 'headers', '_finishers')
+    __slots__ = ("status", "body", "headers", "_finishers")
 
     status: HTTPStatus
     headers: Headers
     body: BodyT | None
     _finishers: deque[F] | None
 
-    def __init__(self,
-                 status: HTTPCode = 200,
-                 body: BodyT | None = None,
-                 headers: HeadersT | None = None):
+    def __init__(
+        self,
+        status: HTTPCode = 200,
+        body: BodyT | None = None,
+        headers: HeadersT | None = None,
+    ):
         self.status = HTTPStatus(status)
         self.body = body
         self.headers = Headers(headers or ())  # idempotent.
@@ -96,40 +96,47 @@ class Response(Generic[F]):
             elif isinstance(self.body, Iterator):
                 yield from self.body
             else:
-                raise TypeError(
-                    f'Body of type {type(self.body)!r} is not supported.'
-                )
+                raise TypeError(f"Body of type {type(self.body)!r} is not supported.")
 
     @classmethod
-    def to_json(cls, code: HTTPCode = 200, body: BodyT | None = None,
-                headers: HeadersT | None = None) -> 'Response':
+    def to_json(
+        cls,
+        code: HTTPCode = 200,
+        body: BodyT | None = None,
+        headers: HeadersT | None = None,
+    ) -> "Response":
         data = orjson.dumps(body)
         if headers is None:
-            headers = {'Content-Type': 'application/json'}
+            headers = {"Content-Type": "application/json"}
         else:
             headers = Headers(headers)
-            headers['Content-Type'] = 'application/json'
+            headers["Content-Type"] = "application/json"
         return cls(code, data, headers)
 
     @classmethod
-    def html(cls, code: HTTPCode = 200, body: AnyStr = b'',
-             headers: HeadersT | None = None) -> 'Response':
+    def html(
+        cls, code: HTTPCode = 200, body: AnyStr = b"", headers: HeadersT | None = None
+    ) -> "Response":
         if headers is None:
-            headers = {'Content-Type': 'text/html; charset=utf-8'}
+            headers = {"Content-Type": "text/html; charset=utf-8"}
         else:
             headers = Headers(headers)
-            headers['Content-Type'] = 'text/html; charset=utf-8'
+            headers["Content-Type"] = "text/html; charset=utf-8"
         return cls(code, body, headers)
 
     @classmethod
-    def redirect(cls, location, code: HTTPCode = 303,
-                 body: BodyT | None = None,
-                 headers: HeadersT | None = None) -> 'Response':
+    def redirect(
+        cls,
+        location,
+        code: HTTPCode = 303,
+        body: BodyT | None = None,
+        headers: HeadersT | None = None,
+    ) -> "Response":
         if code not in REDIRECT_STATUSES:
             raise ValueError(f"{code}: unknown redirection code.")
         if not headers:
-            headers = {'Location': location}
+            headers = {"Location": location}
         else:
             headers = Headers(headers)
-            headers['Location'] = location
+            headers["Location"] = location
         return cls(code, body, headers)

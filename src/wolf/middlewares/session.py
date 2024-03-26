@@ -18,7 +18,7 @@ class HTTPSession:
     httponly: bool = True
     digest: str = HashAlgorithm.sha1.name
     TTL: int = 3600
-    cookie_name: str = 'sid'
+    cookie_name: str = "sid"
     secure: bool = True
     save_new_empty: bool = False
     salt: str | None = None
@@ -40,7 +40,7 @@ class HTTPSession:
             new = True
             if sig := request.cookies.get(self.manager.cookie_name):
                 try:
-                    sid = str(self.manager.verify_id(sig), 'utf-8')
+                    sid = str(self.manager.verify_id(sig), "utf-8")
                 except itsdangerous.exc.SignatureExpired:
                     # Session expired. We generate a new one.
                     pass
@@ -64,8 +64,7 @@ class HTTPSession:
                 # Maybe log.
                 raise
             else:
-                if not session.modified and (
-                        session.new and self.save_new_empty):
+                if not session.modified and (session.new and self.save_new_empty):
                     session.save()
 
                 if session.modified:
@@ -78,12 +77,13 @@ class HTTPSession:
                 domain = self.domain or request.domain
                 cookie = self.manager.cookie(
                     session.sid,
-                    request.root_path or '/',
+                    request.root_path or "/",
                     domain,
                     secure=self.secure,
                     samesite=self.samesite,
-                    httponly=self.httponly
+                    httponly=self.httponly,
                 )
                 response.cookies[self.manager.cookie_name] = cookie
                 return response
+
         return http_session_middleware

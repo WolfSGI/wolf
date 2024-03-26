@@ -12,7 +12,7 @@ class Data(t.NamedTuple):
 
 
 class ContentType(str):
-    __slots__ = ('mimetype', 'options')
+    __slots__ = ("mimetype", "options")
 
     mimetype: MIMEType
     options: t.Mapping[str, str]
@@ -23,8 +23,8 @@ class ContentType(str):
 
         mimetype, params = parse_header(value)
         instance = str.__new__(
-            cls, mimetype + "".join(
-                f"; {k}={v}" for k, v in sorted(params.items())))
+            cls, mimetype + "".join(f"; {k}={v}" for k, v in sorted(params.items()))
+        )
 
         instance.mimetype = mimetype
         instance.options = frozendict(params)
@@ -32,7 +32,7 @@ class ContentType(str):
 
 
 class MediaType(ContentType):
-    __slots__ = ('options', 'mimetype', 'maintype', 'subtype')
+    __slots__ = ("options", "mimetype", "maintype", "subtype")
 
     mimetype: MIMEType
     maintype: str
@@ -45,11 +45,11 @@ class MediaType(ContentType):
 
         mimetype, params = parse_header(value)
 
-        if mimetype == '*':
+        if mimetype == "*":
             maintype = "*"
             subtype = "*"
-        elif '/' in mimetype:
-            type_parts = mimetype.split('/')
+        elif "/" in mimetype:
+            type_parts = mimetype.split("/")
             if not type_parts or len(type_parts) > 2:
                 raise ValueError(f"Can't parse mimetype {mimetype!r}")
             maintype, subtype = type_parts
@@ -58,8 +58,8 @@ class MediaType(ContentType):
             subtype = None
 
         instance = str.__new__(
-            cls, mimetype + "".join(
-                f"; {k}={v}" for k, v in sorted(params.items())))
+            cls, mimetype + "".join(f"; {k}={v}" for k, v in sorted(params.items()))
+        )
 
         instance.mimetype = mimetype
         instance.maintype = maintype
@@ -69,8 +69,10 @@ class MediaType(ContentType):
 
     def match(self, other: str) -> bool:
         other_media_type = MediaType(other)
-        return self.maintype in {'*', other_media_type.maintype} and \
-            self.subtype in {"*", other_media_type.subtype}
+        return self.maintype in {"*", other_media_type.maintype} and self.subtype in {
+            "*",
+            other_media_type.subtype,
+        }
 
 
 class Cookies(t.Dict[str, Cookie]):
@@ -85,19 +87,16 @@ class Cookies(t.Dict[str, Cookie]):
 
 
 class Query(frozendict[str, t.Sequence[str]]):
-
-    TRUE_STRINGS = {'t', 'true', 'yes', '1', 'on'}
-    FALSE_STRINGS = {'f', 'false', 'no', '0', 'off'}
-    NONE_STRINGS = {'n', 'none', 'null'}
+    TRUE_STRINGS = {"t", "true", "yes", "1", "on"}
+    FALSE_STRINGS = {"f", "false", "no", "0", "off"}
+    NONE_STRINGS = {"n", "none", "null"}
 
     def get(self, name: str, default=None):
-        """Return the first value of the found list.
-        """
+        """Return the first value of the found list."""
         return super().get(name, [None])[0]
 
     def getlist(self, name: str) -> t.Sequence[str]:
-        """Return the value list
-        """
+        """Return the value list"""
         return super().get(name, [])
 
     def as_bool(self, key: str) -> t.Optional[bool]:
@@ -121,19 +120,20 @@ class Query(frozendict[str, t.Sequence[str]]):
 
     @classmethod
     def from_string(
-            cls,
-            value: str,
-            keep_blank_values: bool = True,
-            strict_parsing: bool = True,
-            encoding: str = 'utf-8',
-            errors: t.Literal['strict', 'replace', 'ignore'] = 'replace',
-            max_num_fields: int = None,
-            separator: str = '&'
+        cls,
+        value: str,
+        keep_blank_values: bool = True,
+        strict_parsing: bool = True,
+        encoding: str = "utf-8",
+        errors: t.Literal["strict", "replace", "ignore"] = "replace",
+        max_num_fields: int = None,
+        separator: str = "&",
     ):
         if not value:
             return cls()
         return cls(
-            (key, tuple(l)) for key, l in urllib.parse.parse_qs(
+            (key, tuple(val))
+            for key, val in urllib.parse.parse_qs(
                 value,
                 keep_blank_values=keep_blank_values,
                 strict_parsing=strict_parsing,
@@ -141,4 +141,5 @@ class Query(frozendict[str, t.Sequence[str]]):
                 errors=errors,
                 max_num_fields=max_num_fields,
                 separator=separator,
-            ).items())
+            ).items()
+        )

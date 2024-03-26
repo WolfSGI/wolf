@@ -3,15 +3,14 @@ from plum import Signature
 
 
 class SignatureResolver:
-
-    def __init__(self,
-                 signatures: t.Iterable[Signature] | None = None,
-                 restrict: t.Iterable[Signature] | None = None):
-        self.signatures: t.Set[Signature] = (
-            signatures and set(signatures) or set())
+    def __init__(
+        self,
+        signatures: t.Iterable[Signature] | None = None,
+        restrict: t.Iterable[Signature] | None = None,
+    ):
+        self.signatures: t.Set[Signature] = signatures and set(signatures) or set()
         self.is_faithful: bool = True
-        self.restrict: t.Set[Signature] = (
-            restrict and set(restrict) or set())
+        self.restrict: t.Set[Signature] = restrict and set(restrict) or set()
 
     def set_restrictions(self, *signatures):
         self.restrict |= set(signatures)
@@ -19,26 +18,24 @@ class SignatureResolver:
     def register(self, signature: Signature) -> None:
         existing = [s == signature for s in self.signatures]
         if any(existing):
-            raise AssertionError(
-                f"This exact signature already exists : {signature}."
-            )
+            raise AssertionError(f"This exact signature already exists : {signature}.")
         else:
             self.signatures.add(signature)
 
         # Use a double negation for slightly better performance.
-        self.is_faithful = not any(
-            not s.is_faithful for s in self.signatures
-        )
+        self.is_faithful = not any(not s.is_faithful for s in self.signatures)
 
     def __len__(self) -> int:
         return len(self.signatures)
 
     def resolve(self, target: t.Tuple[object, ...] | Signature) -> Signature:
         if isinstance(target, tuple):
+
             def check(s):
                 return s.match(target)
 
         else:
+
             def check(s):
                 return target <= s
 
@@ -53,9 +50,7 @@ class SignatureResolver:
             # The signature under consideration is comparable
             # with at least one of the candidates.
             # First, filter any strictly more general candidates.
-            new_candidates = [
-                c for c in candidates if not signature < c
-            ]
+            new_candidates = [c for c in candidates if not signature < c]
 
             # If the signature under consideration is as specific
             # as at least one candidate, then and only then add

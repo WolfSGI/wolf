@@ -4,21 +4,19 @@ from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
-from mailbox import Mailbox, Maildir
+from mailbox import Maildir
 from contextlib import contextmanager
-from wolf.wsgi.response import WSGIResponse
 
 
 logger = logging.getLogger(__name__)
 
 
 class Mailman(list[Message]):
-
     @staticmethod
     def create_message(origin, targets, subject, text, html=None):
         msg = MIMEMultipart("alternative")
         msg["From"] = origin
-        msg["To"] = ','.join(targets)
+        msg["To"] = ",".join(targets)
         msg["Subject"] = subject
         msg.set_charset("utf-8")
 
@@ -40,7 +38,6 @@ class Mailman(list[Message]):
 
 @dataclass(kw_only=True)
 class PostOffice:
-
     path: Path
 
     def __post_init__(self):

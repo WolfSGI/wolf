@@ -22,25 +22,20 @@ class InvalidToken(Exception):
 
 
 class JWTManager:
-
     def __init__(self, private_key: bytes, public_key: bytes):
         self.private_key = private_key
         self.public_key = public_key
 
     def get_token(self, data: dict, delta: int = 60) -> str:
-        logger.info('Got jwt request for a new token.')
+        logger.info("Got jwt request for a new token.")
         expires = datetime.now(tz=timezone.utc) + timedelta(minutes=delta)
-        data = {
-            **data,
-            "exp": expires
-        }
+        data = {**data, "exp": expires}
         token = jwt.encode(data, self.private_key, algorithm="RS256")
         return token
 
     def verify_token(self, token: str) -> dict:
         try:
-            decoded = jwt.decode(
-                token, self.public_key, algorithms=["RS256"])
+            decoded = jwt.decode(token, self.public_key, algorithms=["RS256"])
             return decoded
         except jwt.exceptions.InvalidSignatureError:
             raise InvalidSignature()
@@ -51,11 +46,10 @@ class JWTManager:
 
 
 class JWTService(ServiceManager, Configuration):
-
     private_key: pathlib.Path
     public_key: pathlib.Path
 
-    @factory('singleton')
+    @factory("singleton")
     def jwt_manager(self, scope: Scope) -> JWTManager:
         assert self.private_key.is_file()
         assert self.public_key.is_file()

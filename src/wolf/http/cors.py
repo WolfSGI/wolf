@@ -32,13 +32,15 @@ class CORSPolicy:
         if self.credentials:
             yield "Access-Control-Allow-Credentials", "true"
 
-    def preflight(self,
-                  origin: Optional[str] = None,
-                  acr_method: Optional[str] = None,
-                  acr_headers: Optional[str] = None) -> Headers:
+    def preflight(
+        self,
+        origin: Optional[str] = None,
+        acr_method: Optional[str] = None,
+        acr_headers: Optional[str] = None,
+    ) -> Headers:
         if origin:
-            if self.origin == '*':
-                yield "Access-Control-Allow-Origin", '*'
+            if self.origin == "*":
+                yield "Access-Control-Allow-Origin", "*"
             elif origin == self.origin:
                 yield "Access-Control-Allow-Origin", origin
                 yield "Vary", "Origin"

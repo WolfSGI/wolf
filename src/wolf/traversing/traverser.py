@@ -7,7 +7,7 @@ from wolf.datastructures import TypedSet
 from wolf.traversing.typed import TypedRouters
 
 
-C = t.TypeVar('C')
+C = t.TypeVar("C")
 Factory = t.Callable[[Request, t.Any, t.Mapping[str, t.Any]], C]
 
 
@@ -27,13 +27,12 @@ class Traversed(ObjectProxy):
 def paths(path: str) -> t.Tuple[str, str]:
     root = PurePosixPath(path)
     parents = list(root.parents)
-    yield str(root), ''
+    yield str(root), ""
     for parent in parents[:-1]:
-        yield str(parent), '/' + str(root.relative_to(parent))
+        yield str(parent), "/" + str(root.relative_to(parent))
 
 
 class Node:
-
     def __init__(self, cls, path):
         self.cls = cls
         self.path = path
@@ -49,7 +48,7 @@ class Node:
         raise TypeError(f"Cannot establish equality between {self!r} and {other!r}")
 
     def __repr__(self):
-        return f'{self.cls} -> {self.path}'
+        return f"{self.cls} -> {self.path}"
 
 
 class ViewRegistry(TypedRouters):
@@ -57,28 +56,29 @@ class ViewRegistry(TypedRouters):
 
 
 class Traverser(TypedRouters):
-
-    __slots__ = ('_reverse',)
+    __slots__ = ("_reverse",)
 
     def __init__(self):
         self._reverse: TypedSet[t.Any, Node] = TypedSet()
         super().__init__()
 
-    def add(self, root: t.Type[t.Any], path: str, method, factory: t.Callable, **kwargs):
+    def add(
+        self, root: t.Type[t.Any], path: str, method, factory: t.Callable, **kwargs
+    ):
         sig = signature(factory)
         if sig.return_annotation is empty:
-            raise TypeError('Factories need to specify a return type.')
+            raise TypeError("Factories need to specify a return type.")
         self[root].add(path, method, factory, **kwargs)
         self._reverse.add(sig.return_annotation, Node(root, path))
 
     def traverse(
-            self,
-            root: t.Any,
-            path: str,
-            method: str,
-            request: Request,
-            partial: bool = None) -> t.Tuple[t.Any, str]:
-
+        self,
+        root: t.Any,
+        path: str,
+        method: str,
+        request: Request,
+        partial: bool = None,
+    ) -> t.Tuple[t.Any, str]:
         for stub, branch in paths(path):
             for matcher in self.lookup(root.__class__):
                 found = matcher.get(stub, method)
@@ -88,9 +88,10 @@ class Traverser(TypedRouters):
                         raise LookupError(stub)
                     traversed = Traversed(obj, parent=root, path=stub)
                     if not branch:
-                        return traversed, ''
+                        return traversed, ""
                     return self.traverse(
-                        traversed, branch, method, request, partial=partial)
+                        traversed, branch, method, request, partial=partial
+                    )
         if partial:
             return root, path
         raise LookupError()
@@ -113,7 +114,7 @@ class Traverser(TypedRouters):
             for candidate in next_nodes:
                 if candidate == node2:
                     current_path.append(candidate)
-                    resolved = '/'
+                    resolved = "/"
                     for node in reversed(current_path[1:]):
                         resolved += node.path
                     return resolved
@@ -129,14 +130,14 @@ class Traverser(TypedRouters):
             # Continue to next path in list
             path_index += 1
         # No path is found
-        raise LookupError('No path found.')
+        raise LookupError("No path found.")
 
-    def __or__(self, other: 'Traverser'):
+    def __or__(self, other: "Traverser"):
         new: Traverser = super().__or__(other)
         new._reverse = self._reverse | other._reverse
         return new
 
-    def __ior__(self, other: 'Traverser'):
+    def __ior__(self, other: "Traverser"):
         new: Traverser = super().__ior__(other)
         new._reverse |= other._reverse
         return new

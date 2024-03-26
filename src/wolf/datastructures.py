@@ -4,14 +4,13 @@ from inspect import isclass
 from collections.abc import Hashable
 
 
-C = t.TypeVar('C')
-H = t.TypeVar('H', bound=Hashable)
-T = t.TypeVar('T', covariant=True)
+C = t.TypeVar("C")
+H = t.TypeVar("H", bound=Hashable)
+T = t.TypeVar("T", covariant=True)
 
 
 class PriorityChain(t.Generic[C]):
-
-    __slots__ = ('_chain',)
+    __slots__ = ("_chain",)
 
     _chain: t.List[t.Tuple[int, C]]
 
@@ -26,16 +25,14 @@ class PriorityChain(t.Generic[C]):
         if not self._chain:
             self._chain = [insert]
         elif insert in self._chain:
-            raise KeyError(
-                'Component {component!r} already exists at #{order}.')
+            raise KeyError("Component {component!r} already exists at #{order}.")
         else:
             bisect.insort(self._chain, insert)
 
     def remove(self, component: C, order: int):
         insert = (order, component)
         if insert not in self._chain:
-            raise KeyError(
-                'Component {component!r} doest not exist at #{order}.')
+            raise KeyError("Component {component!r} doest not exist at #{order}.")
         self._chain.remove(insert)
 
     def clear(self):
@@ -43,7 +40,6 @@ class PriorityChain(t.Generic[C]):
 
 
 class TypedValue(t.Generic[T, H], t.Dict[t.Type[T], H]):
-
     __slots__ = ()
 
     @staticmethod
@@ -58,7 +54,6 @@ class TypedValue(t.Generic[T, H], t.Dict[t.Type[T], H]):
 
 
 class TypedSet(t.Generic[T, H], t.Dict[t.Type[T], t.Set[H]]):
-
     __slots__ = ()
 
     def add(self, cls: t.Type[T], component: H):
@@ -75,7 +70,7 @@ class TypedSet(t.Generic[T, H], t.Dict[t.Type[T], t.Set[H]]):
             if parent in self:
                 yield from self[parent]
 
-    def __or__(self, other: 'TypedSet'):
+    def __or__(self, other: "TypedSet"):
         new = TypedSet()
         for cls, seq in self.items():
             components = new.setdefault(cls, set())
@@ -85,7 +80,7 @@ class TypedSet(t.Generic[T, H], t.Dict[t.Type[T], t.Set[H]]):
             components |= seq
         return new
 
-    def __ior__(self, other: 'TypedSet'):
+    def __ior__(self, other: "TypedSet"):
         for cls, seq in other.items():
             components = self.setdefault(cls, set())
             components |= seq

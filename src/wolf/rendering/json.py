@@ -1,10 +1,8 @@
-import inspect
 import wrapt
 from wolf.http.response import Response
 
 
 def json(wrapped):
-
     @wrapt.decorator
     def json_wrapper(wrapped, instance, args, kwargs) -> Response:
         request = args[0]
@@ -14,7 +12,7 @@ def json(wrapped):
             return content
 
         if not isinstance(content, (dict, list)):
-            raise TypeError(f'Unable to render type: {type(content)}.')
+            raise TypeError(f"Unable to render type: {type(content)}.")
 
         return request.response_cls.to_json(body=content)
 

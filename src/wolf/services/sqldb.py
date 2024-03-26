@@ -1,27 +1,22 @@
 from orjson import loads, dumps
 from typing import Tuple, Type
+from contextlib import contextmanager
 from dataclasses import dataclass
 from aioinject import Scoped
-from wolf.http.response import Response
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.engine.base import Engine
 from wolf.pluggability import Installable
-from contextlib import contextmanager
 
 
 @dataclass(kw_only=True)
 class SQLDatabase(Installable):
-
     url: str
     echo: bool = False
     models_registries: Tuple[Type[SQLModel], ...] = (SQLModel,)
 
     def __post_init__(self):
         engine: Engine = create_engine(
-            self.url,
-            echo=self.echo,
-            json_serializer=dumps,
-            json_deserializer=loads
+            self.url, echo=self.echo, json_serializer=dumps, json_deserializer=loads
         )
         for registry in self.models_registries:
             registry.metadata.create_all(engine)

@@ -1,7 +1,7 @@
 import inspect
 import types
-from typing import Sequence, Any, Type, get_args, Literal
-from plum import dispatch
+from typing import Sequence, Any, Type, get_args
+from plum import dispatch, overload
 from autorouting import Router as BaseRouter, MatchedRoute
 from wolf.http.types import HTTPMethod
 from wolf.pipeline import HandlerWrapper, aggregate
@@ -23,66 +23,61 @@ class APIView:
     pass
 
 
-@dispatch
+@overload
 def get_routables(
-        view: types.FunctionType | types.CoroutineType,
-        methods: HTTPMethods | None = None):
-
+    view: types.FunctionType | types.CoroutineType, methods: HTTPMethods | None = None
+):
     if methods is None:
-        methods = {'GET'}
+        methods = {"GET"}
     else:
         unknown = set(methods) - METHODS
         if unknown:
-            raise ValueError(
-                f"Unknown HTTP method(s): {', '.join(unknown)}")
+            raise ValueError(f"Unknown HTTP method(s): {', '.join(unknown)}")
     yield view, methods
 
 
-@dispatch
-def get_routables(
-        view: Type[APIView],
-        methods: HTTPMethods | None = None):
-
+@overload
+def get_routables(view: Type[APIView], methods: HTTPMethods | None = None):
     inst = view()
     if methods is not None:
-        raise AttributeError(
-            'Registration of APIView does not accept methods.')
+        raise AttributeError("Registration of APIView does not accept methods.")
     members = inspect.getmembers(
-        inst, predicate=(lambda x: inspect.ismethod(x)
-                         and x.__name__ in METHODS))
+        inst, predicate=(lambda x: inspect.ismethod(x) and x.__name__ in METHODS)
+    )
     for name, func in members:
         yield func, [name]
 
 
-@dispatch
-def get_routables(
-        view: Type,
-        methods: HTTPMethods | None = None):
-
+@overload
+def get_routables(view: Type, methods: HTTPMethods | None = None):
     inst = view()
     if not callable(inst):
-        raise AttributeError(
-            f'Instance of {view!r} needs to be callable.')
+        raise AttributeError(f"Instance of {view!r} needs to be callable.")
 
     if methods is None:
-        methods = {'GET'}
+        methods = {"GET"}
     else:
         unknown = set(methods) - METHODS
         if unknown:
-            raise ValueError(
-                f"Unknown HTTP method(s): {', '.join(unknown)}")
+            raise ValueError(f"Unknown HTTP method(s): {', '.join(unknown)}")
     yield inst, methods
 
 
-class Router(BaseRouter):
+@dispatch
+def get_routables(view, methods: HTTPMethods | None = None):
+    pass
 
-    def register(self,
-                 path: str,
-                 methods: HTTPMethods = None,
-                 pipeline: Sequence[HandlerWrapper] | None = None,
-                 name: str | None = None,
-                 requirements: dict | None = None,
-                 priority: int = 0):
+
+class Router(BaseRouter):
+    def register(
+        self,
+        path: str,
+        methods: HTTPMethods = None,
+        pipeline: Sequence[HandlerWrapper] | None = None,
+        name: str | None = None,
+        requirements: dict | None = None,
+        priority: int = 0,
+    ):
         def routing(value: Any):
             for endpoint, verbs in get_routables(value, methods):
                 if pipeline:
@@ -94,9 +89,10 @@ class Router(BaseRouter):
                         endpoint,
                         name=name,
                         requirements=requirements,
-                        priority=priority
+                        priority=priority,
                     )
             return value
+
         return routing
 
     def path_for(self, name: str, **params):
@@ -114,5 +110,5 @@ __all__ = [
     "Params",
     "Extra",
     "APIView",
-    "get_routables"
+    "get_routables",
 ]

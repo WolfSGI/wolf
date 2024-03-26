@@ -8,12 +8,10 @@ from wolf.pluggability import Installable
 
 @dataclass(kw_only=True)
 class SessionAuthenticator(Installable, Authenticator):
-
     user_key: str
     sources: tuple[Source, ...]
 
-    def from_credentials(self,
-                         request: Request, credentials: dict) -> User | None:
+    def from_credentials(self, request: Request, credentials: dict) -> User | None:
         for source in self.sources:
             user = source.find(credentials, request)
             if user is not None:

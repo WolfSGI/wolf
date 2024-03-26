@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class Transactional(ServiceManager, Configuration):
     manager: Callable[[], TransactionManager] = TransactionManager
 
-    @factory('scoped')
+    @factory("scoped")
     def transaction_factory(self, context) -> TransactionManager:
         return context.stack.enter_context(self.transactional(context))
 
