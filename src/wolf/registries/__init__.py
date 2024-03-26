@@ -10,7 +10,7 @@ from plum import Signature
 from prejudice.errors import ConstraintsErrors
 from prejudice.types import Predicate
 from prejudice.utils import resolve_constraints
-from sleigh.registries.resolver import SignatureResolver
+from wolf.registries.resolver import SignatureResolver
 
 
 DEFAULT = ""

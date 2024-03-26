@@ -6,7 +6,7 @@ from wolf.http.response import Response
 def json(wrapped):
 
     @wrapt.decorator
-    def _sync_json(wrapped, instance, args, kwargs) -> Response:
+    def json_wrapper(wrapped, instance, args, kwargs) -> Response:
         request = args[0]
         content = wrapped(*args, **kwargs)
 

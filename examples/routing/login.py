@@ -41,7 +41,7 @@ class Login(Form):
         if user is not None:
             authenticator.remember(request, user)
             flash.add('Logged in.', type="success")
-            return Response.redirect(request.application_uri)
+            return request.response_cls.redirect(request.application_uri)
 
         # Login failed.
         flash.add('Login failed.', type="danger")
@@ -54,4 +54,4 @@ def logout(request):
     authenticator.forget(request)
     flash = request.get(SessionMessages)
     flash.add('Logged out.', type="warning")
-    return Response.redirect(request.application_uri)
+    return request.response_cls.redirect(request.application_uri)

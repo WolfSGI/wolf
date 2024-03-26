@@ -1,10 +1,12 @@
 import deform
 import jsonschema_colander.types
 from sqlmodel import Session
-from winkel.form import Form, trigger
-from winkel.routing import Application, Router, Params
-from winkel.services.flash import SessionMessages
-from winkel import User, Response, html, renderer
+from wolf.form import Form, trigger
+from wolf.routing import Router, Params
+from wolf.wsgi.app import Root
+from wolf.services.flash import SessionMessages
+from wolf.identity import User
+from wolf.rendering import html, renderer
 from models import Document
 
 
@@ -24,19 +26,19 @@ document_schema = jsonschema_colander.types.Object.from_json(
 @routes.register('/folders/{folder_id}/new', name="document_create")
 class CreateDocument(Form):
 
-    def get_schema(self, scope, *, context=None):
+    def get_schema(self, request, *, context=None):
         schema = document_schema()
         schema['text'].widget = deform.widget.TextAreaWidget()
         return schema
 
     @trigger('add', 'Add new document')
-    def add(self, scope, data, *, context):
-        form = self.get_form(scope, context=context)
+    def add(self, request, data, *, context):
+        form = self.get_form(request, context=context)
         appstruct = form.validate(data)
 
-        sqlsession = scope.get(Session)
-        params = scope.get(Params)
-        user = scope.get(User)
+        sqlsession = request.get(Session)
+        params = request.get(Params)
+        user = request.get(User)
         sqlsession.add(
             Document(
                 author_id=user.id,
@@ -44,19 +46,19 @@ class CreateDocument(Form):
                 **appstruct
             )
         )
-        flash = scope.get(SessionMessages)
+        flash = request.get(SessionMessages)
         flash.add('Folder created.', type="info")
-        return Response.redirect(scope.environ.application_uri)
+        return request.response_cls.redirect(request.environ.application_uri)
 
 
 @routes.register(
     '/folders/{folder_id}/browse/{document_id}', name="document_view")
 @html
 @renderer(template='views/document')
-def document_view(scope):
-    application = scope.get(Application)
-    sqlsession = scope.get(Session)
-    params = scope.get(Params)
+def document_view(request):
+    application = request.get(Root)
+    sqlsession = request.get(Session)
+    params = request.get(Params)
     document = sqlsession.get(Document, params['document_id'])
     return {
         "document": document,

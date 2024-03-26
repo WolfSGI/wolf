@@ -1,9 +1,9 @@
 import typing as t
 from collections import defaultdict
 from autorouting import MatchedRoute
-from sleigh.pipeline import aggregate
-from sleigh.routing.router import Router, HTTPMethods, get_routables
-from sleigh.datastructures import TypedValue
+from wolf.pipeline import aggregate
+from wolf.routing.router import Router, HTTPMethods, get_routables
+from wolf.datastructures import TypedValue
 
 
 class TypedRouters(TypedValue[t.Any, Router], defaultdict):

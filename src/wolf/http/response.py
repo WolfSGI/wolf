@@ -3,21 +3,15 @@ from typing import Mapping, Iterable, Iterator, Generic, TypeVar, Callable, AnyS
 from http import HTTPStatus
 from multidict import CIMultiDict
 from collections import deque
-from sleigh.http.datastructures import Cookies
-from sleigh.http.types import HTTPCode
+from wolf.http.datastructures import Cookies
+from wolf.http.constants import EMPTY_STATUSES, REDIRECT_STATUSES
+from wolf.http.types import HTTPCode
 
-
-BODYLESS = frozenset((
-    HTTPStatus.CONTINUE,
-    HTTPStatus.SWITCHING_PROTOCOLS,
-    HTTPStatus.PROCESSING,
-    HTTPStatus.NO_CONTENT,
-    HTTPStatus.NOT_MODIFIED
-))
 
 BodyT = str | bytes | Iterator[bytes]
 HeadersT = Mapping[str, str] | Iterable[tuple[str, str]]
 F = TypeVar('F', bound=Callable)
+
 
 class Headers(CIMultiDict[str]):
 
@@ -89,7 +83,7 @@ class Response(Generic[F]):
         return self.headers.cookies
 
     def __iter__(self) -> Iterator[bytes]:
-        if self.status not in BODYLESS:
+        if self.status not in EMPTY_STATUSES:
             if self.body is None:
                 yield self.status.description.encode()
             elif isinstance(self.body, bytes):
@@ -105,7 +99,7 @@ class Response(Generic[F]):
 
     @classmethod
     def to_json(cls, code: HTTPCode = 200, body: BodyT | None = None,
-                headers: HeadersT | None = None):
+                headers: HeadersT | None = None) -> 'Response':
         data = orjson.dumps(body)
         if headers is None:
             headers = {'Content-Type': 'application/json'}
@@ -116,10 +110,23 @@ class Response(Generic[F]):
 
     @classmethod
     def html(cls, code: HTTPCode = 200, body: AnyStr = b'',
-             headers: HeadersT | None = None):
+             headers: HeadersT | None = None) -> 'Response':
         if headers is None:
             headers = {'Content-Type': 'text/html; charset=utf-8'}
         else:
             headers = Headers(headers)
             headers['Content-Type'] = 'text/html; charset=utf-8'
+        return cls(code, body, headers)
+
+    @classmethod
+    def redirect(cls, location, code: HTTPCode = 303,
+                 body: BodyT | None = None,
+                 headers: HeadersT | None = None) -> 'Response':
+        if code not in REDIRECT_STATUSES:
+            raise ValueError(f"{code}: unknown redirection code.")
+        if not headers:
+            headers = {'Location': location}
+        else:
+            headers = Headers(headers)
+            headers['Location'] = location
         return cls(code, body, headers)

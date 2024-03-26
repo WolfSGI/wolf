@@ -1,9 +1,10 @@
 import urllib.parse
 import typing as t
 from abc import ABC, abstractmethod
-from sleigh.utils import immutable_cached_property
-from sleigh.http.response import Response
-from sleigh.http.datastructures import Query, Cookies, ContentType
+from wolf.utils import immutable_cached_property
+from wolf.http.response import Response
+from wolf.http.datastructures import Query, Cookies, ContentType
+from aioinject.context import _BaseInjectionContext
 
 
 E = t.TypeVar('E', bound=t.Mapping)
@@ -13,6 +14,7 @@ class Request(ABC, t.Generic[E]):
 
     environ: E
     response_cls: t.ClassVar[type[Response]]
+    context: _BaseInjectionContext
 
     @property
     @abstractmethod

@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from sleigh.http.types import HTTPCode
+from wolf.http.types import HTTPCode
 
 
 class ParsingException(ValueError):

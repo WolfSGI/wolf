@@ -1,7 +1,7 @@
 from typing import Any, NamedTuple
 from prejudice.errors import ConstraintError
 from wolf.wsgi.request import WSGIRequest
-from wolf.auth import User, anonymous
+from wolf.identity import User, anonymous
 from wolf.registries import TypedRegistry
 
 
@@ -22,7 +22,7 @@ def is_not_anonymous(request, view, context):
 
 
 def is_anonymous(request, view, context):
-    if request.get('user') is not anonymous:
+    if request.get(User) is not anonymous:
         raise ConstraintError('User is not anonymous.')
 
 

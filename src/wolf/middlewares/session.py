@@ -1,9 +1,9 @@
 import itsdangerous
 import logging
-from dataclasses import dataclass, field
-from functools import cached_property
+from functools import wraps
+from dataclasses import dataclass
 from http_session.cookie import SameSite, HashAlgorithm, SignedCookieManager
-from http_session.meta import Store, Session as HTTPSession
+from http_session import Store, Session
 from aioinject import Object
 
 
@@ -34,13 +34,13 @@ class HTTPSession:
             cookie_name=self.cookie_name,
         )
 
-    def http_session(self, handler):
-        def http_session_middleware(request):
+    def __call__(self, handler):
+        @wraps(handler)
+        def http_session_middleware(request, *args, **kwargs):
             new = True
-            if (sig := request.cookies.get(self.manager.cookie_name)):
+            if sig := request.cookies.get(self.manager.cookie_name):
                 try:
                     sid = str(self.manager.verify_id(sig), 'utf-8')
-                    new = False
                 except itsdangerous.exc.SignatureExpired:
                     # Session expired. We generate a new one.
                     pass
@@ -48,16 +48,18 @@ class HTTPSession:
                     # Discrepancy in time signature.
                     # Invalid, generate a new one
                     pass
+                else:
+                    new = False
 
             if new is True:
                 sid = self.manager.generate_id()
 
-            session: HTTPSession = self.manager.session_factory(
+            session: Session = self.manager.session_factory(
                 sid, self.manager.store, new=new
             )
             request.context.register(Object(session))
             try:
-                response = handler(request)
+                response = handler(request, *args, **kwargs)
             except Exception:
                 # Maybe log.
                 raise

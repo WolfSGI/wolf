@@ -1,6 +1,6 @@
 import typing as t
 from types import TracebackType
-from sleigh.http.types import StatusCode
+from wolf.http.types import StatusCode
 
 
 WSGIEnviron = t.Mapping[str, t.Any]

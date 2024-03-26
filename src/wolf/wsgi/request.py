@@ -7,11 +7,12 @@ from wolf.http.datastructures import Data, Cookies, ContentType, Query
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
-from aioinject import Scoped, SyncInjectionContext, Provider
+from aioinject import Scoped, Object, SyncInjectionContext, Provider
 from aioinject.extensions import SyncOnResolveExtension
 
 
 T = t.TypeVar('T')
+NONE_PROVIDED = object()
 
 
 class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
@@ -30,13 +31,19 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                     instance: T) -> None:
         self.provides.add(provider.type_)
 
-    def get(self, t: type[T], *, default=None):
-        return self.context.resolve(t)
+    def get(self, t: type[T], *, default=NONE_PROVIDED):
+        try:
+            return self.context.resolve(t)
+        except ValueError:
+            if default is NONE_PROVIDED:
+                raise
+            return default
 
     def set_context(self, context: SyncInjectionContext):
         context.register(Scoped(self.get_cookies))
         context.register(Scoped(self.get_query))
         context.register(Scoped(self.get_data))
+        context.register(Object(self, type_=Request))
         self.context = context
 
     @immutable_cached_property

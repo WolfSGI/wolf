@@ -27,13 +27,6 @@ class Node(ABC):
             return Response(exc.status, body=exc.body)
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
-        if path := environ.get('PATH_INFO'):
-            environ['PATH_INFO'] = str(
-                PurePosixPath(path.encode('latin-1').decode('utf-8'))
-            )
-        else:
-            environ['PATH_INFO'] = '/'
-
         iterable = None
         try:
             iterable = self.resolve(environ)

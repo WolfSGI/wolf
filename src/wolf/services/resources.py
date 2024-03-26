@@ -4,10 +4,12 @@ import hashlib
 from typing import Sequence
 from pathlib import PurePosixPath, Path
 from pkg_resources import resource_filename
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.resources import Resource, known_extensions, NeededResources
 from mimetypes import guess_type
 from autoroutes import Routes
+from aioinject import Object, Scoped
+from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
+from wolf.resources import Resource, known_extensions, NeededResources
+from wolf.pluggability import install_method, Installable
 
 
 def generate_sri(filepath: Path):
@@ -149,12 +151,13 @@ class StaticAccessor:
             package_static, resource, restrict=restrict, override=override)
 
 
-class ResourceManager(StaticAccessor):
+class ResourceManager(Installable, StaticAccessor):
 
     @install_method(object)
     def register_services(self, application):
-        application.services.add_instance(self, ResourceManager)
-        application.services.add_scoped_by_factory(self.needed_resources)
+        application.mounts[self.path] = self
+        application.services.register(Object(self, type_=ResourceManager))
+        application.services.register(Scoped(self.needed_resources))
 
     def needed_resources(self) -> NeededResources:
         return NeededResources(self.path)
@@ -162,15 +165,18 @@ class ResourceManager(StaticAccessor):
     def resolve(self, path_info, environ):
         match, _ = self.resources.match(path_info)
         if not match:
-            return Response(status=404)
+            return WSGIResponse(status=404)
 
         headers = {
             "Content-Length": str(match["size"]),
             "Content-Type": match["content_type"]
         }
         if environ['REQUEST_METHOD'] == "HEAD":
-            return Response(200, headers=headers)
+            return WSGIResponse(200, headers=headers)
 
         if 'wsgi.file_wrapper' not in environ:
-            return Response.from_file_path(match["filepath"], headers=headers)
+            return WSGIResponse.from_file_path(
+                match["filepath"],
+                headers=headers
+            )
         return FileWrapperResponse(match["filepath"], headers=headers)

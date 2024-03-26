@@ -4,5 +4,5 @@ http_session_file
 colander
 sqlmodel
 waitress
-winkel
 websockets
+pydantic

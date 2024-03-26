@@ -1,9 +1,13 @@
-from http_session.meta import Session
+from dataclasses import dataclass
+from http_session import Session
+from aioinject import Object, Scoped
 from wolf.http.request import Request
 from wolf.identity import Authenticator, Source, User, anonymous
+from wolf.pluggability import Installable
 
 
-class SessionAuthenticator(Authenticator):
+@dataclass(kw_only=True)
+class SessionAuthenticator(Installable, Authenticator):
 
     user_key: str
     sources: tuple[Source, ...]
@@ -15,11 +19,10 @@ class SessionAuthenticator(Authenticator):
             if user is not None:
                 return user
 
-    @factory('singleton')
-    def auth_service(self, request: Request) -> Authenticator:
-        return self
+    def install(self, application):
+        application.services.register(Object(self, type_=Authenticator))
+        application.services.register(Scoped(self.identify))
 
-    @factory('scoped')
     def identify(self, request: Request) -> User:
         session = request.get(Session)
         if (userid := session.get(self.user_key, None)) is not None:

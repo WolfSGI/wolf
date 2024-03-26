@@ -5,7 +5,7 @@ from types import MappingProxyType
 from chameleon.zpt import template
 
 
-def scan_templates(path: Path, allowed_suffixes={".pt", ".cpt"}):
+def scan_templates(path: Path, allowed_suffixes=(".pt", ".cpt")):
     for child in path.iterdir():
         if child.is_dir():
             yield from scan_templates(child, allowed_suffixes)

@@ -1,7 +1,8 @@
 from wolf.http.datastructures import Query
 from wolf.identity import User
 from wolf.rendering import html, json, renderer
-from wolf.routing import Router, Application
+from wolf.wsgi.app import Root
+from wolf.routing import Router
 from wolf.services.post import Mailman
 
 
@@ -12,7 +13,7 @@ routes = Router()
 @html
 @renderer(template='views/index')
 def index(request):
-    application = request.get(Application)
+    application = request.get(Root)
     return {
         'user': request.get(User),
         'path_for': application.router.path_for
@@ -36,7 +37,7 @@ def some_pipe(handler):
     def some_filter(request):
         query = request.get(Query)
         if query.get('die'):
-            return Response(200, body='ouch, I died')
+            return request.response_cls(200, body='ouch, I died')
         return handler(request)
     return some_filter
 

@@ -1,4 +1,4 @@
-from sleigh.annotations import annotation
+from wolf.annotations import annotation
 
 
 class install_method(annotation):

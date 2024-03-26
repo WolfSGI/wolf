@@ -1,6 +1,7 @@
 import typing as t
-from wolf.wsgi.request import WSGIRequest
-from wolf.plugins import ServiceManager, Configuration, factory
+from aioinject import Scoped
+from http_session import Session
+from wolf.pluggability import Installable, install_method
 
 
 class Message(t.NamedTuple):
@@ -13,8 +14,9 @@ class Message(t.NamedTuple):
 
 class SessionMessages:
 
-    def __init__(self, session: HTTPSession, key: str = "flashmessages"):
-        self.key = key
+    key: str = "flashmessages"
+
+    def __init__(self, session: Session):
         self.session = session
 
     def __iter__(self) -> t.Iterable[Message]:
@@ -32,11 +34,9 @@ class SessionMessages:
         self.session.save()
 
 
-class Flash(ServiceManager, Configuration):
-    key: str = "flashmessages"
-    __dependencies__ = [HTTPSession]
+class Flash(Installable):
 
-    @factory("scoped")
-    def messages_factory(self, scope: Scope) -> SessionMessages:
-        session = scope.get(HTTPSession)
-        return SessionMessages(session, key=self.key)
+    @install_method(object)
+    def register_services(self, application):
+        application.services.register(Scoped(SessionMessages))
+

@@ -3,7 +3,7 @@ from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
 from wolf.rendering import renderer
 #from wolf.utils import ondemand
 from wolf.wsgi.request import WSGIRequest
-from wolf.auth import User, anonymous
+from wolf.identity import User, anonymous
 from wolf.services.flash import SessionMessages
 from actions import Actions
 from login import Login
@@ -29,11 +29,11 @@ def default_layout(
 @renderer(template='slots/actions', layout_name=None)
 def actions(request: WSGIRequest, view: Any, context: Any, *, items):
     registry = request.context.resolve(Actions)
-    matching = registry.match_grouped(scope, view, context)
+    matching = registry.match_grouped(request, view, context)
     evaluated = []
     for name, action in matching.items():
-        if not action.__evaluate__(scope, view, context):
-            result = action(scope, view, context)
+        if not action.__evaluate__(request, view, context):
+            result = action(request, view, context)
             evaluated.append((action.__metadata__, result))
     return {
         "actions": evaluated,
@@ -54,7 +54,7 @@ class AboveContent:
                  *,
                  items):
         return {
-            'items': [item(scope, self, view, context) for item in items],
+            'items': [item(request, self, view, context) for item in items],
             'view': view, 'context': context, 'manager': self
         }
 
@@ -62,7 +62,7 @@ class AboveContent:
 @subslots.register({"manager": AboveContent}, name='messages')
 @renderer(template='slots/messages', layout_name=None)
 def messages(request: WSGIRequest, manager: AboveContent, view: Any, context: Any):
-    flash = scope.get(SessionMessages)
+    flash = request.get(SessionMessages)
     return {'messages': list(flash), 'view': view, 'context': context, 'manager': manager}
 
 

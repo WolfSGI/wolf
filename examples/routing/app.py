@@ -1,24 +1,23 @@
 import http_session_file
 import pathlib
 import vernacular
+from aioinject import Object
 import logging.config
 from wolf.ui import UI
-from wolf.routing import Application
+from wolf.wsgi.app import RoutingApplication
 from wolf.templates import Templates
 from wolf.middlewares import HTTPSession, NoAnonymous
 from wolf.resources import JSResource, CSSResource
 # from wolf.services.resources import ResourceManager
-# from wolf.services import (
-#     Transactional, HTTPSessions, Flash, SessionAuthenticator,
-#     SQLDatabase, TranslationService, PostOffice
-# )
-
+from wolf.services.auth import SessionAuthenticator
+from wolf.services.flash import Flash
+from wolf.services.sqldb import SQLDatabase
 
 import register, login, views, actions, ui, folder, document, db
 
 
-app = Application(middlewares=[
-    HTTPSessions(
+app = RoutingApplication(middlewares=[
+    HTTPSession(
         store=http_session_file.FileStore(
             pathlib.Path('sessions'), 3000
         ),
@@ -34,6 +33,31 @@ app = Application(middlewares=[
     )
 ])
 
+app.use(
+    UI(
+        slots=ui.slots,
+        subslots=ui.subslots,
+        layouts=ui.layouts,
+        templates=Templates('templates')
+    ),
+    SQLDatabase(
+        url="sqlite:///database.db"
+    ),
+    SessionAuthenticator(
+        sources=(db.DBSource(),),
+        user_key="user"
+    ),
+    Flash()
+)
+
+app.router |= (
+    register.routes |
+    login.routes |
+    views.routes |
+    folder.routes |
+    document.routes
+)
+app.services.register(Object(actions.actions))
 
 # Run once at startup:
 logging.config.dictConfig({

@@ -2,8 +2,8 @@ import typing as t
 import urllib.parse
 from biscuits import Cookie, parse
 from frozendict import frozendict
-from sleigh.http.types import MIMEType
-from sleigh.http.utils import parse_header
+from wolf.http.types import MIMEType
+from wolf.http.utils import parse_header
 
 
 class Data(t.NamedTuple):

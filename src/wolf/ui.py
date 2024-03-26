@@ -9,6 +9,7 @@ from wolf.registries import TypedRegistry, Registry
 from wolf.http.request import Request
 from wolf.templates import Templates, EXPRESSION_TYPES
 from wolf.pluggability import Installable
+from aioinject import Object
 
 
 class SlotRegistry(TypedRegistry):
@@ -98,7 +99,7 @@ class UI(Installable):
     resources: set[JSResource | CSSResource] = field(default_factory=set)
 
     def install(self, application):
-        application.services.register(UI, instance=self)
+        application.services.register(Object(self, type_=UI))
         if 'slot' not in EXPRESSION_TYPES:
             EXPRESSION_TYPES['slot'] = SlotExpr
 

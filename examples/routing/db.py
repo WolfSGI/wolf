@@ -1,4 +1,5 @@
 from wolf.identity import Source, User
+from wolf.http.request import Request
 from sqlmodel import Session
 from sqlalchemy import select
 from models import Person

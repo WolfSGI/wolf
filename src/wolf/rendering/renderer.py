@@ -1,9 +1,9 @@
 import wrapt
-import inspect
 import functools
 from wolf.ui import UI
 from wolf.http.request import Request
 from wolf.http.response import Response
+from wolf.services.translation import Locale, Translator
 from chameleon.zpt.template import PageTemplate
 
 
@@ -39,11 +39,11 @@ def renderer(wrapped=None, *,
 
             namespace |= content
 
-            translator: Translator | None = request.context.resolve(
-                Translator
+            translator: Translator | None = request.get(
+                Translator, default=None
             )
-            locale: str | None = request.context.resolve(
-                Locale
+            locale: str | None = request.get(
+                Locale, default=None
             )
             rendered = tpl.render(
                 **namespace,
