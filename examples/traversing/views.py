@@ -49,7 +49,7 @@ def folder_index(request, *, context: Folder):
 @views.register(Application, '/create_folder', name='create_folder')
 class CreateFolder(Form):
 
-    def get_schema(self, request, *, context):
+    def get_schema(self, request, *, context=None):
         return Folder.get_schema(exclude=("id",))
 
     @trigger('save', 'Create new folder')
@@ -78,7 +78,7 @@ def deferred_choices_widget(node, kw):
 @views.register(Folder, '/create_document', name='create_document')
 class CreateDocument(Form):
 
-    def get_schema(self, request, *, context):
+    def get_schema(self, request, *, context=None):
         schema = Document.get_schema(
             exclude=("id", "folder_id", "content")
         )
@@ -102,13 +102,13 @@ class CreateDocument(Form):
 @views.register(Document, '/edit', name="edit")
 class EditDocument(Form):
 
-    def get_schema(self, request, *, context):
+    def get_schema(self, request, *, context=None):
         stores = request.get(Stores)
         key = SchemaKey.from_string(context.type)
         schema = stores[key.store].get((key.schema, key.version))
         return jsonschema_colander.types.Object.from_json(schema)()
 
-    def get_initial_data(self, request, *, context):
+    def get_initial_data(self, request, *, context=None):
         return context.content
 
     @trigger('save', 'Update document')

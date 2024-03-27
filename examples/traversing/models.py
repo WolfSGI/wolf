@@ -9,8 +9,8 @@ class Model(SQLModel):
 
     @classmethod
     def get_schema(cls,
-                   exclude: t.Iterable[str] | None = None,
-                   include: t.Iterable[str] | None = None):
+                   exclude: t.Sequence[str] | None = None,
+                   include: t.Sequence[str] | None = None):
         return jsonschema_colander.types.Object.from_json(
             cls.model_json_schema(), config={
                 "": {

@@ -45,7 +45,7 @@ class Node:
         if isinstance(other, Node):
             return self.cls == other.cls and self.path == other.path
         elif isclass(other):
-            return issubclass(other, self.cls)
+            return other == self.cls
         raise TypeError(
             f"Cannot establish equality between {self!r} and {other!r}")
 

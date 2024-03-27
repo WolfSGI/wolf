@@ -7,8 +7,8 @@ from wolf.http.utils import parse_header
 
 
 class Data(t.NamedTuple):
-    form: t.Optional[t.Iterable[t.Tuple[str, t.Any]]] = None
-    json: t.Optional[t.Union[t.Dict, t.List]] = None  # not too specific
+    form: t.Sequence[tuple[str, t.Any]] | None = None
+    json: int | float | str | dict | list | None = None  # not too specific
 
 
 class ContentType(str):
@@ -68,14 +68,14 @@ class MediaType(ContentType):
         return instance
 
     def match(self, other: str) -> bool:
-        other_media_type = MediaType(other)
+        other_media_type = MediaType(other)  # idempotent
         return self.maintype in {"*", other_media_type.maintype} and self.subtype in {
             "*",
             other_media_type.subtype,
         }
 
 
-class Cookies(t.Dict[str, Cookie]):
+class Cookies(dict[str, Cookie]):
     """A Cookies management class, built on top of biscuits."""
 
     def set(self, name: str, *args, **kwargs):
@@ -99,10 +99,8 @@ class Query(frozendict[str, t.Sequence[str]]):
         """Return the value list"""
         return super().get(name, [])
 
-    def as_bool(self, key: str) -> t.Optional[bool]:
+    def as_bool(self, key: str) -> bool | None:
         value = self[key][0]
-        if value in (True, False, None):
-            return value
         value = value.lower()
         if value in self.TRUE_STRINGS:
             return True
