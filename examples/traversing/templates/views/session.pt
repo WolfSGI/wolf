@@ -1,0 +1,4 @@
+<article>
+    <h2>Document : ${context.name}</h2>
+    <p class="muted">${context.type}</p>
+</article>

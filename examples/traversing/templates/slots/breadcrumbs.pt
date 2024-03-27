@@ -1,0 +1,13 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <tal:crumbs repeat="(path, crumb) crumbs">
+      <li class="breadcrumb-item active"
+          tal:condition="repeat[('path', 'crumb')].end">${crumb.name}</li>
+      <li class="breadcrumb-item"
+          tal:condition="not repeat[('path', 'crumb')].end">
+        <a href="${path}">${crumb.name}</a>
+      </li>
+    </tal:crumbs>
+  </ol>
+</nav>
