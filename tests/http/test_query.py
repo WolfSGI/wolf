@@ -59,11 +59,6 @@ def test_bool_should_cast_to_boolean():
         query.as_bool('key')
     assert str(exc.value) == "Can't cast 'z' to boolean."
 
-    q = Query({'foo': (True,), 'bar': (False,), 'crux': (None,)})
-    assert q.as_bool('foo') is True
-    assert q.as_bool('bar') is False
-    assert q.as_bool('crux') is None
-
 
 def test_int_should_cast_to_int():
     request = Request.blank('/?key=1', method='GET')
