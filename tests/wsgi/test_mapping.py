@@ -1,6 +1,4 @@
 import pytest
-import webtest
-from wolf.http.response import Response
 from wolf.http.exceptions import HTTPError
 from wolf.wsgi.nodes import Mapping
 

@@ -1,11 +1,11 @@
 from typing import Any
 from types import TracebackType
-from collections.abc import Mapping, Sequence, Iterable, Callable
+from collections.abc import MutableMapping, Sequence, Iterable, Callable
 from wolf.http.response import Response
 from wolf.http.types import StatusCode
 
 
-WSGIEnviron = Mapping[str, Any]
+WSGIEnviron = MutableMapping[str, Any]
 ExceptionInfo = (
     tuple[type[BaseException], BaseException, TracebackType] |
     tuple[None, None, None] |
