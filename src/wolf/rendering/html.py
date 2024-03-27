@@ -10,7 +10,7 @@ from wolf.resources import Resource, NeededResources
 logger = logging.getLogger(__name__)
 
 
-def html(wrapped=None, *, resources: Sequence[Resource] | None = None):
+def html(func=None, *, resources: Sequence[Resource] | None = None):
     @wrapt.decorator
     def html_wrapper(wrapped, instance, args, kwargs) -> Response:
         content = wrapped(*args, **kwargs)
@@ -38,7 +38,7 @@ def html(wrapped=None, *, resources: Sequence[Resource] | None = None):
 
         return request.response_cls.html(body=content)
 
-    if wrapped is None:
+    if func is None:
         return partial(html, resources=resources)
 
-    return html_wrapper(wrapped)
+    return html_wrapper(func)

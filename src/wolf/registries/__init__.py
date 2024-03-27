@@ -30,11 +30,16 @@ class Proxy(ObjectProxy):
 
     def __init__(self, wrapped, **kwargs):
         super().__init__(wrapped)
-        self.__metadata__ = ProxyMetadata(callable(wrapped), isclass(wrapped), **kwargs)
+        self.__metadata__ = ProxyMetadata(
+            callable(wrapped),
+            isclass(wrapped),
+            **kwargs
+        )
 
     def __evaluate__(self, *args, **kwargs) -> ConstraintsErrors | None:
         if self.__metadata__.conditions:
-            return resolve_constraints(self.__metadata__.conditions, *args, **kwargs)
+            return resolve_constraints(
+                self.__metadata__.conditions, *args, **kwargs)
 
     def __call__(self, *args, **kwargs):
         return self.__wrapped__(*args, **kwargs)
@@ -102,4 +107,6 @@ class TypedRegistry(Registry):
             discriminant = self.Types(**types)
         elif isinstance(types, Sequence):
             discriminant = self.Types(*types)
+        else:
+            raise NotImplemented('Unknown type of discriminants.')
         return super().register(discriminant, name, **kwargs)

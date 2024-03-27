@@ -8,7 +8,7 @@ from chameleon.zpt.template import PageTemplate
 
 
 def renderer(
-    wrapped=None,
+    func=None,
     *,
     template: PageTemplate | str | None = None,
     layout_name: str | None = "",
@@ -61,7 +61,7 @@ def renderer(
 
         return rendered
 
-    if wrapped is None:
-        return functools.partial(renderer, template=template, layout_name=layout_name)
-
-    return rendering_wrapper(wrapped)
+    if func is None:
+        return functools.partial(
+            renderer, template=template, layout_name=layout_name)
+    return rendering_wrapper(func)

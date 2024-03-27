@@ -31,7 +31,9 @@ class NoAnonymous:
             if user is anonymous:
                 if self.login_url is None:
                     raise HTTPError(403)
-                return request.response_cls.redirect(request.root_path + self.login_url)
+                return request.response_cls.redirect(
+                    request.root_path + self.login_url
+                )
             return handler(request, *args, **kwargs)
 
         return checker
