@@ -54,7 +54,7 @@ app.use(
         public_key=here / 'identities' / 'jwt.pub'
     ),
     PostOffice(
-        path='test.mail'
+        path=pathlib.Path('test.mail')
     ),
     SQLDatabase(
         url="sqlite:///database.db"

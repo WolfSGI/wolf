@@ -1,6 +1,7 @@
 import orjson
 from pathlib import Path
-from typing import Mapping, Iterable, Iterator, Generic, TypeVar, Callable, AnyStr
+from typing import Generic, TypeVar, AnyStr
+from collections.abc import Mapping, Iterable, Iterator, Callable
 from http import HTTPStatus
 from multidict import CIMultiDict
 from collections import deque

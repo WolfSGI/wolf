@@ -1,38 +1,38 @@
-import typing as t
+from typing import TypeVar, Generic
 from inspect import isclass
-from collections.abc import Hashable
+from collections.abc import Hashable, Iterator
 
 
-H = t.TypeVar("H", bound=Hashable)
-T = t.TypeVar("T", covariant=True)
+H = TypeVar("H", bound=Hashable)
+T = TypeVar("T", covariant=True)
 
 
-class TypedValue(t.Generic[T, H], t.Dict[t.Type[T], H]):
+class TypedValue(Generic[T, H], dict[type[T], H]):
     __slots__ = ()
 
     @staticmethod
-    def lineage(cls: t.Type[T]):
+    def lineage(cls: type[T]):
         yield from cls.__mro__
 
-    def lookup(self, co: t.Type[T] | T) -> t.Iterator[H]:
+    def lookup(self, co: type[T] | T) -> Iterator[H]:
         cls = isclass(co) and co or co.__class__
         for parent in self.lineage(cls):
             if parent in self:
                 yield self[parent]
 
 
-class TypedSet(t.Generic[T, H], t.Dict[t.Type[T], t.Set[H]]):
+class TypedSet(Generic[T, H], dict[type[T], set[H]]):
     __slots__ = ()
 
-    def add(self, cls: t.Type[T], component: H):
+    def add(self, cls: type[T], component: H):
         components = self.setdefault(cls, set())
         components.add(component)
 
     @staticmethod
-    def lineage(cls: t.Type[T]):
+    def lineage(cls: type[T]):
         yield from cls.__mro__
 
-    def lookup(self, co: t.Type[T] | T) -> t.Iterator[H]:
+    def lookup(self, co: type[T] | T) -> Iterator[H]:
         cls = isclass(co) and co or co.__class__
         for parent in self.lineage(cls):
             if parent in self:

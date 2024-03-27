@@ -1,4 +1,5 @@
 import typing as t
+from collections.abc import MutableMapping
 from inspect import unwrap, getmembers, isroutine
 
 
@@ -9,7 +10,7 @@ class annotation:
         self.annotation = values
 
     @staticmethod
-    def discriminator(component) -> t.Optional[Exception]:
+    def discriminator(component) -> Exception | None:
         if not isroutine(component):
             return TypeError(f"{component!r} is not a routine.")
         if component.__name__.startswith("_"):
@@ -39,11 +40,11 @@ class annotation:
 
 
 class annotation_mapping(annotation):
-    container: t.ClassVar[t.Type[t.MutableMapping]] = dict
+    container: t.ClassVar[type[MutableMapping]] = dict
 
     def __init__(self, key: str, **values):
         self.key = key
-        self.annotation = values
+        super().__init__(**values)
 
     def __call__(self, func):
         canonical = unwrap(func)

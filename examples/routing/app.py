@@ -54,7 +54,7 @@ app = RoutingApplication(middlewares=[
 app.use(
     libraries,
     PostOffice(
-        path='test.mail'
+        path=pathlib.Path('test.mail')
     ),
     TranslationService(
         translations=i18Catalog,

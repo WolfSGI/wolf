@@ -6,6 +6,7 @@ from pathlib import PurePosixPath, Path
 from pkg_resources import resource_filename
 from mimetypes import guess_type
 from autoroutes import Routes
+from beartype import beartype
 from aioinject import Object, Scoped
 from wolf.wsgi.nodes import Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse

@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
+from beartype import beartype
 from aioinject import Scoped
 from wolf.pluggability import Installable
 
@@ -39,6 +40,7 @@ class Mailman(list[Message]):
         self.append(msg)
 
 
+@beartype
 @dataclass(kw_only=True)
 class PostOffice(Installable):
     path: Path

@@ -1,11 +1,11 @@
 import pathlib
 import jwt
 import logging
+from beartype import beartype
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from aioinject import Object
 from wolf.pluggability import Installable
-from wolf.http.request import Request
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ class InvalidToken(Exception):
 
 
 class JWTManager:
+    
     def __init__(self, private_key: bytes, public_key: bytes):
         self.private_key = private_key
         self.public_key = public_key
@@ -47,6 +48,7 @@ class JWTManager:
             raise InvalidToken()
 
 
+@beartype
 @dataclass(kw_only=True)
 class JWTService(Installable):
     private_key: pathlib.Path

@@ -2,7 +2,8 @@ from inspect import isclass
 from wrapt import ObjectProxy
 from types import EllipsisType
 from collections import UserDict
-from typing import Tuple, NamedTuple, Sequence, Literal, Type, Mapping, ClassVar
+from collections.abc import Sequence, Mapping
+from typing import NamedTuple, Literal, ClassVar
 
 from plum import Signature
 from prejudice.errors import ConstraintsErrors
@@ -45,7 +46,7 @@ class Proxy(ObjectProxy):
         return self.__wrapped__(*args, **kwargs)
 
 
-def base_sorter(result: Tuple[Signature, Proxy]):
+def base_sorter(result: tuple[Signature, Proxy]):
     return result[0], result[1].__metadata__.name
 
 
@@ -82,7 +83,7 @@ class Registry(UserDict[Signature, ObjectProxy]):
         match = self.resolver.resolve((*args, name))
         return self[match]
 
-    def register(self, discriminant: Sequence[Type], name: str = DEFAULT, **kwargs):
+    def register(self, discriminant: Sequence[type], name: str = DEFAULT, **kwargs):
         def register_resolver(func):
             proxy = Proxy(func, name=name, **kwargs)
             signature = Signature(*discriminant, Literal[name] | None)
@@ -93,11 +94,11 @@ class Registry(UserDict[Signature, ObjectProxy]):
 
 
 class TypedRegistry(Registry):
-    Types: ClassVar[Type[NamedTuple]]
+    Types: ClassVar[type[NamedTuple]]
 
     def register(
         self,
-        types: Sequence[Type] | Mapping[str, Type] | EllipsisType,
+        types: Sequence[type] | Mapping[str, type] | EllipsisType,
         name: str = DEFAULT,
         **kwargs,
     ):

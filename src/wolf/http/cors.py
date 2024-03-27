@@ -1,22 +1,21 @@
 from dataclasses import dataclass
-from typing import Optional, Iterable, Tuple, Iterator
+from collections.abc import Iterator, Sequence
 from wolf.http.types import HTTPMethod
 
 
-Header = Tuple[str, str]
-Headers = Iterator[Header]
+Header = tuple[str, str]
 
 
 @dataclass
 class CORSPolicy:
     origin: str = "*"
-    methods: Optional[Iterable[HTTPMethod]] = None
-    allow_headers: Optional[Iterable[str]] = None
-    expose_headers: Optional[Iterable[str]] = None
-    credentials: Optional[bool] = None
-    max_age: Optional[int] = None
+    methods: Sequence[HTTPMethod] | None = None
+    allow_headers: Sequence[str] | None = None
+    expose_headers: Sequence[str] | None = None
+    credentials: bool | None = None
+    max_age: int | None = None
 
-    def headers(self) -> Headers:
+    def headers(self) -> Iterator[Header]:
         yield "Access-Control-Allow-Origin", self.origin
         if self.methods is not None:
             values = ", ".join(self.methods)
@@ -34,10 +33,10 @@ class CORSPolicy:
 
     def preflight(
         self,
-        origin: Optional[str] = None,
-        acr_method: Optional[str] = None,
-        acr_headers: Optional[str] = None,
-    ) -> Headers:
+        origin: str | None = None,
+        acr_method: str | None = None,
+        acr_headers: str | None = None,
+    ) -> Iterator[Header]:
         if origin:
             if self.origin == "*":
                 yield "Access-Control-Allow-Origin", "*"

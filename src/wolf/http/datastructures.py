@@ -1,13 +1,14 @@
-import typing as t
 import urllib.parse
+from typing import NamedTuple, Any, Literal
+from collections.abc import Mapping, Sequence
 from biscuits import Cookie, parse
 from frozendict import frozendict
 from wolf.http.types import MIMEType
 from wolf.http.utils import parse_header
 
 
-class Data(t.NamedTuple):
-    form: t.Sequence[tuple[str, t.Any]] | None = None
+class Data(NamedTuple):
+    form: Sequence[tuple[str, Any]] | None = None
     json: int | float | str | dict | list | None = None  # not too specific
 
 
@@ -15,7 +16,7 @@ class ContentType(str):
     __slots__ = ("mimetype", "options")
 
     mimetype: MIMEType
-    options: t.Mapping[str, str]
+    options: Mapping[str, str]
 
     def __new__(cls, value: str):
         if isinstance(value, cls):
@@ -23,9 +24,10 @@ class ContentType(str):
 
         mimetype, params = parse_header(value)
         instance = str.__new__(
-            cls, mimetype + "".join(f"; {k}={v}" for k, v in sorted(params.items()))
+            cls, mimetype + "".join(
+                f"; {k}={v}" for k, v in sorted(params.items())
+            )
         )
-
         instance.mimetype = mimetype
         instance.options = frozendict(params)
         return instance
@@ -36,8 +38,8 @@ class MediaType(ContentType):
 
     mimetype: MIMEType
     maintype: str
-    subtype: t.Optional[str]
-    options: t.Mapping[str, str]
+    subtype: str | None
+    options: Mapping[str, str]
 
     def __new__(cls, value: str):
         if isinstance(value, cls):
@@ -86,7 +88,7 @@ class Cookies(dict[str, Cookie]):
         return parse(value)
 
 
-class Query(frozendict[str, t.Sequence[str]]):
+class Query(frozendict[str, Sequence[str]]):
     TRUE_STRINGS = {"t", "true", "yes", "1", "on"}
     FALSE_STRINGS = {"f", "false", "no", "0", "off"}
     NONE_STRINGS = {"n", "none", "null"}
@@ -95,7 +97,7 @@ class Query(frozendict[str, t.Sequence[str]]):
         """Return the first value of the found list."""
         return super().get(name, [None])[0]
 
-    def getlist(self, name: str) -> t.Sequence[str]:
+    def getlist(self, name: str) -> Sequence[str]:
         """Return the value list"""
         return super().get(name, [])
 
@@ -123,7 +125,7 @@ class Query(frozendict[str, t.Sequence[str]]):
         keep_blank_values: bool = True,
         strict_parsing: bool = True,
         encoding: str = "utf-8",
-        errors: t.Literal["strict", "replace", "ignore"] = "replace",
+        errors: Literal["strict", "replace", "ignore"] = "replace",
         max_num_fields: int = None,
         separator: str = "&",
     ):

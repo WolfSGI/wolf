@@ -2,6 +2,7 @@ import inspect
 import typing as t
 from pathlib import Path
 from types import MappingProxyType
+from collections.abc import Mapping, MutableMapping
 from chameleon.zpt import template
 
 
@@ -16,9 +17,9 @@ def scan_templates(path: Path, allowed_suffixes=(".pt", ".cpt")):
 EXPRESSION_TYPES = {}
 
 
-class Templates(t.Mapping[str, template.PageTemplate]):
-    registry: t.MutableMapping[str, Path]
-    cache: t.MutableMapping[str, template.PageTemplate]
+class Templates(Mapping[str, template.PageTemplate]):
+    registry: MutableMapping[str, Path]
+    cache: MutableMapping[str, template.PageTemplate]
     extensions = {
         ".pt": template.PageTemplateFile,
         ".cpt": template.PageTemplateFile,

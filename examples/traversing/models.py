@@ -25,7 +25,7 @@ class Folder(Model, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
 
-    documents: t.List["Document"] = Relationship(back_populates="folder")
+    documents: list["Document"] = Relationship(back_populates="folder")
 
     @computed_field
     @property

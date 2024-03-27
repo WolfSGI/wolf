@@ -2,11 +2,13 @@ from orjson import loads, dumps
 from contextlib import contextmanager
 from dataclasses import dataclass
 from aioinject import Scoped
+from beartype import beartype
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.engine.base import Engine
 from wolf.pluggability import Installable
 
 
+@beartype
 @dataclass(kw_only=True)
 class SQLDatabase(Installable):
     url: str

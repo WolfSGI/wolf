@@ -1,4 +1,5 @@
 import typing as t
+from collections.abc import Mapping
 from wrapt import ObjectProxy
 from pathlib import PurePosixPath
 from inspect import signature, _empty as empty, isclass
@@ -8,7 +9,7 @@ from wolf.typed.router import TypedRouter
 
 
 C = t.TypeVar("C")
-Factory = t.Callable[[Request, t.Any, t.Mapping[str, t.Any]], C]
+Factory = t.Callable[[Request, t.Any, Mapping[str, t.Any]], C]
 
 
 class Traversed(ObjectProxy):
@@ -24,7 +25,7 @@ class Traversed(ObjectProxy):
             self.__path__ = path
 
 
-def paths(path: str) -> t.Tuple[str, str]:
+def paths(path: str) -> tuple[str, str]:
     root = PurePosixPath(path)
     parents = list(root.parents)
     yield str(root), ""
@@ -66,7 +67,7 @@ class Traverser(TypedRouter):
 
     def add(
             self,
-            root: t.Type[t.Any],
+            root: type[t.Any],
             path: str,
             method,
             factory: Factory,

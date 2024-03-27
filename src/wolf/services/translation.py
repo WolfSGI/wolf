@@ -1,8 +1,9 @@
 import logging
+from beartype import beartype
 from dataclasses import dataclass
 from annotated_types import Len
 from wolf.http.request import Request
-from typing import NewType, List, Annotated
+from typing import NewType, Annotated
 from aioinject import Scoped, Singleton
 from wolf.pluggability import Installable
 from vernacular import Translations
@@ -16,10 +17,11 @@ logger = logging.getLogger(__name__)
 Locale = NewType("Locale", str)
 
 
+@beartype
 @dataclass(kw_only=True)
 class TranslationService(Installable):
     translations: Translations
-    accepted_languages: Annotated[List[str], Len(min_length=1)]
+    accepted_languages: Annotated[list[str], Len(min_length=1)]
     default_domain: str = "default"
 
     def install(self, application):

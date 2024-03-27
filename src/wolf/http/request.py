@@ -1,16 +1,17 @@
 import urllib.parse
-import typing as t
+from typing import TypeVar, Generic
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from wolf.utils import immutable_cached_property
 from wolf.http.response import Response
 from wolf.http.datastructures import Query, Cookies, ContentType
 from aioinject.context import SyncInjectionContext, InjectionContext
 
 
-E = t.TypeVar("E", bound=t.Mapping)
+E = TypeVar("E", bound=Mapping)
 
 
-class Request(ABC, t.Generic[E]):
+class Request(ABC, Generic[E]):
     environ: E
     response_cls: type[Response]
     context: SyncInjectionContext | InjectionContext

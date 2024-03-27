@@ -1,9 +1,10 @@
 import typing as t
+from collections.abc import Iterator
 
 
 # https://peps.python.org/pep-0594/
 # Copied from CGI to avoid python 3.11 deprecating and python 3.13 removal
-def _parseparam(s: str) -> t.Generator[str, None, None]:
+def _parseparam(s: str) -> Iterator[str]:
     while s[:1] == ";":
         s = s[1:]
         end = s.find(";")
@@ -16,7 +17,7 @@ def _parseparam(s: str) -> t.Generator[str, None, None]:
         s = s[end:]
 
 
-def parse_header(line: str) -> t.Tuple[str, t.Dict[str, str]]:
+def parse_header(line: str) -> tuple[str, dict[str, str]]:
     """Parse a Content-type like header.
     Return the main content-type and a dictionary of options.
     """

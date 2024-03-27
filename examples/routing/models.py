@@ -11,7 +11,7 @@ class Person(User, SQLModel, table=True):
     age: int
     password: str
 
-    folders: t.List["Folder"] = Relationship(back_populates="author")
+    folders: list["Folder"] = Relationship(back_populates="author")
 
     @computed_field
     @property
@@ -24,7 +24,7 @@ class Folder(SQLModel, table=True):
     name: str
     author_id: int = Field(foreign_key="person.id")
 
-    documents: t.List["Document"] = Relationship(back_populates="folder")
+    documents: list["Document"] = Relationship(back_populates="folder")
     author: Person = Relationship(back_populates="folders")
 
     @computed_field
