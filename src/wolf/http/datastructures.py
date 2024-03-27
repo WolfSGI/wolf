@@ -84,7 +84,7 @@ class Cookies(dict[str, Cookie]):
         self[name] = Cookie(name, *args, **kwargs)
 
     @staticmethod
-    def from_string(value: str):
+    def from_string(value: str) -> "Cookies":
         return parse(value)
 
 
