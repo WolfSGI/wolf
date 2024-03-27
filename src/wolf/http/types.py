@@ -1,9 +1,10 @@
-import typing as t
+from typing import Literal
 from http import HTTPStatus
+from collections.abc import Sequence
 
 
-HTTPMethod = t.Literal["GET", "HEAD", "PUT", "DELETE", "PATCH", "POST", "OPTIONS"]
-HTTPMethods = t.Iterable[HTTPMethod]
+HTTPMethod = Literal["GET", "HEAD", "PUT", "DELETE", "PATCH", "POST", "OPTIONS"]
+HTTPMethods = Sequence[HTTPMethod]
 
 Boundary = str | bytes
 Charset = str | bytes

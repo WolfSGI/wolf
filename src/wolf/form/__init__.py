@@ -16,15 +16,18 @@ class trigger(annotation):
     name = "__form_trigger__"
 
     def __init__(self, name: str, title: str, order: int = 0):
-        self.annotation = {"name": name, "title": title, "order": order}
+        super().__init__(name=name, title=title, order=order)
 
 
 class Form(ABC, APIView):
     def __init__(self):
         triggers = sorted(
-            tuple(trigger.find(self)), key=lambda x: (x[0]["order"], x[0]["name"])
+            tuple(trigger.find(self)),
+            key=lambda x: (x[0]["order"], x[0]["name"])
         )
-        self.triggers = {(ann["name"], "__trigger__"): func for ann, func in triggers}
+        self.triggers = {
+            (ann["name"], "__trigger__"): func for ann, func in triggers
+        }
         self.buttons = [
             deform.form.Button(
                 value="__trigger__", name=ann["name"], title=ann["title"]

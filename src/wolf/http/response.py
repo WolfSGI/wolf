@@ -101,7 +101,7 @@ class Response(Generic[F]):
             self._finishers.append(task)
 
     @property
-    def cookies(self):
+    def cookies(self) -> Cookies:
         return self.headers.cookies
 
     def __iter__(self) -> Iterator[bytes]:
@@ -115,7 +115,8 @@ class Response(Generic[F]):
             elif isinstance(self.body, Iterator):
                 yield from self.body
             else:
-                raise TypeError(f"Body of type {type(self.body)!r} is not supported.")
+                raise TypeError(
+                    f"Body of type {type(self.body)!r} is not supported.")
 
     @classmethod
     def to_json(

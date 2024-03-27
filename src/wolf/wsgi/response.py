@@ -25,7 +25,7 @@ class WSGIResponse(WSGICallable, Response[Finisher]):
         return self
 
 
-class FileWrapperResponse(FileResponse, WSGICallable):
+class FileWrapperResponse(WSGICallable, FileResponse):
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
         status = f"{self.status.value} {self.status.phrase}"

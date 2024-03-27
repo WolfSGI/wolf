@@ -15,7 +15,6 @@ Parser = t.Callable[[t.IO, MIMEType, Charset | Boundary | None], Data]
 
 
 class BodyParser(dict[MIMEType, Parser]):
-    __slots__ = ()
 
     def register(self, mimetype: str):
         if not MIME_TYPE_REGEX.fullmatch(mimetype):

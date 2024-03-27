@@ -1,7 +1,8 @@
 import ast
-from beartype import beartype
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple
+from aioinject import Object
+from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
 from wolf.resources import JSResource, CSSResource
@@ -9,7 +10,6 @@ from wolf.registries import TypedRegistry, Registry
 from wolf.http.request import Request
 from wolf.templates import Templates, EXPRESSION_TYPES
 from wolf.pluggability import Installable
-from aioinject import Object
 
 
 class SlotRegistry(TypedRegistry):

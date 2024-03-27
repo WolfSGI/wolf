@@ -60,9 +60,9 @@ class MediaType(ContentType):
             subtype = None
 
         instance = str.__new__(
-            cls, mimetype + "".join(f"; {k}={v}" for k, v in sorted(params.items()))
+            cls, mimetype + "".join(
+                f"; {k}={v}" for k, v in sorted(params.items()))
         )
-
         instance.mimetype = mimetype
         instance.maintype = maintype
         instance.subtype = subtype
@@ -71,10 +71,10 @@ class MediaType(ContentType):
 
     def match(self, other: str) -> bool:
         other_media_type = MediaType(other)  # idempotent
-        return self.maintype in {"*", other_media_type.maintype} and self.subtype in {
-            "*",
-            other_media_type.subtype,
-        }
+        return (
+            self.maintype in {"*", other_media_type.maintype}
+            and self.subtype in {"*", other_media_type.subtype}
+        )
 
 
 class Cookies(dict[str, Cookie]):
@@ -89,9 +89,9 @@ class Cookies(dict[str, Cookie]):
 
 
 class Query(frozendict[str, Sequence[str]]):
-    TRUE_STRINGS = {"t", "true", "yes", "1", "on"}
-    FALSE_STRINGS = {"f", "false", "no", "0", "off"}
-    NONE_STRINGS = {"n", "none", "null"}
+    TRUE_STRINGS: set[str] = frozenset(("t", "true", "yes", "1", "on"))
+    FALSE_STRINGS: set[str] = frozenset(("f", "false", "no", "0", "off"))
+    NONE_STRINGS: set[str] = frozenset(("n", "none", "null"))
 
     def get(self, name: str, default=None):
         """Return the first value of the found list."""
@@ -128,7 +128,7 @@ class Query(frozendict[str, Sequence[str]]):
         errors: Literal["strict", "replace", "ignore"] = "replace",
         max_num_fields: int = None,
         separator: str = "&",
-    ):
+    ) -> "Query":
         if not value:
             return cls()
         return cls(
