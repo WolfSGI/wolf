@@ -4,12 +4,69 @@ from collections.abc import Mapping, Sequence
 from biscuits import Cookie, parse
 from frozendict import frozendict
 from wolf.http.types import MIMEType
-from wolf.http.utils import parse_header
+from wolf.http.exceptions import HTTPError
+from wolf.http.utils import parse_header, consolidate_ranges
 
 
 class Data(NamedTuple):
     form: Sequence[tuple[str, Any]] | None = None
     json: int | float | str | dict | list | None = None  # not too specific
+
+
+class Range(NamedTuple):
+    unit: str
+    values: tuple[tuple[int, int], ...]
+
+    def resolve(self, size: int):
+        max_size = size - 1
+        ranges = []
+        for first, last in self.values:
+            if first < 0:
+                first = size + first
+                if first < 0:
+                    first = 0
+            if last == -1:
+                last = max_size
+            elif last > max_size:
+                last = max_size
+            ranges.append((first, last))
+        return self._replace(values=tuple(consolidate_ranges(ranges)))
+
+    @classmethod
+    def from_string(cls, value: str | bytes) -> "Range":
+        if '=' not in value:
+            raise HTTPError(
+                400,
+                body="Missing range unit, e.g. 'bytes='")
+
+        unit, _, values = value.partition('=')
+
+        ranges = []
+        for rg in values.split(','):
+            first, dash, last = rg.strip().partition('-')
+            try:
+                if not dash:
+                    raise ValueError("Range is malformed.")
+
+                if first and last:
+                    first, last = (int(first), int(last))
+                    if last < first:
+                        raise ValueError("Range is malformed.")
+                elif first:
+                    first, last = (int(first), -1)
+                elif last:
+                    first, last = (-int(last), -1)
+                    if first >= 0:
+                        raise ValueError()
+                else:
+                    raise ValueError("Range offsets are missing.'")
+                ranges.append((first, last))
+            except ValueError as exc:
+                default_error = "Range is malformed."
+                raise HTTPError(
+                    400,
+                    body=str(exc) or default_error)
+        return cls(unit=unit, values=tuple(ranges))
 
 
 class ContentType(str):
@@ -51,10 +108,7 @@ class MediaType(ContentType):
             maintype = "*"
             subtype = "*"
         elif "/" in mimetype:
-            type_parts = mimetype.split("/")
-            if not type_parts or len(type_parts) > 2:
-                raise ValueError(f"Can't parse mimetype {mimetype!r}")
-            maintype, subtype = type_parts
+            maintype, _, subtype = mimetype.partition("/")
         else:
             maintype = mimetype
             subtype = None

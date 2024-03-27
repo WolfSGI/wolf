@@ -1,8 +1,5 @@
 from typing import Iterable
-from pathlib import Path
-from http import HTTPStatus
-from wolf.http.response import Response, FileResponse, HeadersT, Headers
-from wolf.http.types import HTTPCode
+from wolf.http.response import Response, FileResponse
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, StartResponse, Finisher
 
 

@@ -1,5 +1,5 @@
 import typing as t
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 
 
 # https://peps.python.org/pep-0594/
@@ -34,3 +34,17 @@ def parse_header(line: str) -> tuple[str, dict[str, str]]:
                 value = value.replace("\\\\", "\\").replace('\\"', '"')
             pdict[name] = value
     return key, pdict
+
+
+def consolidate_ranges(ranges: Sequence[tuple[int, int]]):
+    ranges = iter(sorted(ranges))
+    current_start, current_stop = next(ranges)
+    for start, stop in ranges:
+        if start > current_stop + 1:
+            # Gap between segments: output current segment and start a new one.
+            yield current_start, current_stop
+            current_start, current_stop = start, stop
+        else:
+            # Segments adjacent or overlapping: merge.
+            current_stop = max(current_stop, stop)
+    yield current_start, current_stop
