@@ -1,5 +1,4 @@
 from orjson import loads, dumps
-from typing import Tuple, Type
 from contextlib import contextmanager
 from dataclasses import dataclass
 from aioinject import Scoped
@@ -12,7 +11,7 @@ from wolf.pluggability import Installable
 class SQLDatabase(Installable):
     url: str
     echo: bool = False
-    models_registries: Tuple[Type[SQLModel], ...] = (SQLModel,)
+    models_registries: tuple[type[SQLModel], ...] = (SQLModel,)
 
     def __post_init__(self):
         engine: Engine = create_engine(

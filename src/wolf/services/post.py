@@ -40,7 +40,7 @@ class Mailman(list[Message]):
 
 
 @dataclass(kw_only=True)
-class PostOffice:
+class PostOffice(Installable):
     path: Path
 
     def __post_init__(self):

@@ -182,5 +182,7 @@ class ResourceManager(Installable, Node, StaticAccessor):
             return WSGIResponse(200, headers=headers)
 
         if "wsgi.file_wrapper" not in environ:
-            return WSGIResponse.from_file_path(match["filepath"], headers=headers)
+            return WSGIResponse.from_file_path(
+                match["filepath"], headers=headers
+            )
         return FileWrapperResponse(match["filepath"], headers=headers)

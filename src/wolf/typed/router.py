@@ -2,7 +2,7 @@ import typing as t
 from collections import defaultdict
 from autorouting import MatchedRoute
 from wolf.pipeline import chain_wrap
-from wolf.routing.router import Router, HTTPMethods, get_routables
+from wolf.routing.router import Router, HTTPMethods, get_endpoints
 from wolf.typed.datastructures import TypedValue
 
 
@@ -28,7 +28,7 @@ class TypedRouter(TypedValue[t.Any, Router], defaultdict):
         **kwargs,
     ):
         def routing(value: t.Any):
-            for endpoint, verbs in get_routables(value, methods):
+            for endpoint, verbs in get_endpoints(value, methods):
                 if pipeline:
                     endpoint = chain_wrap(pipeline, endpoint)
                 for verb in verbs:

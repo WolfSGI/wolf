@@ -24,7 +24,7 @@ class APIView:
 
 
 @overload
-def get_routables(
+def get_endpoints(
         view: types.FunctionType | types.CoroutineType,
         methods: HTTPMethods | None = None
 ):
@@ -39,7 +39,7 @@ def get_routables(
 
 
 @overload
-def get_routables(view: Type[APIView], methods: HTTPMethods | None = None):
+def get_endpoints(view: Type[APIView], methods: HTTPMethods | None = None):
     inst = view()
     if methods is not None:
         raise AttributeError(
@@ -54,7 +54,7 @@ def get_routables(view: Type[APIView], methods: HTTPMethods | None = None):
 
 
 @overload
-def get_routables(view: Type, methods: HTTPMethods | None = None):
+def get_endpoints(view: Type, methods: HTTPMethods | None = None):
     inst = view()
     if not callable(inst):
         raise AttributeError(
@@ -71,7 +71,7 @@ def get_routables(view: Type, methods: HTTPMethods | None = None):
 
 
 @dispatch
-def get_routables(view, methods: HTTPMethods | None = None):
+def get_endpoints(view, methods: HTTPMethods | None = None):
     pass
 
 
@@ -86,7 +86,7 @@ class Router(BaseRouter):
         priority: int = 0,
     ):
         def routing(value: Any):
-            for endpoint, verbs in get_routables(value, methods):
+            for endpoint, verbs in get_endpoints(value, methods):
                 if pipeline:
                     endpoint = chain_wrap(pipeline, endpoint)
                 for verb in verbs:
@@ -117,5 +117,5 @@ __all__ = [
     "Params",
     "Extra",
     "APIView",
-    "get_routables",
+    "get_endpoints",
 ]
