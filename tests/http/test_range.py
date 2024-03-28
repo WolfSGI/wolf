@@ -44,10 +44,10 @@ def test_ranges():
 
 def test_ranges_resolve():
     rg = Range.from_string("bytes=0-4,90-99,5-75,100-199,101-102")
-    resolved = rg.resolve(150)
+    resolved = rg.resolve(150, merge=True)
     assert resolved.unit == "bytes"
     assert resolved.values == ((0, 75), (90, 149))
 
     rg = Range.from_string("bytes=-1,20-100,0-1,101-120")
-    resolved = rg.resolve(150)
+    resolved = rg.resolve(150, merge=True)
     assert resolved.values == ((0, 1), (20, 120), (149, 149))

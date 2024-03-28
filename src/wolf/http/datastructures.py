@@ -32,7 +32,7 @@ class Range(NamedTuple):
     unit: str
     values: tuple[tuple[int, int], ...]
 
-    def resolve(self, size: int) -> 'Range':
+    def resolve(self, size: int, merge: bool = False) -> 'Range':
         max_size = size - 1
         ranges = []
         for first, last in self.values:
@@ -45,7 +45,9 @@ class Range(NamedTuple):
             elif last > max_size:
                 last = max_size
             ranges.append((first, last))
-        return self._replace(values=tuple(consolidate_ranges(ranges)))
+        if merge:
+            ranges = consolidate_ranges(ranges)
+        return self._replace(values=tuple(ranges))
 
     @classmethod
     def from_string(cls, value: str | bytes) -> "Range":
