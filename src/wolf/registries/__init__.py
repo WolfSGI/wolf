@@ -109,5 +109,5 @@ class TypedRegistry(Registry):
         elif isinstance(types, Sequence):
             discriminant = self.Types(*types)
         else:
-            raise NotImplemented('Unknown type of discriminants.')
+            raise NotImplementedError('Unknown type of discriminants.')
         return super().register(discriminant, name, **kwargs)

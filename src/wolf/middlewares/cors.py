@@ -30,7 +30,9 @@ class CORS:
                 200,
                 headers=list(
                     self.policy.preflight(
-                        origin=origin, acr_method=acr_method, acr_headers=acr_headers
+                        origin=origin,
+                        acr_method=acr_method,
+                        acr_headers=acr_headers
                     )
                 ),
             )

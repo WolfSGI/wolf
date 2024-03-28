@@ -46,7 +46,11 @@ parser = BodyParser()
 
 
 @parser.register("application/json")
-def json_parser(body: t.IO, mimetype: MIMEType, charset: Charset = "utf-8") -> Data:
+def json_parser(
+        body: t.IO,
+        mimetype: MIMEType,
+        charset: Charset = "utf-8"
+) -> Data:
     data = body.read()
     if not data:
         raise ValueError("The body of the request is empty.")

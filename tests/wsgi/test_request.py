@@ -1,7 +1,7 @@
 import pytest
 from webtest.app import TestRequest as EnvironBuilder
 from wolf.http.datastructures import Data
-from wolf.http.headers import Query, Cookies, ContentType
+from wolf.http.headers import Query, Cookies
 from wolf.wsgi.request import WSGIRequest
 
 
@@ -16,7 +16,7 @@ def test_request():
     assert request.query == Query({'key': ('1',)})
     assert request.root_path == ''
     assert request.cookies == Cookies('')
-    assert request.content_type == None
+    assert request.content_type is None
     assert request.data == Data()
     assert request.application_uri == 'http://localhost'
     assert request.uri() == 'http://localhost/?key%3D1'

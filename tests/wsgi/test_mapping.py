@@ -142,14 +142,14 @@ def test_nested_mapping():
 
     environ = {'SCRIPT_NAME': '', 'PATH_INFO': '/no'}
     node = Mapping({"/some":  Mapping({'/thing': basic_app})})
-    body = b"".join(node(environ, start_response))
+    b"".join(node(environ, start_response))
     start_response.assert_called_with('404 Not Found', [])
     assert environ == {'SCRIPT_NAME': '', 'PATH_INFO': '/no'}
     start_response.reset()
 
     environ = {'SCRIPT_NAME': '', 'PATH_INFO': '/some'}
     node = Mapping({"/some":  Mapping({'/thing': basic_app})})
-    response = node(environ, start_response)
+    node(environ, start_response)
     start_response.assert_called_with('404 Not Found', [])
     assert environ == {'SCRIPT_NAME': '', 'PATH_INFO': '/some'}
     start_response.reset()

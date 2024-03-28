@@ -3,8 +3,6 @@ from wolf.http.headers import Cookies
 
 
 def test_request_parse_cookies():
-    from webtest.app import TestRequest as Request
-
     # A simple cookie
     cookie = Cookie(name='key', value='value')
     cookies = Cookies.from_string(str(cookie))
