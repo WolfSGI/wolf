@@ -9,7 +9,7 @@ def test_content_type():
     )
 
     ct = ContentType.from_string(header)
-    assert ct.mimetype == "Message/Partial"
+    assert ct.mimetype == "message/partial"
     assert ct.options == {
         'number': '2',
         'total': '3',

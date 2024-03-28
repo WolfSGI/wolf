@@ -106,7 +106,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
     @immutable_cached_property
     def content_type(self) -> ContentType | None:
         try:
-            return ContentType(self.environ.get["CONTENT_TYPE"])
+            return ContentType(self.environ["CONTENT_TYPE"])
         except KeyError:
             return None
 

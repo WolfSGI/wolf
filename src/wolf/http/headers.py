@@ -21,6 +21,15 @@ class Specificity(int, Enum):
     SPECIFIC = 2
 
 
+class Authorization(NamedTuple):
+    scheme: str
+    credentials: str
+
+    @classmethod
+    def from_string(cls, value: str):
+        scheme, _, credentials = value.strip(' ').partition(' ')
+        return cls(scheme.lower(), credentials.strip())
+
 class Query(frozendict[str, Sequence[str]]):
     TRUE_STRINGS: set[str] = frozenset(("t", "true", "yes", "1", "on"))
     FALSE_STRINGS: set[str] = frozenset(("f", "false", "no", "0", "off"))
