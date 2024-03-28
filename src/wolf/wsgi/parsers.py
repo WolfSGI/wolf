@@ -5,7 +5,8 @@ from http import HTTPStatus
 from urllib.parse import parse_qsl
 from wolf.http.parsers.multipart import Multipart
 from wolf.http.exceptions import HTTPError
-from wolf.http.datastructures import ContentType, Data
+from wolf.http.datastructures import Data
+from wolf.http.headers import ContentType
 from wolf.http.types import Boundary, Charset, MIMEType
 
 

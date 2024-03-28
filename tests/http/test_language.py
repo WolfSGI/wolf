@@ -1,4 +1,4 @@
-from wolf.http.datastructures import Language, LanguageTag, Languages
+from wolf.http.headers import Languages, Language
 
 
 def test_language():
@@ -33,15 +33,15 @@ def test_languages():
     assert langs.as_header() == 'en-EN;q=0.5,*;q=0.5'
 
 
-def test_language_negociation():
+def test_language_negotiation():
     langs = Languages.from_string(
         'en-EN;q=0.5, fr-FR;q=0.8, de; q=0.3, ru; q=0.0'
     )
-    assert langs.negociate(('fr-FR', 'en-EN')) == 'fr-FR'
-    assert langs.negociate(('ru', 'de-DE')) == 'de-DE'
+    assert langs.negotiate(('fr-FR', 'en-EN')) == 'fr-FR'
+    assert langs.negotiate(('ru', 'de-DE')) == 'de-DE'
 
     langs = Languages.from_string('en-EN;q=0.5')
-    assert langs.negociate(('fr-FR', 'en')) == 'en'
+    assert langs.negotiate(('fr-FR', 'en')) == 'en'
 
     langs = Languages.from_string('fi-FI')
-    assert langs.negociate(('fr-FR', 'en')) is None
+    assert langs.negotiate(('fr-FR', 'en')) is None

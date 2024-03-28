@@ -1,4 +1,4 @@
-from wolf.http.datastructures import Range
+from wolf.http.headers import Range
 
 
 def test_range():

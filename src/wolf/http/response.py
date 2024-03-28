@@ -5,7 +5,7 @@ from collections.abc import Mapping, Iterable, Iterator, Callable
 from http import HTTPStatus
 from multidict import CIMultiDict
 from collections import deque
-from wolf.http.datastructures import Cookies
+from wolf.http.headers import Cookies
 from wolf.http.constants import EMPTY_STATUSES, REDIRECT_STATUSES
 from wolf.http.types import HTTPCode
 

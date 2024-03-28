@@ -1,4 +1,4 @@
-from wolf.http.datastructures import ContentType
+from wolf.http.headers import ContentType
 
 
 def test_content_type():

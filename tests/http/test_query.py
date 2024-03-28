@@ -1,6 +1,6 @@
 import pytest
 from webtest.app import TestRequest as Request
-from wolf.http.datastructures import Query
+from wolf.http.headers import Query
 
 
 def test_query():

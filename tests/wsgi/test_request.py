@@ -1,6 +1,7 @@
 import pytest
 from webtest.app import TestRequest as EnvironBuilder
-from wolf.http.datastructures import Query, Data, ContentType, Cookies
+from wolf.http.datastructures import Data
+from wolf.http.headers import Query, Cookies, ContentType
 from wolf.wsgi.request import WSGIRequest
 
 

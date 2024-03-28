@@ -1,5 +1,5 @@
 from wolf.http.app import Application
-from wolf.http.datastructures import Query
+from wolf.http.headers import Query
 from wolf.identity import User
 from wolf.rendering import html, json, renderer
 from wolf.routing import Router

@@ -1,5 +1,5 @@
 from biscuits import Cookie
-from wolf.http.datastructures import Cookies
+from wolf.http.headers import Cookies
 
 
 def test_request_parse_cookies():

@@ -4,7 +4,8 @@ from contextlib import contextmanager
 from pathlib import PurePosixPath
 from wolf.utils import immutable_cached_property
 from wolf.http.request import Request
-from wolf.http.datastructures import Data, Cookies, ContentType, Query
+from wolf.http.datastructures import Data
+from wolf.http.headers import Query, Cookies, ContentType
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse

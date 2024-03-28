@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from wolf.utils import immutable_cached_property
 from wolf.http.response import Response
-from wolf.http.datastructures import Query, Cookies, ContentType
+from wolf.http.headers import Query, Cookies, ContentType
 from aioinject.context import SyncInjectionContext, InjectionContext
 
 
