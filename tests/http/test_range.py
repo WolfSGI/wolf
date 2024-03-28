@@ -26,7 +26,7 @@ def test_range():
 
 
 def test_ranges():
-    rg = Range.from_string("bytes=500-999,1000-1499")
+    rg = Range.from_string("bytes=500-999, 1000-1499")
     assert len(rg.values) == 2
     assert rg.unit == 'bytes'
     assert rg.values == ((500, 999), (1000, 1499))

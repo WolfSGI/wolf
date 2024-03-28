@@ -1,11 +1,14 @@
 import urllib.parse
-from typing import NamedTuple, Any, Literal
+from typing import NamedTuple, Any, Literal, TypeVar, Generic
 from collections.abc import Mapping, Sequence
 from biscuits import Cookie, parse
 from frozendict import frozendict
 from wolf.http.types import MIMEType
 from wolf.http.exceptions import HTTPError
 from wolf.http.utils import parse_header, consolidate_ranges
+
+
+W = TypeVar('W', bound=str)
 
 
 class Data(NamedTuple):
@@ -17,7 +20,7 @@ class Range(NamedTuple):
     unit: str
     values: tuple[tuple[int, int], ...]
 
-    def resolve(self, size: int):
+    def resolve(self, size: int) -> 'Range':
         max_size = size - 1
         ranges = []
         for first, last in self.values:
@@ -69,11 +72,53 @@ class Range(NamedTuple):
         return cls(unit=unit, values=tuple(ranges))
 
 
-class ContentType(str):
-    __slots__ = ("mimetype", "options")
+class Weighted:
+
+    exact: bool
+    options: Mapping[str, str]
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, Weighted):
+            # When q values are equal, compare specificity instead:
+            q = self.options.get('q', 1)
+            qo = other.options.get('q', 1)
+            if q == qo:
+                return self.exact and not other.exact
+            # Compare q values:
+            return q < qo
+        raise TypeError()
+
+
+class Language(Weighted, str):
+    __slots__ = ("locale", "options", "exact")
+
+    locale: str
+
+    def __new__(cls, value: str):
+        if isinstance(value, cls):
+            return value
+
+        locale, params = parse_header(value)
+        instance = str.__new__(
+            cls, locale + "".join(
+                f"; {k}={v}" for k, v in sorted(params.items())
+            )
+        )
+        instance.locale = locale
+        instance.exact = locale != '*'
+        instance.options = frozendict(params)
+        return instance
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            return self.locale == other
+        return False  # pragma: no cover
+
+
+class ContentType(Weighted, str):
+    __slots__ = ("mimetype", "options", "exact")
 
     mimetype: MIMEType
-    options: Mapping[str, str]
 
     def __new__(cls, value: str):
         if isinstance(value, cls):
@@ -86,17 +131,21 @@ class ContentType(str):
             )
         )
         instance.mimetype = mimetype
+        instance.exact = True
         instance.options = frozendict(params)
         return instance
 
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            return self.mimetype == other
+        return False  # pragma: no cover
+
 
 class MediaType(ContentType):
-    __slots__ = ("options", "mimetype", "maintype", "subtype")
+    __slots__ = ("value", "options", "exact", "maintype", "subtype")
 
-    mimetype: MIMEType
     maintype: str
     subtype: str | None
-    options: Mapping[str, str]
 
     def __new__(cls, value: str):
         if isinstance(value, cls):
@@ -118,6 +167,7 @@ class MediaType(ContentType):
                 f"; {k}={v}" for k, v in sorted(params.items()))
         )
         instance.mimetype = mimetype
+        instance.exact = "*" in mimetype
         instance.maintype = maintype
         instance.subtype = subtype
         instance.options = frozendict(params)
