@@ -8,7 +8,7 @@ def test_content_type():
         '''id="oc=jpbe0M2Yt4s@thumper.bellcore.com";'''
     )
 
-    ct = ContentType(header)
+    ct = ContentType.from_string(header)
     assert ct.mimetype == "Message/Partial"
     assert ct.options == {
         'number': '2',
@@ -16,11 +16,6 @@ def test_content_type():
         'id': 'oc=jpbe0M2Yt4s@thumper.bellcore.com'
     }
 
-
-def test_idempotency():
-    header = (
-        '''Message/Partial; number=2; total=3; '''
-        '''id="oc=jpbe0M2Yt4s@thumper.bellcore.com";'''
-    )
-    ct = ContentType(header)
-    assert ContentType(ct) is ct
+    ct = ContentType.from_string('')
+    assert ct.mimetype == ""
+    assert ct.options == {}

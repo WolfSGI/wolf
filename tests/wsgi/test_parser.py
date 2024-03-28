@@ -65,7 +65,7 @@ def test_unknown_parser():
 
 def test_parser_with_mimetype():
     parser = BodyParser()
-    contenttype = ContentType('foo/bar')
+    contenttype = ContentType.from_string('foo/bar')
 
     @parser.register('foo/bar')
     def test(body, mimetype, **options):

@@ -27,15 +27,16 @@ class BodyParser(dict[MIMEType, Parser]):
         return registration
 
     def parse(self, body: t.IO, header: str | ContentType) -> Data:
-        content_type = ContentType(header)  # idempotent
-        parser = self.get(content_type.mimetype)
+        if isinstance(header, str):
+            header = ContentType.from_string(header)
+        parser = self.get(header.mimetype)
         if parser is None:
             raise HTTPError(
                 HTTPStatus.BAD_REQUEST,
-                f"Unknown content type: {content_type.mimetype!r}.",
+                f"Unknown content type: {header.mimetype!r}.",
             )
         try:
-            return parser(body, content_type.mimetype, **content_type.options)
+            return parser(body, header.mimetype, **header.options)
         except ValueError as exc:
             raise HTTPError(HTTPStatus.BAD_REQUEST, str(exc))
 

@@ -103,8 +103,11 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         return Cookies.from_string(self.environ.get("HTTP_COOKIE", ""))
 
     @immutable_cached_property
-    def content_type(self) -> ContentType:
-        return ContentType(self.environ.get("CONTENT_TYPE", ""))
+    def content_type(self) -> ContentType | None:
+        try:
+            return ContentType(self.environ.get["CONTENT_TYPE"])
+        except:
+            return None
 
     @immutable_cached_property
     def scheme(self) -> str:

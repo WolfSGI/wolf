@@ -1,14 +1,26 @@
+import re
 import urllib.parse
-from typing import NamedTuple, Any, Literal, TypeVar, Generic
+from enum import Enum
+from fnmatch import fnmatch
+from typing import NamedTuple, Any, Literal, TypeVar, Generic, Union
 from collections.abc import Mapping, Sequence
 from biscuits import Cookie, parse
 from frozendict import frozendict
 from wolf.http.types import MIMEType
 from wolf.http.exceptions import HTTPError
 from wolf.http.utils import parse_header, consolidate_ranges
+from vernacular.utils import LanguageTag, parse_locale
 
 
-W = TypeVar('W', bound=str)
+WEIGHT = re.compile(r"^(0\.[0-9]{1,3}|1\.0{1,3})$")  # 3 decimals.
+WEIGHT_PARAM = re.compile(r"^q=(0\.[0-9]{1,3}|1\.0{1,3})$")
+ALL_LANG = LanguageTag('*')
+
+
+class Specificity(int, Enum):
+    NONSPECIFIC = 0
+    PARTIALLY_SPECIFIC = 1
+    SPECIFIC = 2
 
 
 class Data(NamedTuple):
@@ -72,113 +84,300 @@ class Range(NamedTuple):
         return cls(unit=unit, values=tuple(ranges))
 
 
-class Weighted:
+class Language:
+    __slots__ = ("language", "variant", "quality", "specificity")
 
-    exact: bool
-    options: Mapping[str, str]
+    language: str
+    variant: str | None
+    quality: float
+
+    def __init__(
+            self,
+            locale: str,
+            quality: float = 1.0
+    ):
+        if locale == '*':
+            self.language = "*"
+            self.variant = None
+            self.specificity = Specificity.NONSPECIFIC
+        else:
+            self.language, self.variant = parse_locale(locale)
+            self.specificity = (
+                Specificity.SPECIFIC if self.variant
+                else Specificity.PARTIALLY_SPECIFIC
+            )
+        self.quality = quality
+
+    @classmethod
+    def from_string(cls, value: str) -> Union['Language', None]:
+        locale, _, rest = value.partition(';')
+        rest = rest.strip()
+        if rest:
+            matched = WEIGHT_PARAM.match(rest)
+            if not matched:
+                raise ValueError()
+            quality = float(matched.group(1))
+            return cls(locale.strip(), quality)
+        return cls(locale.strip())
+
+    def __str__(self):
+        if not self.variant:
+            return self.language
+        return f'{self.language}-{self.variant}'
+
+    def as_header(self):
+        return f"{str(self)};q={self.quality}"
 
     def __lt__(self, other: Any) -> bool:
-        if isinstance(other, Weighted):
-            # When q values are equal, compare specificity instead:
-            q = self.options.get('q', 1)
-            qo = other.options.get('q', 1)
-            if q == qo:
-                return self.exact and not other.exact
-            # Compare q values:
-            return q < qo
+        if isinstance(other, Language):
+            if self.quality == other.quality:
+                return self.specificity > other.specificity
+            return self.quality > other.quality
         raise TypeError()
 
-
-class Language(Weighted, str):
-    __slots__ = ("locale", "options", "exact")
-
-    locale: str
-
-    def __new__(cls, value: str):
-        if isinstance(value, cls):
-            return value
-
-        locale, params = parse_header(value)
-        instance = str.__new__(
-            cls, locale + "".join(
-                f"; {k}={v}" for k, v in sorted(params.items())
-            )
-        )
-        instance.locale = locale
-        instance.exact = locale != '*'
-        instance.options = frozendict(params)
-        return instance
-
     def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Language):
+            return (
+                self.language == other.language
+                and self.variant == other.variant
+            )
         if isinstance(other, str):
-            return self.locale == other
-        return False  # pragma: no cover
+            return str(self) == other
+        return False
+
+    def match(self, other: Union[str, 'Language']) -> bool:
+        if self.specificity == Specificity.NONSPECIFIC:
+            return True
+
+        if isinstance(other, str):
+            language, variant = parse_locale(other)
+        else:
+            language = other.language
+            variant = other.variant
+
+        if self.specificity == Specificity.PARTIALLY_SPECIFIC or not variant:
+            return language == self.language
+
+        return (language == self.language and variant == self.variant)
 
 
-class ContentType(Weighted, str):
-    __slots__ = ("mimetype", "options", "exact")
+class Languages(tuple[Language, ...]):
 
+    def __new__(cls, values: Sequence[Language]):
+        return super().__new__(cls, sorted(values))
+
+    def as_header(self):
+        return ','.join((lang.as_header() for lang in self))
+
+    @classmethod
+    def from_string(cls, header: str, keep_null: bool = False):
+        if ',' not in header:
+            header = header.strip()
+            if header:
+                lang = Language.from_string(header)
+                if not keep_null and not lang.quality:
+                    raise ValueError()
+                return cls((lang,))
+
+        langs = []
+        values = header.split(',')
+        for value in values:
+            value = value.strip()
+            if value:
+                lang = Language.from_string(value)
+                if not keep_null and not lang.quality:
+                    continue
+                langs.append(lang)
+        if not langs:
+            raise ValueError()
+        return cls(langs)
+
+    def negociate(self, supported: Sequence[str | Language]):
+        if not self:
+            if not supported:
+                return None
+            return supported[0]
+        for accepted in self:
+            for candidate in supported:
+                if accepted.match(candidate):
+                    return candidate
+        return None
+
+
+class ContentType:
+    __slots__ = ("mimetype", "options")
+
+    quality: float
+    formatted: str
     mimetype: MIMEType
+    options: Mapping[str, str]
 
-    def __new__(cls, value: str):
-        if isinstance(value, cls):
-            return value
+    def __init__(
+            self,
+            mimetype: MIMEType,
+            options: Mapping[str, str],
+    ):
+        self.mimetype = mimetype
+        self.options = options
 
+    @classmethod
+    def from_string(cls, value: str):
         mimetype, params = parse_header(value)
-        instance = str.__new__(
-            cls, mimetype + "".join(
-                f"; {k}={v}" for k, v in sorted(params.items())
-            )
+        return cls(
+            mimetype=mimetype,
+            options=frozendict(params)
         )
-        instance.mimetype = mimetype
-        instance.exact = True
-        instance.options = frozendict(params)
-        return instance
+
+    def as_header(self):
+        return self.mimetype + "".join(
+            f";{k}={v}" for k, v in sorted(self.options.items())
+        )
+
+    def __bool__(self):
+        return bool(self.mimetype)
+
+    def __str__(self):
+        return self.formatted
 
     def __eq__(self, other: Any) -> bool:
+        if isinstance(other, ContentType):
+            return (
+                self.mimetype == other.mimetype and
+                self.options == self.options
+            )
         if isinstance(other, str):
             return self.mimetype == other
-        return False  # pragma: no cover
+        return False
 
 
 class MediaType(ContentType):
-    __slots__ = ("value", "options", "exact", "maintype", "subtype")
+    __slots__ = (
+        "options", "specificity", "maintype", "subtype", "quality")
 
     maintype: str
-    subtype: str | None
+    subtype: str
+    specificity: Specificity
 
-    def __new__(cls, value: str):
-        if isinstance(value, cls):
-            return value
+    def __init__(
+            self,
+            maintype: str,
+            subtype: str,
+            options: Mapping[str, str],
+            quality: float = 1.0,
+    ):
+        mimetype = maintype + '/' + subtype
+        self.quality = quality
+        self.maintype = maintype
+        self.subtype = subtype
 
+        if maintype == "*" and subtype == "*":
+            self.specificity = Specificity.NONSPECIFIC
+        elif subtype == "*":
+            self.specificity = Specificity.PARTIALLY_SPECIFIC
+        else:
+            self.specificity = Specificity.SPECIFIC
+        super().__init__(mimetype, options)
+
+    @classmethod
+    def from_string(cls, value: str):
         mimetype, params = parse_header(value)
-
         if mimetype == "*":
             maintype = "*"
             subtype = "*"
         elif "/" in mimetype:
             maintype, _, subtype = mimetype.partition("/")
+            if not subtype:
+                subtype  = "*"
+            elif maintype == '*' and subtype != '*':
+                raise ValueError()
         else:
             maintype = mimetype
-            subtype = None
+            subtype = "*"
 
-        instance = str.__new__(
-            cls, mimetype + "".join(
-                f"; {k}={v}" for k, v in sorted(params.items()))
+        params = frozendict(params)
+        if 'q' in params:
+            q = params['q']
+            if not WEIGHT.match(q):
+                raise ValueError()
+            quality = float(q)
+        else:
+            quality = 1.0
+        return cls(
+            maintype=maintype,
+            subtype=subtype,
+            options=params,
+            quality=quality
         )
-        instance.mimetype = mimetype
-        instance.exact = "*" in mimetype
-        instance.maintype = maintype
-        instance.subtype = subtype
-        instance.options = frozendict(params)
-        return instance
 
-    def match(self, other: str) -> bool:
-        other_media_type = MediaType(other)  # idempotent
-        return (
-            self.maintype in {"*", other_media_type.maintype}
-            and self.subtype in {"*", other_media_type.subtype}
+    def as_header(self):
+        return self.mimetype + "".join(
+            f";{k}={v}" for k, v in sorted(self.options.items())
         )
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            return self.mimetype == other
+        if isinstance(other, ContentType):
+            return self.mimetype == self.mimetype
+
+    def __lt__(self, other: Any) -> bool:
+        if isinstance(other, MediaType):
+            if self.quality == other.quality:
+                return self.specificity > other.specificity
+            return self.quality > other.quality
+        raise TypeError()
+
+    def match(self, other: str | ContentType) -> bool:
+        if isinstance(other, ContentType):
+            other = other.mimetype
+        if self.specificity == Specificity.NONSPECIFIC:
+            return True
+        if self.specificity == Specificity.PARTIALLY_SPECIFIC:
+            return fnmatch(other, self.mimetype)
+        return self.mimetype == other
+
+
+class Accept(tuple[MediaType, ...]):
+
+    def __new__(cls, values: Sequence[MediaType]):
+        return super().__new__(cls, sorted(values))
+
+    def as_header(self):
+        return ','.join((media.as_header() for media in self))
+
+    @classmethod
+    def from_string(cls, header: str, keep_null: bool = False):
+        if ',' not in header:
+            value = value.strip()
+            if value:
+                media = MediaType.from_string(value)
+                if not keep_null and not media.quality:
+                    raise ValueError()
+                return cls((media,))
+
+        medias = []
+        values = header.split(',')
+        for value in values:
+            value = value.strip()
+            if value:
+                media = MediaType.from_string(value)
+                if not keep_null and not media.quality:
+                    continue
+                medias.append(media)
+        if not medias:
+            raise ValueError()
+        return cls(medias)
+
+    def negociate(self, supported: Sequence[str | MediaType]):
+        if not self:
+            if not supported:
+                return None
+            return supported[0]
+        for accepted in self:
+            for candidate in supported:
+                if accepted.match(candidate):
+                    return candidate
+        return None
 
 
 class Cookies(dict[str, Cookie]):
