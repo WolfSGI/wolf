@@ -30,6 +30,7 @@ class Authorization(NamedTuple):
         scheme, _, credentials = value.strip(' ').partition(' ')
         return cls(scheme.lower(), credentials.strip())
 
+
 class Query(frozendict[str, Sequence[str]]):
     TRUE_STRINGS: set[str] = frozenset(("t", "true", "yes", "1", "on"))
     FALSE_STRINGS: set[str] = frozenset(("f", "false", "no", "0", "off"))
