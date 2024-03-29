@@ -21,7 +21,6 @@ dependencies = [
   "itsdangerous",
   "http_session",
   "vernacular",
-  "content-negotiation",
   "autorouting",
   "plum-dispatch",
   "pyhamcrest",

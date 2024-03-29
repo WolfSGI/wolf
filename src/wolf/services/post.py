@@ -2,11 +2,11 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 from contextlib import contextmanager
+from collections.abc import Iterator
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
-from beartype import beartype
 from aioinject import Scoped
 from wolf.pluggability import Installable
 
@@ -40,7 +40,6 @@ class Mailman(list[Message]):
         self.append(msg)
 
 
-@beartype
 @dataclass(kw_only=True)
 class PostOffice(Installable):
     path: Path
@@ -52,7 +51,7 @@ class PostOffice(Installable):
         application.services.register(Scoped(self.mailer))
 
     @contextmanager
-    def mailer(self) -> Mailman:
+    def mailer(self) -> Iterator[Mailman]:
         mailman = Mailman()
         try:
             yield mailman

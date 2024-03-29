@@ -1,5 +1,4 @@
 import logging
-from beartype import beartype
 from dataclasses import dataclass
 from annotated_types import Len
 from wolf.http.request import Request
@@ -8,16 +7,13 @@ from aioinject import Scoped, Singleton
 from wolf.pluggability import Installable
 from vernacular import Translations
 from vernacular.translate import Translator
-from content_negotiation import decide_language, NoAgreeableLanguageError
 
 
 logger = logging.getLogger(__name__)
 
-
 Locale = NewType("Locale", str)
 
 
-@beartype
 @dataclass(kw_only=True)
 class TranslationService(Installable):
     translations: Translations
@@ -29,20 +25,14 @@ class TranslationService(Installable):
         application.services.register(Scoped(self.locale_factory))
 
     def locale_factory(self, request: Request) -> Locale:
-        header = request.environ.get("HTTP_ACCEPT_LANGUAGE")
-        if header:
-            try:
-                language = decide_language(header.split(","), self.accepted_languages)
-                logger.debug(f"Agreeing on requested language: {language}.")
-                return Locale(language)
-            except NoAgreeableLanguageError:
-                # Fallback to default.
-                logger.debug("Could not find a suitable language. Using fallback.")
-
-        logger.debug("No language preference: Using fallback.")
-        return Locale(self.accepted_languages[0])
+        language = request.accept_language.negotiate(
+            self.accepted_languages
+        )
+        return Locale(language)
 
     def translator_factory(self) -> Translator:
         return Translator(
-            self.translations, self.default_domain, self.accepted_languages[0]
+            self.translations,
+            self.default_domain,
+            self.accepted_languages[0]
         )

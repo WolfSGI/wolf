@@ -1,7 +1,6 @@
 import pathlib
 import jwt
 import logging
-from beartype import beartype
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from aioinject import Object
@@ -48,7 +47,6 @@ class JWTManager:
             raise InvalidToken()
 
 
-@beartype
 @dataclass(kw_only=True)
 class JWTService(Installable):
     private_key: pathlib.Path

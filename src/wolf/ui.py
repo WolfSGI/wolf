@@ -85,7 +85,6 @@ class SlotExpr:
         return [ast.Assign(targets=[target], value=value)]
 
 
-@beartype
 @dataclass(kw_only=True, slots=True)
 class UI(Installable):
     __provides__ = ["UI"]

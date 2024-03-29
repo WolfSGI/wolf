@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from beartype import beartype
 from http_session import Session
 from aioinject import Object, Scoped
 from wolf.http.request import Request
@@ -7,7 +6,6 @@ from wolf.identity import Authenticator, Source, User, anonymous
 from wolf.pluggability import Installable
 
 
-@beartype
 @dataclass(kw_only=True)
 class SessionAuthenticator(Installable, Authenticator):
     user_key: str

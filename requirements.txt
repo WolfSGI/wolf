@@ -1,3 +1,3 @@
 -e git+https://github.com/WolfSGI/autorouting.git#egg=autorouting
--e git+https://github.com/trollfot/aioinject.git#egg=aioinject
+-e git+https://github.com/ThirVondukr/aioinject.git#egg=aioinject
 -e .

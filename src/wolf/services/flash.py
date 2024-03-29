@@ -1,7 +1,6 @@
 import typing as t
 from dataclasses import dataclass
 from aioinject import Scoped
-from beartype import beartype
 from http_session import Session
 from wolf.pluggability import Installable
 
@@ -35,7 +34,6 @@ class SessionMessages:
         self.session.save()
 
 
-@beartype
 @dataclass(kw_only=True)
 class Flash(Installable):
 

@@ -5,7 +5,7 @@ from pathlib import PurePosixPath
 from wolf.utils import immutable_cached_property
 from wolf.http.request import Request
 from wolf.http.datastructures import Data
-from wolf.http.headers import Query, Cookies, ContentType
+from wolf.http.headers import Query, Cookies, ContentType, Languages
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
@@ -79,6 +79,15 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         return self.environ["HTTP_HOST"].split(":", 1)[0]
 
     @immutable_cached_property
+    def accept_language(self) -> Languages:
+        try:
+            return Languages.from_string(
+                self.environ["HTTP_ACCEPT_LANGUAGE"]
+            )
+        except KeyError:
+            return Languages()
+
+    @immutable_cached_property
     def root_path(self) -> str:
         return urllib.parse.quote(self.environ.get("SCRIPT_NAME", ""))
 
@@ -106,7 +115,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
     @immutable_cached_property
     def content_type(self) -> ContentType | None:
         try:
-            return ContentType(self.environ["CONTENT_TYPE"])
+            return ContentType.from_string(self.environ["CONTENT_TYPE"])
         except KeyError:
             return None
 
