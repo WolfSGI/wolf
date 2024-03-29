@@ -5,6 +5,22 @@ from wolf.rendering import html, json, renderer
 from wolf.routing import Router
 from wolf.decorators import ondemand
 from wolf.services.post import Mailman
+from hamcrest.core.base_matcher import BaseMatcher
+from hamcrest.core.description import Description
+
+
+class request_content_type(BaseMatcher):
+
+    def __init__(self, *values: str):
+        self.values: tuple[str] = tuple(values)
+
+    def describe_to(self, description: Description):
+        description.append_text(
+            'String matching a wilcards string '
+        ).append_text(self.value)
+
+    def _matches(self, request):
+        return request.accept.negotiate(self.values)
 
 
 routes = Router()
@@ -37,8 +53,25 @@ def bare(request):
 
 @routes.register('/test/json')
 @json
-def json(request):
+def json_view(request):
     return {"key": "value"}
+
+
+@routes.register(
+    '/test/negotiate',
+    requirements={"request": request_content_type('application/json')})
+@json
+def test_json_negotiation(request):
+    return {"key": "value"}
+
+
+@routes.register(
+    '/test/negotiate',
+    priority=1,
+    requirements={"request": request_content_type('text/html')})
+@html
+def test_html_negotiation(request):
+    return "key : value"
 
 
 def some_pipe(handler):

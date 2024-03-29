@@ -67,8 +67,10 @@ class RoutingApplication(WSGIApplication):
             self,
             request: WSGIRequest
     ) -> WSGIResponse | FileWrapperResponse:
+        extra = Extra(request=request)
+        request.context.register(Object(extra))
         route: MatchedRoute | None = self.router.get(
-            request.path, request.method
+            request.path, request.method, extra=extra
         )
         if route is None:
             raise HTTPError(404)
