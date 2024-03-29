@@ -235,7 +235,9 @@ class MediaType(ContentType):
 class Accept(tuple[MediaType, ...]):
 
     def __new__(cls, values: Sequence[MediaType]):
-        return super().__new__(cls, sorted(values))
+        if values:
+            return super().__new__(cls, sorted(values))
+        return super().__new__(cls, (MediaType('*', '*', {})))
 
     def as_header(self):
         return ','.join((media.as_header() for media in self))
@@ -356,7 +358,9 @@ class Language:
 class Languages(tuple[Language, ...]):
 
     def __new__(cls, values: Sequence[Language]):
-        return super().__new__(cls, sorted(values))
+        if values:
+            return super().__new__(cls, sorted(values))
+        return super().__new__(cls, (Language('*'),))
 
     def as_header(self):
         return ','.join((lang.as_header() for lang in self))

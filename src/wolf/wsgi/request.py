@@ -5,7 +5,7 @@ from pathlib import PurePosixPath
 from wolf.utils import immutable_cached_property
 from wolf.http.request import Request
 from wolf.http.datastructures import Data
-from wolf.http.headers import Query, Cookies, ContentType, Languages, Accept
+from wolf.http.headers import Cookies, ContentType, Languages, Accept, Range
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
@@ -88,6 +88,15 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
             return Accept()
 
     @immutable_cached_property
+    def range(self) -> Range | None:
+        try:
+            return Range.from_string(
+                self.environ["RANGE"]
+            )
+        except KeyError:
+            return None
+
+    @immutable_cached_property
     def accept_language(self) -> Languages:
         try:
             return Languages.from_string(
@@ -114,7 +123,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         return "/"
 
     @immutable_cached_property
-    def querystring(self) -> Query:
+    def querystring(self) -> str:
         return self.environ.get("QUERY_STRING", "")
 
     @immutable_cached_property
