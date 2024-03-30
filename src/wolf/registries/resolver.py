@@ -1,24 +1,23 @@
 import typing as t
 from plum import Signature
+from collections.abc import Sequence
 
 
 class SignatureResolver:
     def __init__(
         self,
-        signatures: t.Iterable[Signature] | None = None,
-        restrict: t.Iterable[Signature] | None = None,
+        signatures: Sequence[Signature] | None = None,
     ):
-        self.signatures: t.Set[Signature] = signatures and set(signatures) or set()
         self.is_faithful: bool = True
-        self.restrict: t.Set[Signature] = restrict and set(restrict) or set()
-
-    def set_restrictions(self, *signatures):
-        self.restrict |= set(signatures)
+        self.signatures: t.Set[Signature] = (
+                signatures and set(signatures) or set()
+        )
 
     def register(self, signature: Signature) -> None:
         existing = [s == signature for s in self.signatures]
         if any(existing):
-            raise AssertionError(f"This exact signature already exists : {signature}.")
+            raise AssertionError(
+                f"This exact signature already exists : {signature}.")
         else:
             self.signatures.add(signature)
 
@@ -72,9 +71,9 @@ class SignatureResolver:
             # Before raising an exception, attempt to resolve
             # the ambiguity using the precedence of the signatures.
             precedences = [c.precedence for c in candidates]
-            max_precendence = max(precedences)
-            if sum([p == max_precendence for p in precedences]) == 1:
-                return candidates[precedences.index(max_precendence)]
+            max_precedence = max(precedences)
+            if sum([p == max_precedence for p in precedences]) == 1:
+                return candidates[precedences.index(max_precedence)]
             else:
                 # Could not resolve the ambiguity, so error.
                 raise LookupError(target, candidates)

@@ -1,5 +1,6 @@
 import re
-from collections.abc import Sequence
+from datetime import datetime
+from email.utils import parsedate_to_datetime
 
 
 # Borrowed from Sanic
@@ -23,15 +24,10 @@ def parse_header(value: str) -> tuple[str, dict[str, str]]:
     return value.strip().lower(), options
 
 
-def consolidate_ranges(ranges: Sequence[tuple[int, int]]):
-    ranges = iter(sorted(ranges))
-    current_start, current_stop = next(ranges)
-    for start, stop in ranges:
-        if start > current_stop + 1:
-            # Gap between segments: output current segment and start a new one.
-            yield current_start, current_stop
-            current_start, current_stop = start, stop
-        else:
-            # Segments adjacent or overlapping: merge.
-            current_stop = max(current_stop, stop)
-    yield current_start, current_stop
+parse_http_datetime = parsedate_to_datetime
+
+
+def serialize_http_datetime(dt: datetime) -> str:
+    """Returns an RFC 1123 datetime string
+    """
+    return dt.strftime('%a, %d %b %Y %H:%M:%S %Z')
