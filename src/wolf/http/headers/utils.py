@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 
@@ -30,4 +30,5 @@ parse_http_datetime = parsedate_to_datetime
 def serialize_http_datetime(dt: datetime) -> str:
     """Returns an RFC 1123 datetime string
     """
-    return dt.strftime('%a, %d %b %Y %H:%M:%S %Z')
+    dt = dt.astimezone(timezone.utc)
+    return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
