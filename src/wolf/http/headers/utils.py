@@ -32,3 +32,21 @@ def serialize_http_datetime(dt: datetime) -> str:
     """
     dt = dt.astimezone(timezone.utc)
     return dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+
+def parse_host(value: str) -> tuple[str | None, int | None]:
+    # RFC 3986 § 3.2.2
+    # IP-literal containing an IPv6 (or later) address
+    if value.startswith('['):
+        # In cast of an IP-Literal, we keep the brackets.
+        pos = value.rfind(']:')
+        # Does it contain a port ?
+        if pos != -1:
+            return value[:pos + 1], int(value[pos + 2:])
+        return value, None
+
+    # Basic domain or IPv4, with or without port
+    name, _, port = value.partition(':')
+    if not port:
+        return value, None
+    return name, int(port)
