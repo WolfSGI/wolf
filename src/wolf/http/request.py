@@ -49,7 +49,8 @@ class Request(ABC, Generic[E]):
 
     @property
     @abstractmethod
-    def host(self) -> str: ...
+    def host(self) -> tuple[str | None, int | None]:
+        ...
 
     @property
     @abstractmethod
@@ -65,14 +66,12 @@ class Request(ABC, Generic[E]):
     @immutable_cached_property
     def application_uri(self) -> str:
         scheme = self.scheme
-        if ":" in self.host:
-            server, port = self.host.split(":", 1)
-        else:
-            server = self.host
-            port = "80"
+        server, port = self.host
+        if not port:
+            port = (scheme == 'https' and 443 or 80)
 
-        if (self.scheme == "http" and port == "80") or (
-            self.scheme == "https" and port == "443"
+        if (self.scheme == "http" and port == 80) or (
+            self.scheme == "https" and port == 443
         ):
             return f"{scheme}://{server}{self.root_path}"
         return f"{scheme}://{server}:{port}{self.root_path}"

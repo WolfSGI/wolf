@@ -7,6 +7,7 @@ from wolf.http.request import Request
 from wolf.http.datastructures import Data
 from wolf.http.headers import Cookies, ContentType, Languages, Accept
 from wolf.http.headers.ranges import Ranges
+from wolf.http.headers.utils import parse_host
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
@@ -143,12 +144,12 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         return self.environ.get("wsgi.url_scheme", "http")
 
     @immutable_cached_property
-    def host(self) -> str:
-        http_host = self.environ.get("HTTP_HOST")
-        if not http_host:
-            server = self.environ["SERVER_NAME"]
+    def host(self) -> tuple[str, int]:
+        try:
+            domain, port = parse_host(self.environ["HTTP_HOST"])
+        except KeyError:
+            domain = self.environ["SERVER_NAME"]
             port = self.environ.get("SERVER_PORT", None)
             if port is None:
                 port = 80 if self.scheme == "http" else 443
-            http_host = f"{server}:{port}"
-        return http_host
+        return domain, port
