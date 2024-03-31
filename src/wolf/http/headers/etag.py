@@ -40,8 +40,7 @@ class ETags(frozenset[ETag]):
         for value in values:
             value = value.strip()
             if value:
-                etag = ETag(value)
-                etags.append(etag)
+                etags.append(ETag(value))
         if not etags:
             raise ValueError()
         return cls(etags)

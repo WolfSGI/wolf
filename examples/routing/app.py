@@ -33,7 +33,7 @@ for translation in vernacular.translations(pathlib.Path('translations')):
     i18Catalog.add(translation)
 
 
-app = RoutingApplication(middlewares=[
+app = RoutingApplication(middlewares=(
     HTTPSession(
         store=http_session_file.FileStore(
             pathlib.Path('sessions'), 3000
@@ -48,7 +48,7 @@ app = RoutingApplication(middlewares=[
         login_url='/login',
         allowed_urls={'/register', '/test'}
     )
-])
+))
 
 
 app.use(

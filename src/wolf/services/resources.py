@@ -1,6 +1,7 @@
 import os
 import base64
 import hashlib
+import enum
 from typing import Sequence
 from pathlib import PurePosixPath, Path
 from pkg_resources import resource_filename
@@ -13,17 +14,21 @@ from wolf.resources import Resource, known_extensions, NeededResources
 from wolf.pluggability import Installable
 
 
-def generate_sri(filepath: Path):
-    hashed = hashlib.sha256()
+class HashAlgorithm(enum.Enum):
+    sha256 = hashlib.sha256
+    sha384 = hashlib.sha384
+    sha512 = hashlib.sha512
+
+
+def generate_hash(filepath: Path, algorithm: HashAlgorithm) -> str:
+    hashed = algorithm.value()
     with filepath.open("rb") as f:
         while True:
             data = f.read(1024 * 32)
             if not data:
                 break
             hashed.update(data)
-    hashed = hashed.digest()
-    hash_base64 = base64.b64encode(hashed).decode("utf-8")
-    return "sha256-{}".format(hash_base64)
+    return hashed.digest()
 
 
 class BaseLibrary:
@@ -88,7 +93,12 @@ class Library(DiscoveryLibrary):
         if not cls:
             raise TypeError("Unknown extension.")
 
-        integrity = generate_sri(fullpath)
+        hash_base64 = base64.b64encode(
+            generate_hash(fullpath),
+            HashAlgorithm.sha256
+        ).decode("utf-8")
+        integrity = f"sha256-{hash_base64}"
+
         if dependencies is not None:
             dependencies = tuple(dependencies)
         resource = cls(
@@ -129,6 +139,7 @@ class StaticAccessor:
                 info = {
                     "filepath": full_path,
                     "size": stats.st_size,
+                    "last_modified": stats.st_mtime,
                     "content_type": content_type,
                 }
                 self.resources.add(str("/" / PurePosixPath(uri)), **info)

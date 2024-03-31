@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass(kw_only=True, repr=False)
 class WSGIApplication(Application, Node):
     services: Container = field(default_factory=Container)
-    middlewares: tuple[Wrapper] = field(default_factory=tuple)
+    middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
 
     def __post_init__(self):
