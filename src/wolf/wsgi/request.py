@@ -1,13 +1,15 @@
 import typing as t
 import urllib.parse
+from datetime import datetime
 from contextlib import contextmanager
 from pathlib import PurePosixPath
 from wolf.utils import immutable_cached_property
-from wolf.http.request import Request
+from wolf.http.request import Request, header_property
 from wolf.http.datastructures import Data
-from wolf.http.headers import Cookies, ContentType, Languages, Accept
+from wolf.http.exceptions import HTTPError
+from wolf.http.headers import Cookies, ContentType, Languages, Accept, ETag
 from wolf.http.headers.ranges import Ranges
-from wolf.http.headers.utils import parse_host
+from wolf.http.headers.utils import parse_host, parse_http_datetime, parse_wsgi_path
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
@@ -19,6 +21,7 @@ T = t.TypeVar("T")
 NONE_PROVIDED = object()
 ACCEPT_ALL = Accept([])
 ALL_LANGUAGES = Languages([])
+ALL_ETAGS = ETags([])
 
 
 class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
@@ -58,93 +61,108 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                 raise
             return default
 
-    @immutable_cached_property
-    def method(self) -> str:
-        return self.environ.get("REQUEST_METHOD", "GET").upper()
+    path: str = header_property(
+        "PATH_INFO",
+        caster=parse_wsgi_path,
+        default="/"
+    )
+
+    root_path: str = header_property(
+        "SCRIPT_NAME",
+        default="",
+        caster=urllib.parse.quote
+    )
+
+    cookies: Cookies | None = header_property(
+        "HTTP_COOKIE",
+        caster=Cookies.from_string,
+        default=None
+    )
+
+    scheme : str = header_property(
+        "wsgi.url_scheme",
+        default="http"
+    )
+
+    querystring: str = header_property(
+        "QUERY_STRING",
+        default=""
+    )
+
+    content_type: ContentType | None = header_property(
+        "CONTENT_TYPE",
+        caster=ContentType.from_string,
+        default=None
+    )
+
+    content_length: int | None = header_property(
+        "CONTENT_LENGTH",
+        caster=int,
+        default=None
+    )
+
+    method: str = header_property(
+        "REQUEST_METHOD",
+        default="GET"
+    )
+
+    body: t.BinaryIO = header_property(
+        "wsgi.input"
+    )
+
+    remote_addr: str = header_property(
+        "REMOTE_ADDR",
+        default="127.0.0.1"
+    )
+
+    accept: Accept = header_property(
+        "HTTP_ACCEPT",
+        caster=Accept.from_string,
+        default=ACCEPT_ALL
+    )
+
+    accept_language: Languages = header_property(
+        "HTTP_ACCEPT_LANGUAGE",
+        caster=Languages.from_string,
+        default=ALL_LANGUAGES
+    )
+
+    range: Ranges | None = header_property(
+        "HTTP_RANGE",
+        caster=Ranges.from_string
+    )
+
+    if_match: ETags = header_property(
+        "HTTP_IF_MATCH",
+        default=ALL_ETAGS
+    )
+
+    if_none_match: ETags = header_property(
+        "HTTP_IF_NONE_MATCH",
+        default=ALL_ETAGS
+    )
+
+    if_modified_since: datetime | None = header_property(
+        "HTTP_IF_MODIFIED_SINCE",
+        caster=parse_http_datetime,
+        default=None
+    )
+
+    if_unmodified_since: datetime | None = header_property(
+        "HTTP_IF_UNMODIFIED_SINCE",
+        caster=parse_http_datetime,
+        default=None
+    )
 
     @immutable_cached_property
-    def body(self) -> t.BinaryIO:
-        return self.environ["wsgi.input"]
-
-    @immutable_cached_property
-    def data(self) -> Data:
-        if self.content_type:
-            return parser.parse(
-                self.environ["wsgi.input"],
-                self.content_type
-            )
-        return Data()
-
-    def get_data(self) -> Data:
-        return self.data
-
-    @immutable_cached_property
-    def domain(self) -> str:
-        domain, _ = self.host
-        return domain
-
-    @immutable_cached_property
-    def accept(self) -> Accept:
+    def if_range(self) -> ETag | datetime | None:
         try:
-            return Accept.from_string(
-                self.environ["HTTP_ACCEPT"]
-            )
-        except KeyError:
-            return ACCEPT_ALL
-
-    @immutable_cached_property
-    def range(self) -> Ranges | None:
-        try:
-            return Ranges.from_string(
-                self.environ["RANGE"]
-            )
+            value = self.environ["HTTP_IF_RANGE"]
+            if '"' in value:
+                return ETag.from_string(value)
+            return parse_http_datetime(value)
         except KeyError:
             return None
-
-    @immutable_cached_property
-    def accept_language(self) -> Languages:
-        try:
-            return Languages.from_string(
-                self.environ["HTTP_ACCEPT_LANGUAGE"]
-            )
-        except KeyError:
-            return ALL_LANGUAGES
-
-    @immutable_cached_property
-    def root_path(self) -> str:
-        return urllib.parse.quote(self.environ.get("SCRIPT_NAME", ""))
-
-    @immutable_cached_property
-    def path(self) -> str:
-        # according to PEP 3333 the native string representing PATH_INFO
-        # (and others) can only contain unicode codepoints from 0 to 255,
-        # which is why we need to decode to latin-1 instead of utf-8 here.
-        # We transform it back to UTF-8
-        # Note that it's valid for WSGI server to omit the value if it's
-        # empty.
-        if path := self.environ.get("PATH_INFO"):
-            # Normalize the slashes to avoid things like '//test'
-            return str(PurePosixPath(path.encode("latin-1").decode("utf-8")))
-        return "/"
-
-    @immutable_cached_property
-    def querystring(self) -> str:
-        return self.environ.get("QUERY_STRING", "")
-
-    @immutable_cached_property
-    def cookies(self) -> Cookies:
-        return Cookies.from_string(self.environ.get("HTTP_COOKIE", ""))
-
-    @immutable_cached_property
-    def content_type(self) -> ContentType | None:
-        try:
-            return ContentType.from_string(self.environ["CONTENT_TYPE"])
-        except KeyError:
-            return None
-
-    @immutable_cached_property
-    def scheme(self) -> str:
-        return self.environ.get("wsgi.url_scheme", "http")
 
     @immutable_cached_property
     def host(self) -> tuple[str, int]:
@@ -156,3 +174,17 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
             if port is None:
                 port = 80 if self.scheme == "http" else 443
         return domain, port
+
+    @immutable_cached_property
+    def domain(self) -> str:
+        domain, _ = self.host
+        return domain
+
+    @immutable_cached_property
+    def data(self) -> Data:
+        if self.content_type:
+            return parser.parse(
+                self.environ["wsgi.input"],
+                self.content_type
+            )
+        return Data()

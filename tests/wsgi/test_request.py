@@ -15,7 +15,7 @@ def test_request():
     assert request.body.read() == b''
     assert request.query == Query({'key': ('1',)})
     assert request.root_path == ''
-    assert request.cookies == Cookies('')
+    assert request.cookies is None
     assert request.content_type is None
     assert request.data == Data()
     assert request.application_uri == 'http://localhost'

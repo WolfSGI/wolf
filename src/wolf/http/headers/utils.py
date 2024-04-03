@@ -1,4 +1,5 @@
 import re
+from pathlib import PurePosixPath
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
@@ -50,3 +51,15 @@ def parse_host(value: str) -> tuple[str | None, int | None]:
     if not port:
         return value, None
     return name, int(port)
+
+
+def parse_wsgi_path(path: str) -> str:
+    # according to PEP 3333 the native string representing PATH_INFO
+    # (and others) can only contain unicode codepoints from 0 to 255,
+    # which is why we need to decode to latin-1 instead of utf-8 here.
+    # We transform it back to UTF-8
+    # Note that it's valid for WSGI server to omit the value if it's
+    # empty.
+    if path:
+        return str(PurePosixPath(path.encode("latin-1").decode("utf-8")))
+    return "/"

@@ -83,3 +83,29 @@ class Request(ABC, Generic[E]):
             if qs:
                 return f"{self.application_uri}{path_info}?{qs}"
         return f"{self.application_uri}{path_info}"
+
+
+UNSET = object()
+
+
+def header_property(
+        name: str,
+        *,
+        caster=None,
+        default=UNSET,
+        on_missing: int = 400
+):
+    """Create a read-only cached header property.
+    """
+    def getter(request: Request):
+        try:
+            value = request.environ[name]
+            if caster is not None:
+                value = caster(value)
+        except KeyError:
+            if default is UNSET:
+                raise HTTPError(on_missing)
+            value = default
+        return value
+
+    return immutable_cached_property(getter)
