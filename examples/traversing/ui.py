@@ -1,9 +1,9 @@
 from typing import Any
 from collections import deque
 from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
-from wolf.traversing.traverser import Traversed
+from kettu.src.kettu.traversing import Traversed
 from wolf.rendering import renderer
-from wolf.http.request import Request
+from wolf.http import Request
 from wolf.services.flash import SessionMessages
 
 

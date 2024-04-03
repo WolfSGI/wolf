@@ -4,8 +4,8 @@ import logging.config
 from aioinject import Object
 from wolf.ui import UI
 from wolf.middlewares import HTTPSession
-from wolf.resources import CSSResource, JSResource
-from wolf.wsgi.app import TraversingApplication
+from kettu.src.kettu.resources import CSSResource, JSResource
+from kettu.src.kettu.wsgi.app import TraversingApplication
 from wolf.templates import Templates
 from wolf.services.resources import ResourceManager
 from wolf.services.token import JWTService

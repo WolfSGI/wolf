@@ -1,9 +1,9 @@
 from sqlmodel import Session as SQLSession, select
-from wolf.wsgi.app import TraversingApplication
-from wolf.http.request import Request
-from wolf.http.exceptions import HTTPError
-from wolf.routing import Extra
-from wolf.traversing import Traverser
+from kettu.src.kettu.wsgi.app import TraversingApplication
+from wolf.http import Request
+from wolf.http import HTTPError
+from kettu.src.kettu.routing import Extra
+from kettu.src.kettu.traversing import Traverser
 from models import Folder, Document
 
 

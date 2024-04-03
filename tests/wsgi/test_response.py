@@ -2,7 +2,7 @@ import pytest
 import webtest
 from unittest.mock import Mock
 from http import HTTPStatus
-from wolf.wsgi.response import WSGIResponse
+from kettu.src.kettu.wsgi.response import WSGIResponse
 
 
 def test_can_set_status_from_numeric_value():

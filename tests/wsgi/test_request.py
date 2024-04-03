@@ -1,8 +1,8 @@
 import pytest
 from webtest.app import TestRequest as EnvironBuilder
-from wolf.http.datastructures import Data
-from wolf.http.headers import Query, Cookies
-from wolf.wsgi.request import WSGIRequest
+from wolf.http import Data
+from wolf.http import Query
+from kettu.src.kettu.wsgi.request import WSGIRequest
 
 
 def test_request():

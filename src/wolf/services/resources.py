@@ -10,8 +10,8 @@ from autoroutes import Routes
 from aioinject import Object, Scoped
 from wolf.wsgi.nodes import Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.resources import Resource, known_extensions, NeededResources
-from wolf.pluggability import Installable
+from kettu.resources import Resource, known_extensions, NeededResources
+from kettu.pluggability import Installable
 
 
 class HashAlgorithm(enum.Enum):

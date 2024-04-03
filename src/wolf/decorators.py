@@ -1,6 +1,6 @@
 from functools import wraps
-from wolf.http.request import Request
-from wolf.utils import method_dependencies
+from kettu.http.request import Request
+from kettu.utils import method_dependencies
 
 
 def ondemand(func):

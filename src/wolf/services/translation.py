@@ -1,10 +1,10 @@
 import logging
 from dataclasses import dataclass
 from annotated_types import Len
-from wolf.http.request import Request
 from typing import NewType, Annotated
 from aioinject import Scoped, Singleton
-from wolf.pluggability import Installable
+from kettu.http.request import Request
+from kettu.pluggability import Installable
 from vernacular import Translations
 from vernacular.translate import Translator
 

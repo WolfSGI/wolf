@@ -1,8 +1,8 @@
 from typing import Any
 from types import TracebackType
 from collections.abc import MutableMapping, Sequence, Iterable, Callable
-from wolf.http.response import Response
-from wolf.http.types import StatusCode
+from kettu.http.response import Response
+from kettu.http.types import StatusCode
 
 
 WSGIEnviron = MutableMapping[str, Any]

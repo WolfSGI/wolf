@@ -1,8 +1,8 @@
-from wolf.http.app import Application
-from wolf.http.headers import Query
-from wolf.identity import User
+from kettu.http.app import Application
+from kettu.http.headers import Query
+from kettu.identity import User
 from wolf.rendering import html, json, renderer
-from wolf.routing import Router
+from kettu.routing import Router
 from wolf.decorators import ondemand
 from wolf.services.post import Mailman
 from hamcrest.core.base_matcher import BaseMatcher

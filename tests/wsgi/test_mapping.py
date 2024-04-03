@@ -1,5 +1,5 @@
 import pytest
-from wolf.http.exceptions import HTTPError
+from kettu.http.exceptions import HTTPError
 from wolf.wsgi.nodes import Mapping
 
 

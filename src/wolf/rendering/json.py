@@ -1,13 +1,13 @@
 import wrapt
-from wolf.http.response import Response
+from wolf.wsgi.response import WSGIResponse
 
 
 @wrapt.decorator
-def json(wrapped, instance, args, kwargs) -> Response:
+def json(wrapped, instance, args, kwargs) -> WSGIResponse:
     request = args[0]
     content = wrapped(*args, **kwargs)
 
-    if isinstance(content, Response):
+    if isinstance(content, WSGIResponse):
         return content
 
     if not isinstance(content, (dict, list)):

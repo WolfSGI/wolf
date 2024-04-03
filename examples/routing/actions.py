@@ -1,8 +1,8 @@
 from typing import Any, NamedTuple
 from prejudice.errors import ConstraintError
 from wolf.wsgi.request import WSGIRequest
-from wolf.identity import User, anonymous
-from wolf.registries import TypedRegistry
+from kettu.identity import User, anonymous
+from kettu.registries import TypedRegistry
 
 
 class Actions(TypedRegistry):

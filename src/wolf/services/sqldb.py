@@ -5,7 +5,7 @@ from aioinject import Scoped
 from collections.abc import Iterator
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.engine.base import Engine
-from wolf.pluggability import Installable
+from kettu.pluggability import Installable
 
 
 @dataclass(kw_only=True)

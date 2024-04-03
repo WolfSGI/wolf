@@ -8,7 +8,7 @@ from wolf.ui import UI
 from wolf.wsgi.app import RoutingApplication
 from wolf.templates import Templates
 from wolf.middlewares import HTTPSession, NoAnonymous
-from wolf.resources import JSResource, CSSResource
+from kettu.resources import JSResource, CSSResource
 from wolf.services.resources import ResourceManager
 from wolf.services.auth import SessionAuthenticator
 from wolf.services.flash import Flash

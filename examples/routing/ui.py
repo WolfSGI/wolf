@@ -1,9 +1,7 @@
 from typing import Any
 from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
 from wolf.rendering import renderer
-#from wolf.utils import ondemand
 from wolf.wsgi.request import WSGIRequest
-from wolf.identity import User, anonymous
 from wolf.services.flash import SessionMessages
 from actions import Actions
 from login import Login

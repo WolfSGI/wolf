@@ -1,7 +1,6 @@
-import typing as t
 from pydantic import computed_field
 from sqlmodel import Field, SQLModel, Relationship
-from wolf.identity import User
+from kettu.identity import User
 
 
 class Person(User, SQLModel, table=True):

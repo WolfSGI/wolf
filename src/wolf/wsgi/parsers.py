@@ -3,11 +3,11 @@ import re
 import typing as t
 from http import HTTPStatus
 from urllib.parse import parse_qsl
-from wolf.http.parsers.multipart import Multipart
-from wolf.http.exceptions import HTTPError
-from wolf.http.datastructures import Data
-from wolf.http.headers import ContentType
-from wolf.http.types import Boundary, Charset, MIMEType
+from kettu.http.parsers.multipart import Multipart
+from kettu.http.exceptions import HTTPError
+from kettu.http.datastructures import Data
+from kettu.http.headers import ContentType
+from kettu.http.types import Boundary, Charset, MIMEType
 
 
 MIME_TYPE_REGEX = re.compile(r"^multipart|[-\w.]+/[-\w.\+]+$")

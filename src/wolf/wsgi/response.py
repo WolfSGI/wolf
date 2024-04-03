@@ -1,5 +1,5 @@
 from typing import Iterable
-from wolf.http.response import Response, FileResponse
+from kettu.http.response import Response, FileResponse
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, StartResponse, Finisher
 
 

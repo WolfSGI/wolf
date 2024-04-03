@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
 from aioinject import Scoped
-from wolf.pluggability import Installable
+from kettu.pluggability import Installable
 
 
 logger = logging.getLogger(__name__)

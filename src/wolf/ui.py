@@ -5,11 +5,11 @@ from aioinject import Object
 from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
-from wolf.resources import JSResource, CSSResource
-from wolf.registries import TypedRegistry, Registry
-from wolf.http.request import Request
+from kettu.resources import JSResource, CSSResource
+from kettu.registries import TypedRegistry, Registry
+from kettu.http.request import Request
+from kettu.pluggability import Installable
 from wolf.templates import Templates, EXPRESSION_TYPES
-from wolf.pluggability import Installable
 
 
 class SlotRegistry(TypedRegistry):

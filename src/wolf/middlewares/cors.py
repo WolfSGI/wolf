@@ -1,9 +1,9 @@
 import logging
 from functools import wraps
 from dataclasses import dataclass
-from wolf.http.cors import CORSPolicy
-from wolf.http.request import Request
-from wolf.http.response import Response
+from kettu.http.cors import CORSPolicy
+from kettu.http.request import Request
+from kettu.http.response import Response
 
 
 logger = logging.getLogger(__name__)

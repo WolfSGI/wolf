@@ -4,12 +4,13 @@
 import deform
 import colander
 from abc import ABC, abstractmethod
-from wolf.annotations import annotation
-from wolf.http.datastructures import Data
-from wolf.http.exceptions import HTTPError
+from kettu.annotations import annotation
+from kettu.resources import NeededResources
+from kettu.routing import APIView
+from kettu.http.datastructures import Data
+from kettu.http.exceptions import HTTPError
 from wolf.rendering import html, renderer
-from wolf.resources import NeededResources
-from wolf.routing import APIView
+
 
 
 class trigger(annotation):

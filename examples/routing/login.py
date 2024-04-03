@@ -1,8 +1,8 @@
 import colander
 import deform
 from wolf.form import Form, trigger
-from wolf.identity import Authenticator
-from wolf.routing import Router
+from kettu.identity import Authenticator
+from kettu.routing import Router
 from wolf.services.flash import SessionMessages
 
 

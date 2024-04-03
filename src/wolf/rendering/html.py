@@ -2,20 +2,19 @@ import wrapt
 import logging
 from typing import Sequence
 from functools import partial
-from wolf.http.response import Response
+from kettu.resources import Resource, NeededResources
+from wolf.wsgi.response import WSGIResponse
 from wolf.ui import UI
-from wolf.resources import Resource, NeededResources
-
 
 logger = logging.getLogger(__name__)
 
 
 def html(func=None, *, resources: Sequence[Resource] | None = None):
     @wrapt.decorator
-    def html_wrapper(wrapped, instance, args, kwargs) -> Response:
+    def html_wrapper(wrapped, instance, args, kwargs) -> WSGIResponse:
         content = wrapped(*args, **kwargs)
 
-        if isinstance(content, Response):
+        if isinstance(content, WSGIResponse):
             return content
 
         if not isinstance(content, str):

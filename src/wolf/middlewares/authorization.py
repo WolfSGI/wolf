@@ -1,10 +1,10 @@
 from pathlib import PurePosixPath
 from functools import wraps
 from dataclasses import dataclass, field
-from wolf.http.exceptions import HTTPError
-from wolf.http.request import Request
-from wolf.http.response import Response
-from wolf.identity import anonymous, User
+from kettu.http.exceptions import HTTPError
+from kettu.http.request import Request
+from kettu.http.response import Response
+from kettu.identity import anonymous, User
 
 
 @dataclass(kw_only=True)

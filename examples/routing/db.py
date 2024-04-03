@@ -1,5 +1,5 @@
-from wolf.identity import Source, User
-from wolf.http.request import Request
+from kettu.identity import Source, User
+from wolf.wsgi.request import WSGIRequest
 from sqlmodel import Session
 from sqlalchemy import select
 from models import Person
@@ -7,7 +7,7 @@ from models import Person
 
 class DBSource(Source):
 
-    def find(self, credentials: dict, request: Request) -> User | None:
+    def find(self, credentials: dict, request: WSGIRequest) -> User | None:
         username = credentials.get('username')
         password = credentials.get('password')
         sqlsession = request.get(Session)

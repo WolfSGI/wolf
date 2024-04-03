@@ -2,7 +2,7 @@ import colander
 import deform
 from models import Person
 from wolf.form import Form, trigger
-from wolf.routing import Router
+from kettu.routing import Router
 from wolf.services.flash import SessionMessages
 from wolf.wsgi.request import WSGIRequest
 from wolf.wsgi.response import WSGIResponse

@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from aioinject import Object
-from wolf.pluggability import Installable
+from kettu.pluggability import Installable
 
 
 logger = logging.getLogger(__name__)

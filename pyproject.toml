@@ -30,7 +30,8 @@ dependencies = [
   # following the soon-to-be excised from the package
   "deform",
   "colander",
-  "pyjwt"
+  "pyjwt",
+  "kettu"
 ]
 
 [project.optional-dependencies]

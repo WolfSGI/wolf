@@ -2,14 +2,12 @@ import typing as t
 import urllib.parse
 from datetime import datetime
 from contextlib import contextmanager
-from pathlib import PurePosixPath
-from wolf.utils import immutable_cached_property
-from wolf.http.request import Request, header_property
-from wolf.http.datastructures import Data
-from wolf.http.exceptions import HTTPError
-from wolf.http.headers import Cookies, ContentType, Languages, Accept, ETag
-from wolf.http.headers.ranges import Ranges
-from wolf.http.headers.utils import parse_host, parse_http_datetime, parse_wsgi_path
+from kettu.utils import immutable_cached_property
+from kettu.http.request import Request, header_property
+from kettu.http.datastructures import Data
+from kettu.http.headers import Cookies, ContentType, Languages, Accept, ETag, ETags
+from kettu.http.headers import Ranges
+from kettu.http.headers.utils import parse_host, parse_http_datetime, parse_wsgi_path
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
@@ -46,7 +44,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
             context.register(Scoped(self.get_cookies))
             context.register(Scoped(self.get_query))
             context.register(Scoped(self.get_data))
-            context.register(Object(self, type_=Request))
+            context.register(Object(self, type_=WSGIRequest))
             self.context = context
             yield self
         self.context = None
@@ -188,3 +186,6 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                 self.content_type
             )
         return Data()
+
+    def get_data(self) -> Data:
+        return self.data
