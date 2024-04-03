@@ -1,5 +1,5 @@
+from uuid import uuid4
 from typing import NamedTuple, Sequence
-
 from wolf.http.exceptions import HTTPError
 
 
@@ -73,3 +73,18 @@ def consolidate_ranges(ranges: Sequence[tuple[int, int]]):
             # Segments adjacent or overlapping: merge.
             current_stop = max(current_stop, stop)
     yield current_start, current_stop
+
+
+def bytes_multipart(
+        body: bytes | str,
+        content_type: str,
+        ranges: Ranges,
+        max_size: int):
+    boundary = yield
+    chunks = ranges.resolve(max_size)
+    yield f"--{boundary}\r\n"
+    for first, last in chunks.values:
+        yield f"Content-Type: {content_type}\r\n"
+        yield f"Content-Range: bytes {first}-{last}/{max_size}\r\n\r\n"
+        yield body[first:last]
+        yield f"--{boundary}\r\n"

@@ -17,6 +17,8 @@ from aioinject.extensions import SyncOnResolveExtension
 
 T = t.TypeVar("T")
 NONE_PROVIDED = object()
+ACCEPT_ALL = Accept([])
+ALL_LANGUAGES = Languages([])
 
 
 class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
@@ -78,7 +80,8 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
 
     @immutable_cached_property
     def domain(self) -> str:
-        return self.environ["HTTP_HOST"].split(":", 1)[0]
+        domain, _ = self.host
+        return domain
 
     @immutable_cached_property
     def accept(self) -> Accept:
@@ -87,7 +90,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                 self.environ["HTTP_ACCEPT"]
             )
         except KeyError:
-            return Accept()
+            return ACCEPT_ALL
 
     @immutable_cached_property
     def range(self) -> Ranges | None:
@@ -105,7 +108,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
                 self.environ["HTTP_ACCEPT_LANGUAGE"]
             )
         except KeyError:
-            return Languages()
+            return ALL_LANGUAGES
 
     @immutable_cached_property
     def root_path(self) -> str:
