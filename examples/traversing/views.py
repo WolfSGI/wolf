@@ -3,12 +3,13 @@ import deform
 import jsonschema_colander.types
 from hamcrest import equal_to
 from sqlmodel import Session as SQLSession, select
-from wolf.http import Application
-from kettu.src.kettu.traversing import path_for
-from wolf.rendering import html, renderer
-from kettu.src.kettu.traversing import ViewRegistry
-from kettu.src.kettu import matchers
+
+from kettu import matchers
+from kettu.traversing import ViewRegistry
+from kettu.traversing import path_for
+from kettu.http.app import Application
 from wolf.form import Form, trigger
+from wolf.rendering import html, renderer
 
 from models import Folder, Document
 from store import Stores, SchemaKey

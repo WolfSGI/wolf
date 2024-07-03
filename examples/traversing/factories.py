@@ -1,9 +1,9 @@
 from sqlmodel import Session as SQLSession, select
-from kettu.src.kettu.wsgi.app import TraversingApplication
-from wolf.http import Request
-from wolf.http import HTTPError
-from kettu.src.kettu.routing import Extra
-from kettu.src.kettu.traversing import Traverser
+from wolf.wsgi.app import TraversingApplication
+from kettu.http.request import Request
+from kettu.http.exceptions import HTTPError
+from kettu.routing import Extra
+from kettu.traversing import Traverser
 from models import Folder, Document
 
 
@@ -27,7 +27,7 @@ def document_factory(
         request: Request, parent: Folder, *,
         document_id: str) -> Document:
 
-    sqlsession = request.environ.resolve(SQLSession)
+    sqlsession = request.context.resolve(SQLSession)
     query = select(Document).where(
         Document.id == document_id,
         Document.folder_id == parent.id

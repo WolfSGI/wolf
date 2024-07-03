@@ -94,8 +94,7 @@ class Library(DiscoveryLibrary):
             raise TypeError("Unknown extension.")
 
         hash_base64 = base64.b64encode(
-            generate_hash(fullpath),
-            HashAlgorithm.sha256
+            generate_hash(fullpath, HashAlgorithm.sha256),
         ).decode("utf-8")
         integrity = f"sha256-{hash_base64}"
 

@@ -2,16 +2,16 @@ import http_session_file
 import pathlib
 import logging.config
 from aioinject import Object
-from wolf.ui import UI
+from kettu.resources import CSSResource, JSResource
+from wolf.wsgi.app import TraversingApplication
 from wolf.middlewares import HTTPSession
-from kettu.src.kettu.resources import CSSResource, JSResource
-from kettu.src.kettu.wsgi.app import TraversingApplication
-from wolf.templates import Templates
-from wolf.services.resources import ResourceManager
-from wolf.services.token import JWTService
-from wolf.services.post import PostOffice
-from wolf.services.sqldb import SQLDatabase
 from wolf.services.flash import Flash
+from wolf.services.post import PostOffice
+from wolf.services.resources import ResourceManager
+from wolf.services.sqldb import SQLDatabase
+from wolf.services.token import JWTService
+from wolf.templates import Templates
+from wolf.ui import UI
 
 import ui, views, store, factories, resources
 
