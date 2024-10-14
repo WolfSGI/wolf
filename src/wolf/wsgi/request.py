@@ -77,7 +77,7 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         default=None
     )
 
-    scheme : str = header_property(
+    scheme: str = header_property(
         "wsgi.url_scheme",
         default="http"
     )

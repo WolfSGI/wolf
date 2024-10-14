@@ -12,7 +12,6 @@ from kettu.http.exceptions import HTTPError
 from wolf.rendering import html, renderer
 
 
-
 class trigger(annotation):
     name = "__form_trigger__"
 
