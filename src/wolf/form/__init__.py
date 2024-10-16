@@ -20,6 +20,7 @@ class trigger(annotation):
 
 
 class Form(ABC, APIView):
+
     def __init__(self):
         triggers = sorted(
             tuple(trigger.find(self)),

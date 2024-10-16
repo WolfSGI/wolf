@@ -27,12 +27,21 @@ def is_anonymous(request, view, context):
 
 
 @actions.register(
-    ..., name='login', title='Login', description='Login action', conditions=(is_anonymous,))
+    ..., name='login', title='Login', description='Login action',
+    conditions=(is_anonymous,))
 def login_action(request, view, item):
     return '/login'
 
 
 @actions.register(
-    ..., name='logout', title='Logout', description='Logout action', conditions=(is_not_anonymous,))
+    ..., name='register', title='Register', description='Registration',
+    conditions=(is_anonymous,))
+def register_action(request, view, item):
+    return '/register'
+
+
+@actions.register(
+    ..., name='logout', title='Logout', description='Logout action',
+    conditions=(is_not_anonymous,))
 def logout_action(request, view, item):
     return '/logout'
