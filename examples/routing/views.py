@@ -5,8 +5,12 @@ from wolf.rendering import html, json, renderer
 from kettu.routing import Router
 from wolf.decorators import ondemand
 from wolf.services.post import Mailman
+from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.request import WSGIRequest
 from hamcrest.core.base_matcher import BaseMatcher
 from hamcrest.core.description import Description
+from wolf.services.flash import SessionMessages
+from rq import Queue
 
 
 class request_content_type(BaseMatcher):
@@ -35,6 +39,14 @@ def index(request):
         'user': request.get(User),
         'path_for': application.router.path_for
     }
+
+
+@routes.register('/test/job')
+@ondemand
+def task_queue(request: WSGIRequest, queue: Queue, flash: SessionMessages):
+    queue.enqueue(print, 'this was queued')
+    flash.add('Job was enqueued.', type="info")
+    return WSGIResponse.redirect(request.application_uri)
 
 
 @routes.register('/test/ondemand')

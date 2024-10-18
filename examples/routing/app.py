@@ -2,7 +2,8 @@ import pathlib
 import logging.config
 import vernacular
 import http_session_file
-
+from redis import Redis
+from rq import Queue
 from aioinject import Object
 from wolf.ui import UI
 from wolf.wsgi.app import RoutingApplication
@@ -15,7 +16,6 @@ from wolf.services.flash import Flash
 from wolf.services.sqldb import SQLDatabase
 from wolf.services.translation import TranslationService
 from wolf.services.post import PostOffice
-
 import register, login, views, actions, ui, folder, document, db
 
 
@@ -112,6 +112,12 @@ app.router |= (
     document.routes
 )
 app.services.register(Object(actions.actions))
+
+
+# Jobs queue
+q = Queue(connection=Redis())
+app.services.register(Object(q))
+
 
 # Run once at startup:
 logging.config.dictConfig({

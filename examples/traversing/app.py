@@ -12,7 +12,6 @@ from wolf.services.sqldb import SQLDatabase
 from wolf.services.token import JWTService
 from wolf.templates import Templates
 from wolf.ui import UI
-
 import ui, views, store, factories, resources
 
 

@@ -67,6 +67,6 @@ class Register(Form):
         sqlsession = request.context.resolve(Session)
         sqlsession.add(Person(**appstruct))
 
-        flash =  request.context.resolve(SessionMessages)
+        flash = request.context.resolve(SessionMessages)
         flash.add('Account created.', type="info")
         return WSGIResponse.redirect(request.application_uri)

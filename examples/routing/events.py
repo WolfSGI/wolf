@@ -1,7 +1,6 @@
 from uuid import uuid4
-from typing import Any, Type, NamedTuple
+from typing import Any, Type
 from kettu.registries import Registry, Proxy
-from kettu.typed import TypedValue
 from plum import Signature
 
 
@@ -9,15 +8,11 @@ def event_sorter(result: tuple[Signature, Proxy]):
     return result[1].__metadata__.order
 
 
-
 class User:
     pass
 
 
 class Event:
-
-    def __init__(self):
-        self.name = name or str(uuid4())
 
     def __dispatch__(self):
         return tuple()
