@@ -6,6 +6,7 @@ from kettu.resources import Resource, NeededResources
 from wolf.wsgi.response import WSGIResponse
 from wolf.ui import UI
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +28,7 @@ def html(func=None, *, resources: Sequence[Resource] | None = None):
             logger.debug("No resource injection.")
         else:
             if ui.resources:
-                needed_resources.update(ui.resources)
+                needed_resources.precede(ui.resources)
             if resources:
                 needed_resources.update(resources)
             content = needed_resources.apply(
