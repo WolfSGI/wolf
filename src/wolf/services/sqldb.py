@@ -1,7 +1,6 @@
 from orjson import loads, dumps
 from contextlib import contextmanager
 from dataclasses import dataclass
-from aioinject import Scoped
 from collections.abc import Iterator
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.engine.base import Engine
@@ -26,7 +25,7 @@ class SQLDatabase(Installable):
         self.engine = engine
 
     def install(self, application):
-        application.services.register(Scoped(self.sqlsession))
+        application.services.register_factory(Session, self.sqlsession)
 
     @contextmanager
     def sqlsession(self) -> Iterator[Session]:

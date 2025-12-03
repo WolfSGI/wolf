@@ -40,7 +40,10 @@ class Flash(Installable):
     key: str = "flashmessages"
 
     def install(self, application):
-        application.services.register(Scoped(self.session_messages))
+        application.services.register_factory(
+            SessionMessages,
+            lambda svcs_container: self.session_messages(svcs_container.get(Session))
+        )
 
     def session_messages(self, session: Session) -> SessionMessages:
         return SessionMessages(session, key=self.key)

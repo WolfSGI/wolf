@@ -26,7 +26,7 @@ def default_layout(
 @slots.register(..., name='actions')
 @renderer(template='slots/actions', layout_name=None)
 def actions(request: WSGIRequest, view: Any, context: Any, *, items):
-    registry = request.context.resolve(Actions)
+    registry = request.get(Actions)
     matching = registry.match_grouped(request, view, context)
     evaluated = []
     for name, action in matching.items():

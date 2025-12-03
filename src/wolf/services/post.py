@@ -7,7 +7,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
-from aioinject import Scoped
 from kettu.pluggability import Installable
 
 
@@ -48,7 +47,7 @@ class PostOffice(Installable):
         self.mailbox = Maildir(self.path)
 
     def install(self, application):
-        application.services.register(Scoped(self.mailer))
+        application.services.register_factory(Mailman, self.mailer)
 
     @contextmanager
     def mailer(self) -> Iterator[Mailman]:

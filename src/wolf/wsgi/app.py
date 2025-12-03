@@ -1,6 +1,6 @@
 import logging
+import svcs
 from dataclasses import dataclass, field
-from aioinject import Container, Object, Scoped
 from autorouting import MatchedRoute
 from kettu.http.exceptions import HTTPError
 from kettu.http.app import Application
@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass(kw_only=True, repr=False)
 class WSGIApplication(Application, Node):
-    services: Container = field(default_factory=Container)
+    services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
 
     def __post_init__(self):
-        self.services.register(Object(self, type_=Application))
+        self.services.register_value(Application, self)
 
     def endpoint(
             self,
@@ -68,7 +68,7 @@ class RoutingApplication(WSGIApplication):
             request: WSGIRequest
     ) -> WSGIResponse | FileWrapperResponse:
         extra = Extra(request=request)
-        request.context.register(Object(extra))
+        request.context.register_local_value(Extra, extra)
         route: MatchedRoute | None = self.router.get(
             request.path, request.method, extra=extra
         )
@@ -78,8 +78,8 @@ class RoutingApplication(WSGIApplication):
         # Register the route and its params.
         # No need to guess the type. For optimization purposes,
         # we provide it.
-        request.context.register(Object(route, type_=MatchedRoute))
-        request.context.register(Object(route.params, type_=Params))
+        request.context.register_local_value(MatchedRoute, route)
+        request.context.register_local_value(Params, route.params)
         return route.routed(request)
 
 
@@ -90,8 +90,8 @@ class TraversingApplication(WSGIApplication):
 
     def __post_init__(self):
         super().__post_init__()
-        self.services.register(Scoped(Params))
-        self.services.register(Scoped(Extra))
+        self.services.register_factory(Params, Params)
+        self.services.register_factory(Extra, Extra)
 
     def finalize(self):
         # everything that needs doing before serving requests.
@@ -119,6 +119,5 @@ class TraversingApplication(WSGIApplication):
 
         params = request.get(Params)
         params |= view.params
-
-        request.context.register(Object(view, type_=MatchedRoute))
+        request.context.register_local_value(MatchedRoute, view)
         return view.routed(request, context=leaf)

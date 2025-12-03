@@ -43,7 +43,7 @@ app = TraversingApplication(
     ]
 )
 
-app.services.register(Object(store.stores))
+app.services.register_value(store.Stores, store.stores)
 
 
 app.use(

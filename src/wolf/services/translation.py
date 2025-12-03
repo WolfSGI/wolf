@@ -2,11 +2,11 @@ import logging
 from dataclasses import dataclass
 from annotated_types import Len
 from typing import NewType, Annotated
-from aioinject import Scoped, Singleton
 from kettu.http.request import Request
 from kettu.pluggability import Installable
 from vernacular import Translations
 from vernacular.translate import Translator
+from wolf.wsgi.request import WSGIRequest
 
 
 logger = logging.getLogger(__name__)
@@ -21,18 +21,24 @@ class TranslationService(Installable):
     default_domain: str = "default"
 
     def install(self, application):
-        application.services.register(Singleton(self.translator_factory))
-        application.services.register(Scoped(self.locale_factory))
+        application.services.register_value(Translator, self.translator)
+        application.services.register_factory(
+            Locale,
+            lambda svcs_container: self.locale_factory(
+                svcs_container.get(WSGIRequest)
+            )
+        )
+
+    @property
+    def translator(self) -> Translator:
+        return Translator(
+            self.translations,
+            self.default_domain,
+            self.accepted_languages[0]
+        )
 
     def locale_factory(self, request: Request) -> Locale:
         language = request.accept_language.negotiate(
             self.accepted_languages
         )
         return Locale(language)
-
-    def translator_factory(self) -> Translator:
-        return Translator(
-            self.translations,
-            self.default_domain,
-            self.accepted_languages[0]
-        )

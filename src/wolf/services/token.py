@@ -3,7 +3,6 @@ import jwt
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from aioinject import Object
 from kettu.pluggability import Installable
 
 
@@ -64,4 +63,4 @@ class JWTService(Installable):
             public_key_pem = f.read()
 
         manager = JWTManager(private_key_pem, public_key_pem)
-        application.services.register(Object(manager, type_=JWTManager))
+        application.services.register_value(JWTManager, manager)
