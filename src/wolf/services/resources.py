@@ -7,7 +7,6 @@ from pathlib import PurePosixPath, Path
 from pkg_resources import resource_filename
 from mimetypes import guess_type
 from autoroutes import Routes
-from aioinject import Object, Scoped
 from wolf.wsgi.nodes import Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from kettu.resources import Resource, known_extensions, NeededResources
@@ -171,10 +170,14 @@ class StaticAccessor:
 
 
 class ResourceManager(Installable, Node, StaticAccessor):
+
     def install(self, application):
         application.sinks[self.path] = self
-        application.services.register(Object(self, type_=ResourceManager))
-        application.services.register(Scoped(self.needed_resources))
+        application.services.register_value(
+            ResourceManager, self
+        )
+        application.services.register_factory(
+            NeededResources, self.needed_resources)
 
     def needed_resources(self) -> NeededResources:
         return NeededResources(self.path)

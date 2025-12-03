@@ -1,7 +1,6 @@
 import ast
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple
-from aioinject import Object
 from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
@@ -42,7 +41,7 @@ def query_slot(econtext, name):
     request = econtext.get("request")  # mandatory.
     context = econtext.get("context", object())
     view = econtext.get("view", object())
-    ui = econtext.get("ui", request.context.resolve(UI))
+    ui = econtext.get("ui", request.get(UI))
 
     try:
         manager = ui.slots.fetch(request, view, context, name=name)
@@ -97,7 +96,7 @@ class UI(Installable):
     resources: set[JSResource | CSSResource] = field(default_factory=set)
 
     def install(self, application):
-        application.services.register(Object(self, type_=UI))
+        application.services.register_value(UI, self)
         if "slot" not in EXPRESSION_TYPES:
             EXPRESSION_TYPES["slot"] = SlotExpr
 

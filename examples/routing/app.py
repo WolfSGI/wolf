@@ -111,12 +111,12 @@ app.router |= (
     folder.routes |
     document.routes
 )
-app.services.register(Object(actions.actions))
+app.services.register_value(actions.Actions, actions.actions)
 
 
 # Jobs queue
 q = Queue(connection=Redis())
-app.services.register(Object(q))
+app.services.register_value(Redis, q)
 
 
 # Run once at startup:

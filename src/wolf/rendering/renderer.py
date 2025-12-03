@@ -21,7 +21,7 @@ def renderer(
             return content
 
         request: WSGIRequest = args[0]
-        ui = request.context.resolve(UI)
+        ui = request.get(UI)
         namespace = {
             "request": request,
             "ui": ui,

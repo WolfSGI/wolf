@@ -4,7 +4,7 @@ from functools import wraps
 from dataclasses import dataclass
 from http_session.cookie import SameSite, HashAlgorithm, SignedCookieManager
 from http_session import Store, Session
-from aioinject import Object
+import svcs
 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ class HTTPSession:
             session: Session = self.manager.session_factory(
                 sid, self.manager.store, new=new
             )
-            request.context.register(Object(session))
+            request.context.register_local_value(Session, session)
             try:
                 response = handler(request, *args, **kwargs)
             except Exception:

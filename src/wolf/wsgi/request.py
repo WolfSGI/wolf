@@ -1,18 +1,18 @@
 import typing as t
 import urllib.parse
+import svcs
+from svcs.exceptions import ServiceNotFoundError
 from datetime import datetime
 from contextlib import contextmanager
 from kettu.utils import immutable_cached_property
 from kettu.http.request import Request, header_property
 from kettu.http.datastructures import Data
-from kettu.http.headers import Cookies, ContentType, Languages, Accept, ETag, ETags
+from kettu.http.headers import Cookies, ContentType, Languages, Accept, ETag, ETags, Query
 from kettu.http.headers import Ranges
 from kettu.http.headers.utils import parse_host, parse_http_datetime, parse_wsgi_path
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse
-from aioinject import Scoped, Object, SyncInjectionContext
-from aioinject.extensions import SyncOnResolveExtension
 
 
 T = t.TypeVar("T")
@@ -22,11 +22,11 @@ ALL_LANGUAGES = Languages([])
 ALL_ETAGS = ETags([])
 
 
-class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
+class WSGIRequest(Request[WSGIEnviron]):
 
     __slots__ = ('environ', 'context', 'response_cls')
 
-    context: SyncInjectionContext | None
+    context: svcs.Container | None
     response_cls: type[WSGIResponse]
 
     def __init__(
@@ -39,12 +39,12 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         self.response_cls = response_cls
 
     @contextmanager
-    def __call__(self, container) -> 'WSGIRequest':
-        with container.sync_context() as context:
-            context.register(Scoped(self.get_cookies))
-            context.register(Scoped(self.get_query))
-            context.register(Scoped(self.get_data))
-            context.register(Object(self, type_=WSGIRequest))
+    def __call__(self, registry: svcs.Registry) -> 'WSGIRequest':
+        with svcs.Container(registry) as context:
+            context.register_local_factory(Cookies, self.get_cookies)
+            context.register_local_factory(Query, self.get_query)
+            context.register_local_factory(Data, self.get_data)
+            context.register_local_value(WSGIRequest, self)
             self.context = context
             yield self
         self.context = None
@@ -53,8 +53,8 @@ class WSGIRequest(Request[WSGIEnviron], SyncOnResolveExtension):
         if self.context is None:
             raise NotImplementedError('Context is unavailable.')
         try:
-            return self.context.resolve(t)
-        except ValueError:
+            return self.context.get(t)
+        except ServiceNotFoundError:
             if default is NONE_PROVIDED:
                 raise
             return default

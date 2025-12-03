@@ -18,11 +18,14 @@ class SessionAuthenticator(Installable, Authenticator):
                 return user
 
     def install(self, application):
-        application.services.register(Object(self, type_=Authenticator))
-        application.services.register(Scoped(self.identify))
+        application.services.register_value(Authenticator, self)
+        application.services.register_factory(
+            User,
+            lambda svcs_container: self.identify(svcs_container.get(WSGIRequest))
+        )
 
     def identify(self, request: WSGIRequest) -> User:
-        session = request.context.resolve(Session)
+        session = request.get(Session)
         if (userid := session.get(self.user_key, None)) is not None:
             for source in self.sources:
                 user = source.fetch(userid, request)
@@ -31,9 +34,9 @@ class SessionAuthenticator(Installable, Authenticator):
         return anonymous
 
     def forget(self, request: WSGIRequest) -> None:
-        session = request.context.resolve(Session)
+        session = request.get(Session)
         session.clear()
 
     def remember(self, request: WSGIRequest, user: User) -> None:
-        session = request.context.resolve(Session)
+        session = request.get(Session)
         session[self.user_key] = user.id
