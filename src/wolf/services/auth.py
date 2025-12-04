@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from http_session import Session
-from aioinject import Object, Scoped
 from wolf.wsgi.request import WSGIRequest
 from kettu.identity import Authenticator, Source, User, anonymous
 from kettu.pluggability import Installable
