@@ -65,7 +65,8 @@ class HTTPSession:
                 # Maybe log.
                 raise
             else:
-                if not session.modified and (session.new and self.save_new_empty):
+                if not session.modified and (
+                        session.new and self.save_new_empty):
                     session.save()
 
                 if session.modified:

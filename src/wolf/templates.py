@@ -46,7 +46,9 @@ class Templates(Mapping[str, template.PageTemplate]):
         for tpl in scan_templates(path, set(self.extensions.keys())):
             name = str(tpl.relative_to(path).with_suffix("").as_posix())
             if conflict := self.registry.get(name):
-                raise KeyError(f"{name!r} exists: {tpl!r} overrides {conflict!r}.")
+                raise KeyError(
+                    f"{name!r} exists: {tpl!r} overrides {conflict!r}."
+                )
             self.registry[name] = tpl
 
     def __iter__(self):
@@ -72,7 +74,9 @@ class Templates(Mapping[str, template.PageTemplate]):
 
     def __or__(self, reg: "Templates"):
         if not isinstance(reg, Templates):
-            raise TypeError(f"Cannot merge {self.__class__!r} with {reg.__class__!r}.")
+            raise TypeError(
+                f"Cannot merge {self.__class__!r} with {reg.__class__!r}."
+            )
         templates = self.__class__()
         templates.registry = self.registry | reg.registry
 

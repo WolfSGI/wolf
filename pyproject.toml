@@ -11,22 +11,19 @@ authors = [
 requires-python = ">=3.10"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
+  "beartype",
   "autoroutes",
   "chameleon",
-  "frozendict",
   "orjson",
-  "prejudice",
   "svcs",
   "wrapt",
+  "sqlmodel",
   "itsdangerous",
   "http_session",
   "vernacular",
   "autorouting",
   "plum-dispatch",
   "pyhamcrest",
-  "biscuits >= 0.3.0",
-  "multidict >= 5.1",
-  "multifruits >= 0.1.5",
   # following the soon-to-be excised from the package
   "deform",
   "colander",

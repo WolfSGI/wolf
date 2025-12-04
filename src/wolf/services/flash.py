@@ -41,7 +41,9 @@ class Flash(Installable):
     def install(self, application):
         application.services.register_factory(
             SessionMessages,
-            lambda svcs_container: self.session_messages(svcs_container.get(Session))
+            lambda svcs_container: self.session_messages(
+                svcs_container.get(Session)
+            )
         )
 
     def session_messages(self, session: Session) -> SessionMessages:

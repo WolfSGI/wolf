@@ -14,7 +14,8 @@ def renderer(
     layout_name: str | None = "",
 ):
     @wrapt.decorator
-    def rendering_wrapper(wrapped, instance, args, kwargs) -> str | WSGIResponse:
+    def rendering_wrapper(
+            wrapped, instance, args, kwargs) -> str | WSGIResponse:
         content = wrapped(*args, **kwargs)
 
         if isinstance(content, WSGIResponse):
@@ -40,7 +41,9 @@ def renderer(
 
             namespace |= content
 
-            translator: Translator | None = request.get(Translator, default=None)
+            translator: Translator | None = request.get(
+                Translator, default=None
+            )
             locale: str | None = request.get(Locale, default=None)
             rendered = tpl.render(
                 **namespace,
@@ -56,8 +59,10 @@ def renderer(
         if layout_name is not None:
             view = namespace["view"]
             context = namespace["context"]
-            layout = ui.layouts.fetch(request, view, context, name=layout_name)
-            return layout(request, view, context, name=layout_name, content=rendered)
+            layout = ui.layouts.fetch(
+                request, view, context, name=layout_name)
+            return layout(
+                request, view, context, name=layout_name, content=rendered)
 
         return rendered
 

@@ -10,7 +10,8 @@ class SessionAuthenticator(Installable, Authenticator):
     user_key: str
     sources: tuple[Source, ...]
 
-    def from_credentials(self, request: WSGIRequest, credentials: dict) -> User | None:
+    def from_credentials(
+            self, request: WSGIRequest, credentials: dict) -> User | None:
         for source in self.sources:
             user = source.find(credentials, request)
             if user is not None:
@@ -20,7 +21,9 @@ class SessionAuthenticator(Installable, Authenticator):
         application.services.register_value(Authenticator, self)
         application.services.register_factory(
             User,
-            lambda svcs_container: self.identify(svcs_container.get(WSGIRequest))
+            lambda svcs_container: self.identify(
+                svcs_container.get(WSGIRequest)
+            )
         )
 
     def identify(self, request: WSGIRequest) -> User:

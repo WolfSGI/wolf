@@ -3,7 +3,6 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
 from sqlmodel import Session, SQLModel, create_engine
-from sqlalchemy.engine.base import Engine
 from kettu.pluggability import Installable
 
 
@@ -14,7 +13,7 @@ class SQLDatabase(Installable):
     models_registries: tuple[type[SQLModel], ...] = (SQLModel,)
 
     def __post_init__(self):
-        engine: Engine = create_engine(
+        engine = create_engine(
             self.url,
             echo=self.echo,
             json_serializer=dumps,

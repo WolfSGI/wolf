@@ -7,9 +7,10 @@ from contextlib import contextmanager
 from kettu.utils import immutable_cached_property
 from kettu.http.request import Request, header_property
 from kettu.http.datastructures import Data
-from kettu.http.headers import Cookies, ContentType, Languages, Accept, ETag, ETags, Query
-from kettu.http.headers import Ranges
-from kettu.http.headers.utils import parse_host, parse_http_datetime, parse_wsgi_path
+from kettu.http.headers import Query, Cookies, ETag, ETags
+from kettu.http.headers import Ranges, ContentType, Languages, Accept
+from kettu.http.headers.utils import (
+    parse_host, parse_http_datetime, parse_wsgi_path)
 from wolf.wsgi.types import WSGIEnviron
 from wolf.wsgi.parsers import parser
 from wolf.wsgi.response import WSGIResponse

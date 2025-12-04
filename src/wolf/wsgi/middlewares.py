@@ -60,12 +60,15 @@ class ProxyMiddleware:
         if x_proto:
             environ["wsgi.url_scheme"] = x_proto
 
-        x_host = self.get_value(self.x_host, environ.get("HTTP_X_FORWARDED_HOST"))
+        x_host = self.get_value(
+            self.x_host, environ.get("HTTP_X_FORWARDED_HOST"))
         if x_host:
             environ["HTTP_HOST"] = environ["SERVER_NAME"] = x_host
-            environ["SERVER_NAME"], environ["SERVER_PORT"] = parse_host(x_host)
+            environ["SERVER_NAME"], environ["SERVER_PORT"] = (
+                parse_host(x_host))
 
-        x_port = self.get_value(self.x_port, environ.get("HTTP_X_FORWARDED_PORT"))
+        x_port = self.get_value(
+            self.x_port, environ.get("HTTP_X_FORWARDED_PORT"))
         if x_port:
             host = environ.get("HTTP_HOST")
             if host:
