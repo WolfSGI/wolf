@@ -1,6 +1,5 @@
 import typing as t
 from dataclasses import dataclass
-from aioinject import Scoped
 from http_session import Session
 from kettu.pluggability import Installable
 
