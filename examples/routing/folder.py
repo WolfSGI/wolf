@@ -44,9 +44,9 @@ class CreateFolder(Form):
 @html
 @renderer(template='views/folder')
 def folder_view(request):
-    application = request.context.resolve(Application)
-    sqlsession = request.context.resolve(Session)
-    params = request.context.resolve(Params)
+    application = request.get(Application)
+    sqlsession = request.get(Session)
+    params = request.get(Params)
     folder = sqlsession.get(Folder, params['folder_id'])
     return {
         "folder": folder,

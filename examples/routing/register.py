@@ -15,7 +15,7 @@ routes = Router()
 
 def UniqueEmail(node, value):
     request: WSGIRequest = node.bindings['request']
-    sqlsession = request.context.resolve(Session)
+    sqlsession = request.get(Session)
     if sqlsession.query(exists().where(Person.email == value)).scalar():
         raise colander.Invalid(node, "Email already in use.")
 
@@ -64,9 +64,9 @@ class Register(Form):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)
 
-        sqlsession = request.context.resolve(Session)
+        sqlsession = request.get(Session)
         sqlsession.add(Person(**appstruct))
 
-        flash = request.context.resolve(SessionMessages)
+        flash = request.get(SessionMessages)
         flash.add('Account created.', type="info")
         return WSGIResponse.redirect(request.application_uri)
