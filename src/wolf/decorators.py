@@ -1,6 +1,21 @@
-from functools import wraps
+from functools import wraps, cache
+from inspect import Signature
+from types import FunctionType
+from typing import NamedTuple
 from kettu.http.request import Request
-from kettu.utils import method_dependencies
+
+
+class Dependency(NamedTuple):
+    name: str
+    type_: type
+
+
+@cache
+def method_dependencies(
+        method: FunctionType | type) -> list[Dependency]:
+    sig = Signature.from_callable(method)
+    return [Dependency(name=key, type_=value.annotation)
+            for key, value in sig.parameters.items()]
 
 
 def ondemand(func):
