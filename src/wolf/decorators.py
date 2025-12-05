@@ -1,4 +1,3 @@
-import inspect
 from functools import wraps
 from kettu.http.request import Request
 from kettu.utils import method_dependencies
