@@ -71,13 +71,13 @@ class TrajectResolver(URIResolver):
                 target.__class__,
                 source.__class__
             )
+
             factory_path, unmatched = RouteURL.from_path(
                 traversal_path
             ).resolve(namespace, qstring=False)
         else:
             factory_path = ''
-            unmatched = namespace
-            target = source
+            unmatched = {}
 
         view_path = self.views.route_for(target, name, **unmatched)
         return '/' + (root_path / factory_path / view_path)
