@@ -23,7 +23,7 @@ class request_content_type(BaseMatcher):
             'String matching a wilcards string '
         ).append_text(self.value)
 
-    def _matches(self, request):
+    def _matches(self, request: WSGIRequest):
         return request.accept.negotiate(self.values)
 
 
@@ -51,9 +51,10 @@ def task_queue(request: WSGIRequest, queue: Queue, flash: SessionMessages):
 
 @routes.register('/test/ondemand')
 @html
+@renderer
 @ondemand
 def ondemand(root: Application):
-    return f"{root.__class__.__name__}"
+    return f"I got the root : {root.__class__.__name__}"
 
 
 @routes.register('/test/bare')
