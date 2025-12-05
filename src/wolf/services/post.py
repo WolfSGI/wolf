@@ -4,10 +4,12 @@ from pathlib import Path
 from contextlib import contextmanager
 from collections.abc import Iterator
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
 from kettu.pluggability import Installable
+from io import IOBase
 
 
 logger = structlog.get_logger("wolf.services.post")
@@ -16,7 +18,14 @@ logger = structlog.get_logger("wolf.services.post")
 class Mailman(list[Message]):
 
     @staticmethod
-    def create_message(origin, targets, subject, text, html=None):
+    def create_message(
+            origin: str,
+            targets: list[str],
+            subject: str,
+            text: str,
+            html: str | None = None,
+            files: list[str | Path | IOBase] | None = None
+    ):
         msg = MIMEMultipart("alternative")
         msg["From"] = origin
         msg["To"] = ",".join(targets)
@@ -31,6 +40,19 @@ class Mailman(list[Message]):
             part2 = MIMEText(html, "html")
             part2.set_charset("utf-8")
             msg.attach(part2)
+
+        if files:
+            for name, f in files.items():
+                if isinstance(f, str):
+                    with open(f, "rb") as fd:
+                        part = MIMEApplication(fd.read(), Name=name)
+                elif isinstance(f, Path):
+                    with f.open("rb") as fd:
+                        part = MIMEApplication(fd.read(), Name=name)
+                elif isinstance(f, IOBase):
+                    part = MIMEApplication(f.read(), Name=name)
+                part["Content-Disposition"] = f'attachment; filename="{name}"'
+                msg.attach(part)
 
         return msg
 
