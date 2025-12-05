@@ -6,7 +6,7 @@ from sqlmodel import Session as SQLSession, select
 
 from kettu import matchers
 from kettu.traject import ViewRegistry
-from kettu.http.app import Application
+from kettu.http.app import Application, URIResolver
 from wolf.form import Form, trigger
 from wolf.rendering import html, renderer
 
@@ -25,10 +25,11 @@ def root_index(request, *, context: Application):
     sqlsession = request.get(SQLSession)
     query = select(Folder)
     folders = sqlsession.exec(query).all()
+    resolver = request.get(URIResolver)
     return {
         'context': context,
         'folders': folders,
-        'path_for': context.resolver.path_for
+        'path_for': resolver.path_for
     }
 
 
@@ -36,14 +37,14 @@ def root_index(request, *, context: Application):
 @html
 @renderer(template='views/folder')
 def folder_index(request, *, context: Folder):
-    application = request.get(Application)
+    resolver = request.get(URIResolver)
     sqlsession = request.get(SQLSession)
     query = select(Document).filter(Document.folder_id == context.id)
     documents = sqlsession.exec(query).all()
     return {
         'context': context,
         'documents': documents,
-        'path_for': application.resolver.path_for
+        'path_for': resolver.path_for
     }
 
 

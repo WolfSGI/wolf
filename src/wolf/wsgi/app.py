@@ -9,6 +9,7 @@ from wolf.wsgi.nodes import Mapping, Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.wsgi.request import WSGIRequest
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from kettu.utils import immutable_cached_property
 
 
 logger = structlog.get_logger("wolf.wsgi.app")
@@ -20,10 +21,12 @@ class WSGIApplication(Application, Node):
     services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
-    endpoint = None
+
+    _finalized: bool = field(default=False, init=False)
 
     def __post_init__(self):
         self.services.register_value(Application, self)
+        self.services.register_value(URIResolver, self.resolver)
         self.services.register_factory(Params, Params)
         self.services.register_factory(Extra, Extra)
 
@@ -33,13 +36,14 @@ class WSGIApplication(Application, Node):
         return WSGIResponse(500, str(err))
 
     def finalize(self):
-        # everything that needs doing before serving requests.
         self.resolver.finalize()
-        if self.middlewares:
-            self.endpoint = chain_wrap(
-                self.middlewares,
-                self.resolver.resolve
-            )
+
+    @immutable_cached_property
+    def endpoint(self):
+        return chain_wrap(
+            self.middlewares,
+            self.resolver.resolve
+        )
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         if self.sinks:
