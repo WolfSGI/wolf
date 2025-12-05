@@ -6,7 +6,7 @@ from autorouting.url import RouteURL
 from kettu.http.app import Application, URIResolver
 from kettu.http.exceptions import HTTPError
 from kettu.pipeline import Wrapper, chain_wrap
-from kettu.routing import Router, Params, Extra
+from kettu.routing import Params, Extra
 from kettu.traject import ContextRegistry, ViewRegistry
 from kettu.traject.resolver import Located
 from wolf.wsgi.request import WSGIRequest
