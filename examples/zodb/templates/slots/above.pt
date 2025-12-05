@@ -1,0 +1,6 @@
+<section>
+    <div tal:content="structure slot:subslot" />
+    <div tal:repeat="item items">
+        <div tal:replace="structure item" />
+    </div>
+</section>

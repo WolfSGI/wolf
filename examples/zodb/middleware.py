@@ -1,0 +1,73 @@
+import typing as t
+import logging
+from functools import wraps
+from dataclasses import dataclass, field
+from contextlib import contextmanager
+from dataclasses import dataclass
+from collections.abc import Iterator
+from kettu.pluggability import Installable
+from kettu.http.request import Request
+from kettu.http.response import Response
+from ZODB import DB, Connection
+from transaction import Transaction, TransactionManager
+
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass(kw_only=True)
+class Transaction:
+
+    factory: t.Callable[[], TransactionManager] = (
+        lambda: TransactionManager(explicit=True)
+    )
+
+
+    def install(self, application):
+        application.services.register_factory(
+            TransactionManager, self.factory)
+
+    def __call__(self, handler):
+        @wraps(handler)
+        def middleware(request: Request, *args, **kwargs) -> Response:
+            manager = self.factory()
+            request.context.register_local_value(TransactionManager, manager)
+
+            txn = manager.begin()
+            request.context.register_local_value(Transaction, txn)
+            try:
+                response = handler(request, *args, **kwargs)
+                if txn.isDoomed() or (
+                        isinstance(response, Response)
+                        and response.status >= 400):
+                    txn.abort()
+                else:
+                    txn.commit()
+                return response
+            except Exception:
+                txn.abort()
+                raise
+
+        return middleware
+
+
+@dataclass(kw_only=True)
+class ZODB(Installable):
+
+    db: DB
+
+    def install(self, application):
+        application.services.register_factory(
+            Connection, self.zodb_connection)
+
+    @contextmanager
+    def zodb_connection(self, svcs_container) -> Iterator[Connection]:
+        transaction_manager = svcs_container.get(TransactionManager)
+        conn = self.db.open(transaction_manager)
+        try:
+            yield conn
+        except Exception:
+            # maybe log.
+            raise
+        finally:
+            conn.close()

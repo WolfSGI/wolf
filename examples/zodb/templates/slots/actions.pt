@@ -1,0 +1,9 @@
+<div class="text-end">
+  <tal:actions repeat="(action, url) actions">
+    <a role="button"
+       href="${url}"
+       class="btn btn-light text-dark me-2">
+      ${action.title}
+    </a>
+  </tal:actions>
+</div>

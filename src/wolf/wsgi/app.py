@@ -7,6 +7,7 @@ from kettu.http.app import Application
 from kettu.pipeline import Wrapper, chain_wrap
 from kettu.routing.router import Router, Params, Extra
 from kettu.traversing.traverser import Traverser, ViewRegistry
+from wolf.wsgi.publisher import Publisher, PublicationRoot
 from wolf.wsgi.nodes import Mapping, Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.wsgi.request import WSGIRequest
@@ -106,6 +107,45 @@ class TraversingApplication(WSGIApplication):
         leaf, view_path = self.factories.traverse(
             self, request.path, 'GET', request, partial=True
         )
+
+        if not view_path.startswith('/'):
+            view_path = f'/{view_path}'
+
+        extra = request.get(Extra)
+        view = self.views.match(
+            leaf, view_path, request.method, extra=extra
+        )
+        if view is None:
+            raise HTTPError(404)
+
+        params = request.get(Params)
+        params |= view.params
+        request.context.register_local_value(MatchedRoute, view)
+        return view.routed(request, context=leaf)
+
+
+@dataclass(kw_only=True, repr=False)
+class PublishingApplication(WSGIApplication):
+    publisher: Publisher = field(default_factory=Publisher)
+    views: ViewRegistry = field(default_factory=ViewRegistry)
+
+    def __post_init__(self):
+        super().__post_init__()
+        self.services.register_factory(Params, Params)
+        self.services.register_factory(Extra, Extra)
+
+    def finalize(self):
+        # everything that needs doing before serving requests.
+        self.views.finalize()
+        super().finalize()
+
+    def endpoint(
+            self,
+            request: WSGIRequest
+    ) -> WSGIResponse | FileWrapperResponse:
+
+        root = request.get(PublicationRoot)
+        leaf, view_path = self.publisher.publish(request, root)
 
         if not view_path.startswith('/'):
             view_path = f'/{view_path}'

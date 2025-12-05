@@ -1,0 +1,13 @@
+<article>
+  <h2>Folder: ${getattr(context, '__name__', 'Root')}</h2>
+  <section>
+    <h3>Content</h3>
+    <div class="list-group">
+      <a class="button list-group-item d-flex justify-content-between align-items-start"
+         tal:repeat="name context.keys()"
+         href="${getattr(context, '__path__', '') + '/' + name}">
+        ${name}
+      </a>
+    </div>
+  </section>
+</article>
