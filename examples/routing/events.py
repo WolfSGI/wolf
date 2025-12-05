@@ -32,8 +32,6 @@ class UserEvent(ObjectEvent):
     def __init__(self, obj: User):
         self.obj = obj
 
-    def __dispatch__(self):
-        return (self.obj,)
 
 
 class Events(Registry):
@@ -59,6 +57,10 @@ events1 = Events()
 events2 = Events()
 
 
+@events1.register(Event)
+def very_simple_handler(event):
+    print("Some event occured", event)
+
 @events1.register(ObjectEvent, object, order=2)
 def handler_for_all(event):
     print("object was added: ", event.obj)
@@ -82,9 +84,11 @@ def handler_for_user_event(event):
 events = events1 | events2
 
 
+print('------- triggering basic event ------')
+events.notify(Event())
 print('------- triggering object event 1 ------')
 events.notify(ObjectEvent(1))
 print('------- triggering object event string ------')
 events.notify(ObjectEvent("string"))
 print('------- triggering user event user ------')
-events.notify(UserEvent("user"))
+events.notify(UserEvent(User()))
