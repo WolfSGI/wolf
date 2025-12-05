@@ -1,5 +1,5 @@
 import wrapt
-import logging
+import structlog
 from typing import Sequence
 from functools import partial
 from kettu.resources import Resource, NeededResources
@@ -7,7 +7,7 @@ from wolf.wsgi.response import WSGIResponse
 from wolf.ui import UI
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.rendering.html")
 
 
 def html(func=None, *, resources: Sequence[Resource] | None = None):
@@ -25,7 +25,7 @@ def html(func=None, *, resources: Sequence[Resource] | None = None):
         ui = request.get(UI)
         needed_resources = request.get(NeededResources, default=None)
         if needed_resources is None:
-            logger.debug("No resource injection.")
+            logger.warning("No resource injection.")
         else:
             if ui.resources:
                 needed_resources.precede(ui.resources)

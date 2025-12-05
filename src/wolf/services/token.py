@@ -1,12 +1,12 @@
 import pathlib
 import jwt
-import logging
+import structlog
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from kettu.pluggability import Installable
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.services.token")
 
 
 class InvalidSignature(Exception):

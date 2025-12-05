@@ -13,4 +13,4 @@ somejs = my_lib.bind('some.js', dependencies=[whatever])
 
 
 static = DiscoveryLibrary(
-    'misc', here / 'static' / 'misc', restrict=('*.jpg',))
+    'misc', here / 'static' / 'misc', restrict=('*.jpg', "*.ico"))

@@ -1,4 +1,4 @@
-import logging
+import structlog
 from functools import wraps
 from dataclasses import dataclass
 from kettu.http.cors import CORSPolicy
@@ -6,7 +6,7 @@ from kettu.http.request import Request
 from kettu.http.response import Response
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.middlewares.cors")
 
 
 @dataclass(kw_only=True)

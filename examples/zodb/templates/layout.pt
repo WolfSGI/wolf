@@ -4,6 +4,7 @@
       main > .container {
         padding: 75px 15px 0;
       }
+      <link rel="icon" type="image/x-icon" href="/static/misc/favicon.ico" />
     </style>
   </head>
   <body class="d-flex flex-column h-100">

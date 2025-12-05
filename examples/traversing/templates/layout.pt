@@ -5,6 +5,7 @@
         padding: 75px 15px 0;
       }
     </style>
+    <link rel="icon" type="image/x-icon" href="/static/misc/favicon.ico" />
   </head>
   <body class="d-flex flex-column h-100">
     <header>

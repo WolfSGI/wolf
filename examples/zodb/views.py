@@ -8,7 +8,7 @@ views = ViewRegistry()
 
 
 @views.register(models.Folder, '/', name="view")
-@html(resources=[somejs])
+@html
 @renderer(template="views/folder")
 def folder_index(request, *, context: object):
     return {

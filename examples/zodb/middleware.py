@@ -1,5 +1,5 @@
 import typing as t
-import logging
+import structlog
 from functools import wraps
 from dataclasses import dataclass, field
 from contextlib import contextmanager
@@ -12,7 +12,7 @@ from ZODB import DB, Connection
 from transaction import Transaction, TransactionManager
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.examples.zodb")
 
 
 @dataclass(kw_only=True)

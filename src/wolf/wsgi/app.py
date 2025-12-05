@@ -1,4 +1,4 @@
-import logging
+import structlog
 import svcs
 from dataclasses import dataclass, field
 from autorouting import MatchedRoute
@@ -11,10 +11,10 @@ from wolf.wsgi.publisher import Publisher, PublicationRoot
 from wolf.wsgi.nodes import Mapping, Node
 from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
 from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.types import WSGIEnviron, ExceptionInfo, WSGICallable
+from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.wsgi.app")
 
 
 @dataclass(kw_only=True, repr=False)
@@ -32,15 +32,16 @@ class WSGIApplication(Application, Node):
     ) -> WSGIResponse | FileWrapperResponse:
         raise NotImplementedError('Override.')
 
+
+    def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
+        typ, err, tb = exc_info
+        logger.critical(err, exc_info=False)
+        return WSGIResponse(500, str(err))
+
     def finalize(self):
         # everything that needs doing before serving requests.
         if self.middlewares:
             self.endpoint = chain_wrap(self.middlewares, self.endpoint)
-
-    def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
-        typ, err, tb = exc_info
-        logging.critical(err, exc_info=True)
-        return WSGIResponse(500, str(err))
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
         if self.sinks:
@@ -52,7 +53,14 @@ class WSGIApplication(Application, Node):
 
         wsgi_request = WSGIRequest(environ)
         with wsgi_request(self.services) as request:
-            return self.endpoint(request)
+            try:
+                return self.endpoint(request)
+            except HTTPError as err:
+                logger.debug(err, exc_info=True)
+                raise
+            except Exception as err:
+                logger.critical(err, exc_info=True)
+                raise
 
 
 @dataclass(kw_only=True, repr=False)

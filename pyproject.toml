@@ -28,7 +28,9 @@ dependencies = [
   "deform",
   "colander",
   "pyjwt",
-  "kettu"
+  "kettu",
+  "structlog",
+  "rich",
 ]
 
 [project.optional-dependencies]

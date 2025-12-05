@@ -2,9 +2,9 @@ import os
 import base64
 import hashlib
 import enum
+import importlib.resources
 from typing import Sequence
 from pathlib import PurePosixPath, Path
-from pkg_resources import resource_filename
 from mimetypes import guess_type
 from autoroutes import Routes
 from wolf.wsgi.nodes import Node
@@ -163,7 +163,9 @@ class StaticAccessor:
     ):
         # package_static of form:  package_name:path
         pkg, resource_name = package_static.split(":")
-        resource = Path(resource_filename(pkg, resource_name))
+        resource = Path(
+            importlib.resources.files(pkg) / resource_name
+        )
         return self.add_static(
             package_static, resource, restrict=restrict, override=override
         )

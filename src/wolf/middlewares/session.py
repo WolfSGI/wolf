@@ -1,5 +1,5 @@
+import structlog
 import itsdangerous
-import logging
 from functools import wraps
 from dataclasses import dataclass
 from http_session.cookie import SameSite, HashAlgorithm, SignedCookieManager
@@ -7,7 +7,7 @@ from http_session import Store, Session
 import svcs
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.middlewares.session")
 
 
 @dataclass(kw_only=True)

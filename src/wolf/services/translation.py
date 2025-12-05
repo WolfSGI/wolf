@@ -1,4 +1,4 @@
-import logging
+import structlog
 from dataclasses import dataclass
 from annotated_types import Len
 from typing import NewType, Annotated
@@ -9,7 +9,8 @@ from vernacular.translate import Translator
 from wolf.wsgi.request import WSGIRequest
 
 
-logger = logging.getLogger(__name__)
+
+logger = structlog.get_logger("wolf.services.translation")
 
 Locale = NewType("Locale", str)
 

@@ -51,7 +51,7 @@ class BaseConsumer(ABC):
             return False, obj, stack
 
         resolved = Traversed(
-            found, parent=self.context, path=f"/{name}", name=name)
+            found, parent=self.context, path=f"/{name}", id=name)
         return True, resolved, stack
 
 

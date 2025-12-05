@@ -1,4 +1,4 @@
-import logging
+import structlog
 from dataclasses import dataclass
 from pathlib import Path
 from contextlib import contextmanager
@@ -10,7 +10,7 @@ from mailbox import Maildir
 from kettu.pluggability import Installable
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.services.post")
 
 
 class Mailman(list[Message]):
