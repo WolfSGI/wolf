@@ -6,19 +6,18 @@ from kettu.utils import method_dependencies
 
 def ondemand(func):
 
-    sig = inspect.signature(func)
+    dependencies = method_dependencies(func)
 
     @wraps(func)
     def dispatch(request: Request, *args, **kwargs):
-        nonlocal sig
+        nonlocal dependencies
 
         if request.context is None:
             raise AssertionError('Request does not provide a context.')
 
         mapper = {
             dependency.name: request.get(dependency.type_)
-            for dependency in method_dependencies(func)
+            for dependency in dependencies
         }
-        bound = sig.bind(**mapper)
-        return func(*bound.args, **bound.kwargs)
+        return func(**mapper)
     return dispatch
