@@ -78,6 +78,7 @@ class TrajectResolver(URIResolver):
         else:
             factory_path = ''
             unmatched = {}
+            target = source
 
         view_path = self.views.route_for(target, name, **unmatched)
         return '/' + (root_path / factory_path / view_path)
