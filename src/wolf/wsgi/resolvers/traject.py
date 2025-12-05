@@ -76,7 +76,7 @@ class TrajectResolver(URIResolver):
             ).resolve(namespace, qstring=False)
         else:
             factory_path = ''
-            unmatched = {}
+            unmatched = namespace
             target = source
 
         view_path = self.views.route_for(target, name, **unmatched)
