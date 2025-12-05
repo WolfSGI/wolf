@@ -22,7 +22,6 @@ class Transaction:
         lambda: TransactionManager(explicit=True)
     )
 
-
     def install(self, application):
         application.services.register_factory(
             TransactionManager, self.factory)
@@ -37,15 +36,19 @@ class Transaction:
             request.context.register_local_value(Transaction, txn)
             try:
                 response = handler(request, *args, **kwargs)
-                if txn.isDoomed() or (
-                        isinstance(response, Response)
-                        and response.status >= 400):
+                if txn.isDoomed():
+                    logger.info('Transaction aborted: transaction is doomed.')
+                    txn.abort()
+                elif (isinstance(response, Response)
+                      and response.status >= 400):
+                    logger.info(f'Transaction aborted: response has code {response.status}')
                     txn.abort()
                 else:
                     txn.commit()
                 return response
             except Exception:
                 txn.abort()
+                logger.info('Transaction aborted: an exception occured.')
                 raise
 
         return middleware
