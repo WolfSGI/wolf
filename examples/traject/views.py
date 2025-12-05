@@ -9,7 +9,7 @@ from kettu.traject import ViewRegistry
 from kettu.http.app import Application, URIResolver
 from wolf.form import Form, trigger
 from wolf.rendering import html, renderer
-
+from wolf.decorators import ondemand
 from models import Folder, Document
 from store import Stores, SchemaKey
 from resources import somejs
@@ -36,9 +36,8 @@ def root_index(request, *, context: Application):
 @registry.register(Folder, '/', name="view")
 @html
 @renderer(template='views/folder')
-def folder_index(request, *, context: Folder):
-    resolver = request.get(URIResolver)
-    sqlsession = request.get(SQLSession)
+@ondemand
+def folder_index(resolver: URIResolver, sqlsession: SQLSession, *, context: Folder):
     query = select(Document).filter(Document.folder_id == context.id)
     documents = sqlsession.exec(query).all()
     return {

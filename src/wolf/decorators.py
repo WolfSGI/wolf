@@ -29,9 +29,11 @@ def ondemand(func):
         if request.context is None:
             raise AssertionError('Request does not provide a context.')
 
-        mapper = {
-            dependency.name: request.get(dependency.type_)
-            for dependency in dependencies
-        }
+        mapper = {}
+        for dependency in dependencies:
+            if dependency.name in kwargs:
+                mapper[dependency.name] = kwargs[dependency.name]
+            else:
+                mapper[dependency.name] = request.get(dependency.type_)
         return func(**mapper)
     return dispatch
