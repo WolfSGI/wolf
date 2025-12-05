@@ -116,7 +116,7 @@ app.services.register_value(actions.Actions, actions.actions)
 
 # Jobs queue
 q = Queue(connection=Redis())
-app.services.register_value(Redis, q)
+app.services.register_value(Queue, q)
 
 
 # Run once at startup:
