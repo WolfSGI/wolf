@@ -31,6 +31,7 @@ class TraversingResolver(URIResolver):
             view_path = f'/{view_path}'
 
         extra = request.get(Extra)
+        extra['request'] = request
         view = self.views.match(
             leaf, view_path, request.method, extra=extra
         )
@@ -38,7 +39,7 @@ class TraversingResolver(URIResolver):
             raise HTTPError(404)
 
         params = request.get(Params)
-        params |= view.params
+        params.update(view.params)
         request.context.register_local_value(MatchedRoute, view)
         return view.routed(request, context=leaf)
 

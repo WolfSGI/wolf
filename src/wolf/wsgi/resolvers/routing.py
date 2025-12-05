@@ -24,19 +24,21 @@ class RouteResolver(URIResolver):
         self.router.finalize()
 
     def resolve(self, request):
-        extra = Extra(request=request)
-        request.context.register_local_value(Extra, extra)
+        extra = request.get(Extra)
+        extra['request'] = request
+
         route: MatchedRoute | None = self.router.get(
             request.path, request.method, extra=extra
         )
         if route is None:
             raise HTTPError(404)
 
+        params = request.get(Params)
+        params.update(route.params)
         # Register the route and its params.
         # No need to guess the type. For optimization purposes,
         # we provide it.
         request.context.register_local_value(MatchedRoute, route)
-        request.context.register_local_value(Params, route.params)
         return route.routed(request)
 
     def path_for(self, name: str, **namespace):

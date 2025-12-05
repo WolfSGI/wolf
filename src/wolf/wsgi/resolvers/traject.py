@@ -48,6 +48,7 @@ class TrajectResolver(URIResolver):
             view_path = f'/{view_path}'
 
         extra = request.get(Extra)
+        extra['request'] = request
         view = self.views.match(
             leaf, view_path, request.method, extra=extra
         )
