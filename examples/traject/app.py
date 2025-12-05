@@ -4,7 +4,8 @@ import pathlib
 import logging.config
 from aioinject import Object
 from kettu.resources import CSSResource, JSResource
-from wolf.wsgi.app import TraversingApplication
+from wolf.wsgi.app import WSGIApplication
+from wolf.wsgi.resolvers import TrajectResolver
 from wolf.middlewares import HTTPSession
 from wolf.services.flash import Flash
 from wolf.services.post import PostOffice
@@ -27,9 +28,11 @@ libraries.add_library(resources.my_lib)
 libraries.finalize()
 
 
-app = TraversingApplication(
-    factories=factories.registry,
-    views=views.views,
+app = WSGIApplication(
+    resolver=TrajectResolver(
+        contexts=factories.registry,
+        views=views.registry
+    ),
     middlewares=[
         HTTPSession(
             store=http_session_file.FileStore(

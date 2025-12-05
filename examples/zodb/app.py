@@ -2,18 +2,19 @@ import http_session_file
 import pathlib
 import logging.config
 import structlog
+from kettu.traversing import PublicationRoot
 from kettu.resources import CSSResource, JSResource
-from wolf.wsgi.app import PublishingApplication
+from wolf.wsgi.app import WSGIApplication
+from wolf.wsgi.resolvers import TraversingResolver
 from wolf.middlewares import HTTPSession
 from wolf.services.flash import Flash
 from wolf.services.resources import ResourceManager
 from wolf.templates import Templates
 from wolf.ui import UI
-from wolf.wsgi.publisher import PublicationRoot
-import ui, views, resources, middleware, models
 from ZODB.FileStorage import FileStorage
 from ZODB import Connection, DB
 
+import ui, views, resources, middleware, models
 
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -27,8 +28,8 @@ libraries.add_library(resources.my_lib)
 libraries.finalize()
 
 
-app = PublishingApplication(
-    views=views.views,
+app = WSGIApplication(
+    resolver=TraversingResolver(views=views.views),
     middlewares=[
         middleware.Transaction(),
         HTTPSession(

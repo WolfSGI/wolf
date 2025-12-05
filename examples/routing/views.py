@@ -37,7 +37,7 @@ def index(request):
     application = request.get(Application)
     return {
         'user': request.get(User),
-        'path_for': application.router.path_for
+        'path_for': application.resolver.router.path_for
     }
 
 

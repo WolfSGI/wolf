@@ -14,7 +14,7 @@
     <div class="list-group">
       <a class="button list-group-item d-flex justify-content-between align-items-start"
          tal:repeat="document context.documents"
-         href="${path_for(document, 'view', document_id=document.id)}">
+         href="${path_for(context, 'view', target=document, document_id=document.id)}">
         ${document.title} ${document.type}
       </a>
     </div>

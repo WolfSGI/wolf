@@ -1,18 +1,18 @@
 from sqlmodel import Session as SQLSession, select
-from wolf.wsgi.app import TraversingApplication
+from wolf.wsgi.app import WSGIApplication
 from kettu.http.request import Request
 from kettu.http.exceptions import HTTPError
 from kettu.routing import Extra
-from kettu.traversing import Traverser
+from kettu.traject import ContextRegistry
 from models import Folder, Document
 
 
-registry = Traverser()
+registry = ContextRegistry()
 
 
-@registry.register(TraversingApplication, '/folders/{folder_id}')
+@registry.register(WSGIApplication, '/folders/{folder_id}')
 def folder_factory(
-        request: Request, parent: TraversingApplication,  *,
+        request: Request, parent: WSGIApplication,  *,
         folder_id: str) -> Folder:
 
     sqlsession = request.get(SQLSession)

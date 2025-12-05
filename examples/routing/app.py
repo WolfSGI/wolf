@@ -7,7 +7,8 @@ from redis import Redis
 from rq import Queue
 from aioinject import Object
 from wolf.ui import UI
-from wolf.wsgi.app import RoutingApplication
+from wolf.wsgi.app import WSGIApplication
+from wolf.wsgi.resolvers import RouteResolver
 from wolf.templates import Templates
 from wolf.middlewares import HTTPSession, NoAnonymous
 from kettu.resources import JSResource, CSSResource
@@ -34,22 +35,25 @@ for translation in vernacular.translations(pathlib.Path('translations')):
     i18Catalog.add(translation)
 
 
-app = RoutingApplication(middlewares=(
-    HTTPSession(
-        store=http_session_file.FileStore(
-            pathlib.Path('sessions'), 3000
+app = WSGIApplication(
+    resolver=RouteResolver(),
+    middlewares=(
+        HTTPSession(
+            store=http_session_file.FileStore(
+                pathlib.Path('sessions'), 3000
+            ),
+            secret="secret",
+            salt="salt",
+            cookie_name="cookie_name",
+            secure=False,
+            TTL=3000
         ),
-        secret="secret",
-        salt="salt",
-        cookie_name="cookie_name",
-        secure=False,
-        TTL=3000
-    ),
-    NoAnonymous(
-        login_url='/login',
-        allowed_urls={'/register', '/test'}
+        NoAnonymous(
+            login_url='/login',
+            allowed_urls={'/register', '/test'}
+        )
     )
-))
+)
 
 
 app.use(
@@ -105,7 +109,7 @@ app.use(
     Flash()
 )
 
-app.router |= (
+app.resolver.router |= (
     register.routes |
     login.routes |
     views.routes |

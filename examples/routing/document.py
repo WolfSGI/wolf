@@ -62,5 +62,5 @@ def document_view(request):
     document = sqlsession.get(Document, params['document_id'])
     return {
         "document": document,
-        'path_for': application.router.path_for
+        'path_for': application.resolver.path_for
     }

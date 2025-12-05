@@ -1,4 +1,4 @@
-from kettu.traversing import ViewRegistry
+from kettu.traject import ViewRegistry
 from wolf.rendering import html, renderer
 from resources import somejs
 import models

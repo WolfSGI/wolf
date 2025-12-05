@@ -5,8 +5,7 @@ from hamcrest import equal_to
 from sqlmodel import Session as SQLSession, select
 
 from kettu import matchers
-from kettu.traversing import ViewRegistry
-from kettu.traversing import path_for
+from kettu.traject import ViewRegistry
 from kettu.http.app import Application
 from wolf.form import Form, trigger
 from wolf.rendering import html, renderer
@@ -16,10 +15,10 @@ from store import Stores, SchemaKey
 from resources import somejs
 
 
-views = ViewRegistry()
+registry = ViewRegistry()
 
 
-@views.register(Application, '/', name="view")
+@registry.register(Application, '/', name="view")
 @html(resources=[somejs])
 @renderer(template='views/index')
 def root_index(request, *, context: Application):
@@ -29,25 +28,26 @@ def root_index(request, *, context: Application):
     return {
         'context': context,
         'folders': folders,
-        'path_for': path_for(request, context)
+        'path_for': context.resolver.path_for
     }
 
 
-@views.register(Folder, '/', name="view")
+@registry.register(Folder, '/', name="view")
 @html
 @renderer(template='views/folder')
 def folder_index(request, *, context: Folder):
+    application = request.get(Application)
     sqlsession = request.get(SQLSession)
     query = select(Document).filter(Document.folder_id == context.id)
     documents = sqlsession.exec(query).all()
     return {
         'context': context,
         'documents': documents,
-        'path_for': path_for(request, context)
+        'path_for': application.resolver.path_for
     }
 
 
-@views.register(Application, '/create_folder', name='create_folder')
+@registry.register(Application, '/create_folder', name='create_folder')
 class CreateFolder(Form):
 
     def get_schema(self, request, *, context=None):
@@ -76,7 +76,7 @@ def deferred_choices_widget(node, kw):
     return deform.widget.SelectWidget(values=choices)
 
 
-@views.register(Folder, '/create_document', name='create_document')
+@registry.register(Folder, '/create_document', name='create_document')
 class CreateDocument(Form):
 
     def get_schema(self, request, *, context=None):
@@ -100,7 +100,7 @@ class CreateDocument(Form):
         return request.response_cls.redirect(request.application_uri)
 
 
-@views.register(Document, '/edit', name="edit")
+@registry.register(Document, '/edit', name="edit")
 class EditDocument(Form):
 
     def get_schema(self, request, *, context=None):
@@ -121,7 +121,7 @@ class EditDocument(Form):
         return request.response_cls.redirect(resolver(context, 'view'))
 
 
-@views.register(
+@registry.register(
     Document, '/', name="view",
     requirements={"type": matchers.match_wildcards('schema2.1.2*')})
 @html
@@ -130,7 +130,7 @@ def schema2_document_index(request, *, context: Document):
     return f"I use a schema2: {context.type}"
 
 
-@views.register(
+@registry.register(
     Document, '/', name="view",
     requirements={"type": equal_to('schema1.1.0@reha')})
 @html

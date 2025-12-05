@@ -1,6 +1,6 @@
 from typing import Any
 from collections import deque
-from kettu.traversing import Traversed
+from kettu.traject import Located
 from kettu.http.request import Request
 from wolf.rendering import renderer
 from wolf.services.flash import SessionMessages
@@ -43,7 +43,7 @@ def breadcrumbs(request: Request, manager: AboveContent, view: Any, context: Any
     node = context
     parents = deque()
     while node is not None:
-        if type(node) is Traversed:
+        if type(node) is Located:
             parents.appendleft((node.__path__, node))
             node = node.__parent__
         else:

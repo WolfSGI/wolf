@@ -50,5 +50,5 @@ def folder_view(request):
     folder = sqlsession.get(Folder, params['folder_id'])
     return {
         "folder": folder,
-        'path_for': application.router.path_for
+        'path_for': application.resolver.path_for
     }
