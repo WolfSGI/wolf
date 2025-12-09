@@ -1,8 +1,8 @@
 import pytest
 from io import BytesIO
-from kettu.http.exceptions import HTTPError
-from kettu.http.datastructures import Data
-from kettu.http.headers import ContentType
+from kettu.exceptions import HTTPError
+from kettu.datastructures import Data
+from kettu.headers import ContentType
 from wolf.wsgi.parsers import BodyParser
 
 

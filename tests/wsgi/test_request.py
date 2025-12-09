@@ -1,15 +1,13 @@
 import pytest
 from webtest.app import TestRequest as EnvironBuilder
-from kettu.http.datastructures import Data
-from kettu.http.headers import Query
-from wolf.wsgi.request import WSGIRequest
+from kettu.datastructures import Data
+from kettu.headers import Query
+from wolf.wsgi.request import Request
 
 
 def test_request():
     environ = EnvironBuilder.blank('/?key=1', method='GET').environ
-    request = WSGIRequest(environ)
-    assert isinstance(request, WSGIRequest)
-
+    request = Request(environ)
     assert request.path == '/'
     assert request.method == 'GET'
     assert request.body.read() == b''
@@ -25,7 +23,7 @@ def test_request():
 
 def test_request_immutability():
     environ = EnvironBuilder.blank('/?key=1', method='GET').environ
-    request = WSGIRequest(environ)
+    request = Request(environ)
     assert request.path == '/'
 
     with pytest.raises(AttributeError):

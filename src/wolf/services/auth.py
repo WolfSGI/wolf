@@ -1,6 +1,6 @@
 import abc
 import typing as t
-import logging
+import structlog
 from wrapt import ObjectProxy
 from types import MappingProxyType
 from dataclasses import dataclass
@@ -12,7 +12,7 @@ from wolf.wsgi.request import Request
 from wolf.pluggability import Installable
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.services")
 
 
 class AuthenticationInfo(t.TypedDict):

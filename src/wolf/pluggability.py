@@ -1,8 +1,8 @@
-import logging
+import structlog
 from wolf.annotations import annotation
 
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger("wolf.pluggability")
 
 
 class install_method(annotation):
@@ -13,6 +13,7 @@ class install_method(annotation):
 
 
 class Installable:
+
     def install(self, application):
         for restrict, func in install_method.find(self):
             if not isinstance(application, restrict):
