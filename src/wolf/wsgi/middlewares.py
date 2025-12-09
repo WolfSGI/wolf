@@ -1,14 +1,13 @@
 import typing as t
-from kettu.http.headers.utils import parse_list_header, parse_host
-from wolf.wsgi.app import WSGIApplication
-from wolf.wsgi.types import WSGIEnviron, StartResponse
+from kettu.headers import parse_list_header, parse_host
+from wolf.wsgi.types import WSGICallable, WSGIEnviron, StartResponse
 
 
 class ProxyMiddleware:
 
     def __init__(
         self,
-        app: WSGIApplication,
+        app: WSGICallable,
         x_for: int = 1,
         x_proto: int = 1,
         x_host: int = 1,

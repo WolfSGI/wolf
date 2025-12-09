@@ -4,9 +4,10 @@ import jsonschema_colander.types
 from hamcrest import equal_to
 from sqlmodel import Session as SQLSession, select
 
-from kettu import matchers
-from kettu.traject import ViewRegistry
-from kettu.http.app import Application, URIResolver
+from wolf import matchers
+from wolf.wsgi.app import Application
+from wolf.abc.resolvers import URIResolver
+from wolf.abc.resolvers.traject import ViewRegistry
 from wolf.form import Form, trigger
 from wolf.rendering import html, renderer
 from wolf.decorators import ondemand

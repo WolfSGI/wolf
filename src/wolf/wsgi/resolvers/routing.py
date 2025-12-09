@@ -1,15 +1,9 @@
 import structlog
-import svcs
 from dataclasses import dataclass, field
-from autorouting import MatchedRoute
-from kettu.http.exceptions import HTTPError
-from kettu.http.app import Application, URIResolver
-from kettu.pipeline import Wrapper, chain_wrap
-from kettu.routing import Router, Params, Extra
-from wolf.wsgi.nodes import Mapping, Node
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from kettu.exceptions import HTTPError
+from wolf.pipeline import Wrapper, chain_wrap
+from wolf.abc.resolvers import URIResolver, Params, Extra
+from wolf.abc.resolvers.routing import Router, MatchedRoute
 
 
 logger = structlog.get_logger("wolf.wsgi.resolvers")

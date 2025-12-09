@@ -1,10 +1,10 @@
 from pathlib import PurePosixPath
 from functools import wraps
 from dataclasses import dataclass, field
-from kettu.http.exceptions import HTTPError
-from kettu.http.request import Request
-from kettu.http.response import Response
-from kettu.identity import anonymous, User
+from kettu.exceptions import HTTPError
+from wolf.abc.request import RequestProtocol
+from wolf.abc.response import ResponseProtocol
+from wolf.abc.identity import anonymous, User
 
 
 @dataclass(kw_only=True)
@@ -20,7 +20,9 @@ class NoAnonymous:
 
     def __call__(self, handler):
         @wraps(handler)
-        def checker(request: Request, *args, **kwargs) -> Response:
+        def checker(
+                request: RequestProtocol, *args, **kwargs
+        ) -> ResponseProtocol:
             # we skip unnecessary checks if it's not protected.
             path = PurePosixPath(request.path)
             for bypass in self.unprotected:
@@ -50,7 +52,9 @@ class Protected:
 
     def __call__(self, handler):
         @wraps(handler)
-        def checker(request: Request, *args, **kwargs) -> Response:
+        def checker(
+                request: RequestProtocol, *args, **kwargs
+        ) -> ResponseProtocol:
             # we skip unnecessary checks if it's not protected.
             path = PurePosixPath(request.path)
             for protected in self.protected:

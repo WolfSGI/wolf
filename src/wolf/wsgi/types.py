@@ -1,8 +1,8 @@
 from typing import Any
 from types import TracebackType
 from collections.abc import MutableMapping, Sequence, Iterable, Callable
-from kettu.http.response import Response
-from kettu.http.types import StatusCode
+from wolf.abc.response import ResponseProtocol
+from kettu.types import StatusCode
 
 
 WSGIEnviron = MutableMapping[str, Any]
@@ -17,4 +17,4 @@ StartResponse = Callable[
     Callable[[bytes], None] | None,
 ]
 WSGICallable = Callable[[WSGIEnviron, StartResponse], Iterable[bytes]]
-Finisher = Callable[[Response], None]
+Finisher = Callable[[ResponseProtocol], None]

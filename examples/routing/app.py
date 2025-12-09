@@ -5,13 +5,12 @@ import vernacular
 import http_session_file
 from redis import Redis
 from rq import Queue
-from aioinject import Object
 from wolf.ui import UI
-from wolf.wsgi.app import WSGIApplication
+from wolf.wsgi.app import Application
 from wolf.wsgi.resolvers import RouteResolver
 from wolf.templates import Templates
 from wolf.middlewares import HTTPSession, NoAnonymous
-from kettu.resources import JSResource, CSSResource
+from wolf.resources import JSResource, CSSResource
 from wolf.services.resources import ResourceManager
 from wolf.services.auth import SessionAuthenticator
 from wolf.services.flash import Flash
@@ -35,7 +34,7 @@ for translation in vernacular.translations(pathlib.Path('translations')):
     i18Catalog.add(translation)
 
 
-app = WSGIApplication(
+app = Application(
     resolver=RouteResolver(),
     middlewares=(
         HTTPSession(
@@ -103,7 +102,9 @@ app.use(
         url="sqlite:///database.db"
     ),
     SessionAuthenticator(
-        sources=(db.DBSource(),),
+        sources={
+            "sql": db.DBSource(),
+        },
         user_key="user"
     ),
     Flash()

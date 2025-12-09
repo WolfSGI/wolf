@@ -1,10 +1,10 @@
 from typing import Any
 from collections import deque
-from kettu.traject import Located
-from kettu.http.request import Request
+from wolf.abc.resolvers import Located
 from wolf.rendering import renderer
 from wolf.services.flash import SessionMessages
 from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
+from wolf.wsgi.request import Request
 
 
 slots = SlotRegistry()

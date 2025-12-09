@@ -3,11 +3,11 @@ import re
 import typing as t
 from http import HTTPStatus
 from urllib.parse import parse_qsl
-from kettu.http.parsers.multipart import Multipart
-from kettu.http.exceptions import HTTPError
-from kettu.http.datastructures import Data
-from kettu.http.headers import ContentType
-from kettu.http.types import Boundary, Charset, MIMEType
+from kettu.parsers.multipart import Multipart
+from kettu.exceptions import HTTPError
+from kettu.datastructures import Data
+from kettu.headers import ContentType
+from kettu.types import Boundary, Charset, MIMEType
 
 
 MIME_TYPE_REGEX = re.compile(r"^multipart|[-\w.]+/[-\w.\+]+$")

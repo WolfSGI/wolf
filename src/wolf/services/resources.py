@@ -8,9 +8,9 @@ from pathlib import PurePosixPath, Path
 from mimetypes import guess_type
 from autoroutes import Routes
 from wolf.wsgi.nodes import Node
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from kettu.resources import Resource, known_extensions, NeededResources
-from kettu.pluggability import Installable
+from wolf.wsgi.response import Response, FileWrapperResponse
+from wolf.resources import Resource, known_extensions, NeededResources
+from wolf.pluggability import Installable
 
 
 class HashAlgorithm(enum.Enum):

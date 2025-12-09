@@ -3,15 +3,12 @@ import svcs
 from dataclasses import dataclass, field
 from autorouting import MatchedRoute
 from autorouting.url import RouteURL
-from kettu.http.app import Application, URIResolver
-from kettu.http.exceptions import HTTPError
-from kettu.pipeline import Wrapper, chain_wrap
-from kettu.routing import Params, Extra
-from kettu.traject import ContextRegistry, ViewRegistry
-from kettu.traject.resolver import Located
-from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from kettu.exceptions import HTTPError
+from wolf.pipeline import Wrapper, chain_wrap
+from wolf.wsgi.app import Application
+from wolf.abc.resolvers import URIResolver
+from wolf.abc.resolvers.traject import ContextRegistry, ViewRegistry
+from wolf.abc.resolvers import Located, Params, Extra
 
 
 logger = structlog.get_logger("wolf.wsgi.resolvers")
@@ -34,7 +31,7 @@ class TrajectResolver(URIResolver):
     contexts: ContextRegistry = field(default_factory=ContextRegistry)
     views: ViewRegistry = field(default_factory=ViewRegistry)
 
-    def finalize(self):
+    def finalize(self) -> None:
         self.contexts.finalize()
         self.views.finalize()
 
@@ -60,7 +57,13 @@ class TrajectResolver(URIResolver):
         request.context.register_local_value(MatchedRoute, view)
         return view.routed(request, context=leaf)
 
-    def path_for(self, source: object, name: str, target: object | None = None, **namespace):
+    def path_for(
+            self,
+            source: object,
+            name: str,
+            target: object | None = None,
+            **namespace
+    ) -> str:
         if type(source) is Located:
             root_path = PathFragment(source.__path__)
         else:
@@ -83,13 +86,13 @@ class TrajectResolver(URIResolver):
         view_path = self.views.route_for(target, name, **unmatched)
         return '/' + (root_path / factory_path / view_path)
 
-    def __or__(self, other: "TrajectResolver"):
+    def __or__(self, other: "TrajectResolver") -> "TrajectResolver":
         return TrajectResolver(
             contexts=(self.contexts | other.contexts),
             views=(self.views | other.views)
         )
 
-    def __ior__(self, other: "TrajectResolver"):
+    def __ior__(self, other: "TrajectResolver") -> "TrajectResolver":
         self.contexts |= other.contexts
         self.views |= other.views
         return self

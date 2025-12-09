@@ -1,8 +1,8 @@
 import wrapt
 import functools
 from wolf.ui import UI
-from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.request import Request
+from wolf.wsgi.response import Response
 from wolf.services.translation import Locale, Translator
 from chameleon.zpt.template import PageTemplate
 
@@ -15,13 +15,13 @@ def renderer(
 ):
     @wrapt.decorator
     def rendering_wrapper(
-            wrapped, instance, args, kwargs) -> str | WSGIResponse:
+            wrapped, instance, args, kwargs) -> str | Response:
         content = wrapped(*args, **kwargs)
 
-        if isinstance(content, WSGIResponse):
+        if isinstance(content, Response):
             return content
 
-        request: WSGIRequest = args[0]
+        request: Request = args[0]
         ui = request.get(UI)
         namespace = {
             "request": request,

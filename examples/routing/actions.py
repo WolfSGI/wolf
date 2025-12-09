@@ -1,19 +1,20 @@
 from typing import Any, NamedTuple
 from prejudice.errors import ConstraintError
-from wolf.wsgi.request import WSGIRequest
-from kettu.identity import User, anonymous
-from kettu.registries import TypedRegistry
+from wolf.wsgi.request import Request
+from wolf.abc.identity import User, anonymous
+from signature_registries import TypedRegistry
 
 
 class Actions(TypedRegistry):
 
     class Types(NamedTuple):
-        request: type[WSGIRequest] = WSGIRequest
+        request: type[Request] = Request
         view: type = Any
         context: type = Any
 
 
 actions = Actions()
+
 
 
 def is_not_anonymous(request, view, context):

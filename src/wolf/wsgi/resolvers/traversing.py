@@ -1,17 +1,11 @@
 import structlog
-import svcs
 from dataclasses import dataclass, field
-from autorouting import MatchedRoute
-from kettu.http.exceptions import HTTPError
-from kettu.http.app import URIResolver
-from kettu.pipeline import Wrapper, chain_wrap
-from kettu.routing import Router, Params, Extra
-from kettu.traject import ViewRegistry
-from kettu.traversing import Publisher, PublicationRoot
-from wolf.wsgi.nodes import Mapping, Node
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from kettu.exceptions import HTTPError
+from wolf.pipeline import Wrapper, chain_wrap
+from wolf.abc.resolvers import URIResolver, Params, Extra
+from wolf.abc.resolvers.routing import MatchedRoute
+from wolf.abc.resolvers.traject import ViewRegistry
+from wolf.abc.resolvers.traversing import Publisher, PublicationRoot
 
 
 @dataclass(kw_only=True, repr=False)

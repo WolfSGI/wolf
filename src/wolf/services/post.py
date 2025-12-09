@@ -1,3 +1,4 @@
+from io import IOBase
 import structlog
 from dataclasses import dataclass
 from pathlib import Path
@@ -8,8 +9,7 @@ from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
-from kettu.pluggability import Installable
-from io import IOBase
+from wolf.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.services.post")

@@ -1,7 +1,7 @@
 import typing as t
 from dataclasses import dataclass
 from http_session import Session
-from kettu.pluggability import Installable
+from wolf.pluggability import Installable
 
 
 class Message(t.NamedTuple):

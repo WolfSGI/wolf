@@ -1,8 +1,8 @@
 import colander
 import deform
 from wolf.form import Form, trigger
-from kettu.identity import Authenticator
-from kettu.routing import Router
+from wolf.abc.auth import Authenticator
+from wolf.abc.resolvers.routing import Router
 from wolf.services.flash import SessionMessages
 
 
@@ -34,11 +34,11 @@ class Login(Form):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)
         authenticator = request.get(Authenticator)
-        user = authenticator.from_credentials(request, appstruct)
+        source_id, user = authenticator.challenge(request, appstruct)
 
         flash = request.get(SessionMessages)
         if user is not None:
-            authenticator.remember(request, user)
+            authenticator.remember(request, source_id, user)
             flash.add('Logged in.', type="success")
             return request.response_cls.redirect(request.application_uri)
 

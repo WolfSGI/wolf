@@ -2,12 +2,10 @@ import structlog
 from dataclasses import dataclass
 from annotated_types import Len
 from typing import NewType, Annotated
-from kettu.http.request import Request
-from kettu.pluggability import Installable
 from vernacular import Translations
 from vernacular.translate import Translator
-from wolf.wsgi.request import WSGIRequest
-
+from wolf.wsgi.request import Request
+from wolf.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.services.translation")
@@ -26,7 +24,7 @@ class TranslationService(Installable):
         application.services.register_factory(
             Locale,
             lambda svcs_container: self.locale_factory(
-                svcs_container.get(WSGIRequest)
+                svcs_container.get(Request)
             )
         )
 

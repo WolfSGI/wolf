@@ -3,7 +3,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
 from sqlmodel import Session, SQLModel, create_engine
-from kettu.pluggability import Installable
+from wolf.pluggability import Installable
 
 
 @dataclass(kw_only=True)

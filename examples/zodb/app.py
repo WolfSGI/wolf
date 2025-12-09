@@ -2,9 +2,9 @@ import http_session_file
 import pathlib
 import logging.config
 import structlog
-from kettu.traversing import PublicationRoot
-from kettu.resources import CSSResource, JSResource
-from wolf.wsgi.app import WSGIApplication
+from wolf.abc.resolvers.traversing import PublicationRoot
+from wolf.resources import CSSResource, JSResource
+from wolf.wsgi.app import Application
 from wolf.wsgi.resolvers import TraversingResolver
 from wolf.middlewares import HTTPSession
 from wolf.services.flash import Flash
@@ -28,7 +28,7 @@ libraries.add_library(resources.my_lib)
 libraries.finalize()
 
 
-app = WSGIApplication(
+app = Application(
     resolver=TraversingResolver(views=views.views),
     middlewares=[
         middleware.Transaction(),

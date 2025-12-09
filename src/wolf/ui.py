@@ -4,17 +4,17 @@ from typing import Any, NamedTuple
 from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
-from kettu.resources import JSResource, CSSResource
-from kettu.registries import TypedRegistry, Registry
-from kettu.http.request import Request
-from kettu.pluggability import Installable
+from signature_registries import TypedRegistry, Registry
+from wolf.resources import JSResource, CSSResource
+from wolf.abc.request import RequestProtocol
+from wolf.pluggability import Installable
 from wolf.templates import Templates, EXPRESSION_TYPES
 
 
 class SlotRegistry(TypedRegistry):
     @beartype
     class Types(NamedTuple):
-        request: type[Request] = Request
+        request: type[RequestProtocol] = RequestProtocol
         view: type = Any
         context: type = Any
 
@@ -22,7 +22,7 @@ class SlotRegistry(TypedRegistry):
 class SubSlotRegistry(TypedRegistry):
     @beartype
     class Types(NamedTuple):
-        request: type[Request] = Request
+        request: type[RequestProtocol] = RequestProtocol
         manager: type = Any
         view: type = Any
         context: type = Any
@@ -31,7 +31,7 @@ class SubSlotRegistry(TypedRegistry):
 class LayoutRegistry(TypedRegistry):
     @beartype
     class Types(NamedTuple):
-        request: type[Request] = Request
+        request: type[RequestProtocol] = RequestProtocol
         view: type = Any
         context: type = Any
 

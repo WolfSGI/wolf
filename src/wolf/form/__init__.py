@@ -4,11 +4,11 @@
 import deform
 import colander
 from abc import ABC, abstractmethod
-from kettu.annotations import annotation
-from kettu.resources import NeededResources
-from kettu.routing import APIView
-from kettu.http.datastructures import Data
-from kettu.http.exceptions import HTTPError
+from kettu.datastructures import Data
+from kettu.exceptions import HTTPError
+from wolf.annotations import annotation
+from wolf.resources import NeededResources
+from wolf.abc.resolvers import APIView
 from wolf.rendering import html, renderer
 
 

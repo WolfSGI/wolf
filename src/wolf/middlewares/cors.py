@@ -1,9 +1,9 @@
 import structlog
 from functools import wraps
 from dataclasses import dataclass
-from kettu.http.cors import CORSPolicy
-from kettu.http.request import Request
-from kettu.http.response import Response
+from kettu.cors import CORSPolicy
+from wolf.abc.request import RequestProtocol
+from wolf.abc.response import ResponseProtocol
 
 
 logger = structlog.get_logger("wolf.middlewares.cors")
@@ -15,7 +15,9 @@ class CORS:
 
     def __call__(self, handler):
         @wraps(handler)
-        def preflight(request: Request, *args, **kwargs) -> Response:
+        def preflight(
+                request: RequestProtocol, *args, **kwargs
+        ) -> ResponseProtocol:
             if request.method != "OPTIONS":
                 return handler(request, *args, **kwargs)
 

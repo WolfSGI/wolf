@@ -2,9 +2,8 @@ import structlog
 import http_session_file
 import pathlib
 import logging.config
-from aioinject import Object
-from kettu.resources import CSSResource, JSResource
-from wolf.wsgi.app import WSGIApplication
+from wolf.resources import CSSResource, JSResource
+from wolf.wsgi.app import Application
 from wolf.wsgi.resolvers import TrajectResolver
 from wolf.middlewares import HTTPSession
 from wolf.services.flash import Flash
@@ -28,7 +27,7 @@ libraries.add_library(resources.my_lib)
 libraries.finalize()
 
 
-app = WSGIApplication(
+app = Application(
     resolver=TrajectResolver(
         contexts=factories.registry,
         views=views.registry

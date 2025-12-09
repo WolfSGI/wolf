@@ -1,51 +1,80 @@
+import svcs
 import typing as t
 import urllib.parse
-import svcs
-from svcs.exceptions import ServiceNotFoundError
-from datetime import datetime
 from contextlib import contextmanager
-from kettu.utils import immutable_cached_property
-from kettu.http.request import Request, header_property
-from kettu.http.datastructures import Data
-from kettu.http.headers import Query, Cookies, ETag, ETags
-from kettu.http.headers import Ranges, ContentType, Languages, Accept
-from kettu.http.headers.utils import (
-    parse_host, parse_http_datetime, parse_wsgi_path)
-from wolf.wsgi.types import WSGIEnviron
+from datetime import datetime
+from svcs.exceptions import ServiceNotFoundError
+
+from kettu.datastructures import Data
+from kettu.exceptions import HTTPError
+from kettu import headers
+
+from typing import TypeVar, Generic, Any
+from wolf.utils import immutable_cached_property
+from wolf.abc.request import RequestProtocol
 from wolf.wsgi.parsers import parser
-from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.response import Response, FileWrapperResponse
+from wolf.wsgi.types import WSGIEnviron
 
 
 T = t.TypeVar("T")
+
 NONE_PROVIDED = object()
-ACCEPT_ALL = Accept([])
-ALL_LANGUAGES = Languages([])
-ALL_ETAGS = ETags([])
+ACCEPT_ALL = headers.Accept([])
+ALL_LANGUAGES = headers.Languages([])
+ALL_ETAGS = headers.ETags([])
+
+UNSET = object()
 
 
-class WSGIRequest(Request[WSGIEnviron]):
+def header_property(
+        name: str,
+        *,
+        caster=None,
+        default=UNSET,
+        on_missing: int = 400
+):
+    """Create a read-only cached header property.
+    """
+    def getter(request: RequestProtocol):
+        try:
+            value = request.environ[name]
+            if caster is not None:
+                value = caster(value)
+        except KeyError:
+            if default is UNSET:
+                raise HTTPError(on_missing)
+            value = default
+        return value
+
+    return immutable_cached_property(getter)
+
+
+class Request(RequestProtocol[WSGIEnviron]):
 
     __slots__ = ('environ', 'context', 'response_cls')
 
     context: svcs.Container | None
-    response_cls: type[WSGIResponse]
+    response_cls: type[Response] | type[FileWrapperResponse]
 
     def __init__(
             self,
             environ: WSGIEnviron,
-            response_cls: type[WSGIResponse] = WSGIResponse
+            response_cls: type[Response] | type[FileWrapperResponse] = Response
     ):
         self.context = None
         self.environ = environ
         self.response_cls = response_cls
 
     @contextmanager
-    def __call__(self, registry: svcs.Registry) -> 'WSGIRequest':
+    def __call__(self, registry: svcs.Registry) -> 'Request':
         with svcs.Container(registry) as context:
-            context.register_local_factory(Cookies, self.get_cookies)
-            context.register_local_factory(Query, self.get_query)
-            context.register_local_factory(Data, self.get_data)
-            context.register_local_value(WSGIRequest, self)
+            context.register_local_factory(
+                headers.Cookies, lambda: self.cookies)
+            context.register_local_factory(
+                headers.Query, lambda: self.query)
+            context.register_local_factory(Data, lambda: self.data)
+            context.register_local_value(Request, self)
             self.context = context
             yield self
         self.context = None
@@ -62,7 +91,7 @@ class WSGIRequest(Request[WSGIEnviron]):
 
     path: str = header_property(
         "PATH_INFO",
-        caster=parse_wsgi_path,
+        caster=headers.parse_wsgi_path,
         default="/"
     )
 
@@ -72,9 +101,9 @@ class WSGIRequest(Request[WSGIEnviron]):
         caster=urllib.parse.quote
     )
 
-    cookies: Cookies | None = header_property(
+    cookies: headers.Cookies | None = header_property(
         "HTTP_COOKIE",
-        caster=Cookies.from_string,
+        caster=headers.Cookies.from_string,
         default=None
     )
 
@@ -88,9 +117,9 @@ class WSGIRequest(Request[WSGIEnviron]):
         default=""
     )
 
-    content_type: ContentType | None = header_property(
+    content_type: headers.ContentType | None = header_property(
         "CONTENT_TYPE",
-        caster=ContentType.from_string,
+        caster=headers.ContentType.from_string,
         default=None
     )
 
@@ -114,59 +143,59 @@ class WSGIRequest(Request[WSGIEnviron]):
         default="127.0.0.1"
     )
 
-    accept: Accept = header_property(
+    accept: headers.Accept = header_property(
         "HTTP_ACCEPT",
-        caster=Accept.from_string,
+        caster=headers.Accept.from_string,
         default=ACCEPT_ALL
     )
 
-    accept_language: Languages = header_property(
+    accept_language: headers.Languages = header_property(
         "HTTP_ACCEPT_LANGUAGE",
-        caster=Languages.from_string,
+        caster=headers.Languages.from_string,
         default=ALL_LANGUAGES
     )
 
-    range: Ranges | None = header_property(
+    range: headers.Ranges | None = header_property(
         "HTTP_RANGE",
-        caster=Ranges.from_string
+        caster=headers.Ranges.from_string
     )
 
-    if_match: ETags = header_property(
+    if_match: headers.ETags = header_property(
         "HTTP_IF_MATCH",
         default=ALL_ETAGS
     )
 
-    if_none_match: ETags = header_property(
+    if_none_match: headers.ETags = header_property(
         "HTTP_IF_NONE_MATCH",
         default=ALL_ETAGS
     )
 
     if_modified_since: datetime | None = header_property(
         "HTTP_IF_MODIFIED_SINCE",
-        caster=parse_http_datetime,
+        caster=headers.parse_http_datetime,
         default=None
     )
 
     if_unmodified_since: datetime | None = header_property(
         "HTTP_IF_UNMODIFIED_SINCE",
-        caster=parse_http_datetime,
+        caster=headers.parse_http_datetime,
         default=None
     )
 
     @immutable_cached_property
-    def if_range(self) -> ETag | datetime | None:
+    def if_range(self) -> headers.ETag | datetime | None:
         try:
             value = self.environ["HTTP_IF_RANGE"]
             if '"' in value:
                 return ETag.from_string(value)
-            return parse_http_datetime(value)
+            return headers.parse_http_datetime(value)
         except KeyError:
             return None
 
     @immutable_cached_property
     def host(self) -> tuple[str, int]:
         try:
-            domain, port = parse_host(self.environ["HTTP_HOST"])
+            domain, port = headers.parse_host(self.environ["HTTP_HOST"])
         except KeyError:
             domain = self.environ["SERVER_NAME"]
             port = self.environ.get("SERVER_PORT", None)
@@ -187,6 +216,3 @@ class WSGIRequest(Request[WSGIEnviron]):
                 self.content_type
             )
         return Data()
-
-    def get_data(self) -> Data:
-        return self.data

@@ -1,9 +1,9 @@
 from typing import Iterable
-from kettu.http.response import Response, FileResponse
+from wolf.abc.response import ResponseProtocol, FileResponseProtocol
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, StartResponse, Finisher
 
 
-class WSGIResponse(WSGICallable, Response[Finisher]):
+class Response(WSGICallable, ResponseProtocol[Finisher]):
 
     def close(self):
         """Exhaust the list of finishers. No error is handled here.
@@ -22,7 +22,7 @@ class WSGIResponse(WSGICallable, Response[Finisher]):
         return self
 
 
-class FileWrapperResponse(WSGICallable, FileResponse):
+class FileWrapperResponse(WSGICallable, FileResponseProtocol):
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
         status = f"{self.status.value} {self.status.phrase}"

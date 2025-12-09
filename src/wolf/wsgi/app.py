@@ -1,28 +1,26 @@
 import structlog
 import svcs
 from dataclasses import dataclass, field
-from kettu.http.exceptions import HTTPError
-from kettu.http.app import Application, URIResolver
-from kettu.pipeline import Wrapper, chain_wrap
-from kettu.routing import Params, Extra
+from kettu.exceptions import HTTPError
+from wolf.pipeline import Wrapper, chain_wrap
+from wolf.abc.resolvers import URIResolver, Params, Extra
 from wolf.wsgi.nodes import Mapping, Node
-from wolf.wsgi.response import WSGIResponse, FileWrapperResponse
-from wolf.wsgi.request import WSGIRequest
+from wolf.wsgi.response import Response
+from wolf.wsgi.request import Request
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
-from kettu.utils import immutable_cached_property
+from wolf.utils import immutable_cached_property
+from wolf.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.wsgi.app")
 
 
 @dataclass(kw_only=True, repr=False)
-class WSGIApplication(Application, Node):
+class Application(Node):
     resolver: URIResolver
     services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
-
-    _finalized: bool = field(default=False, init=False)
 
     def __post_init__(self):
         self.services.register_value(Application, self)
@@ -33,7 +31,11 @@ class WSGIApplication(Application, Node):
     def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
         typ, err, tb = exc_info
         logger.critical(err, exc_info=False)
-        return WSGIResponse(500, str(err))
+        return Response(500, str(err))
+
+    def use(self, *components: Installable):
+        for component in components:
+            component.install(self)
 
     def finalize(self):
         self.resolver.finalize()
@@ -53,10 +55,10 @@ class WSGIApplication(Application, Node):
                 if err.status != 404:
                     raise err
 
-        wsgi_request = WSGIRequest(environ)
-        with wsgi_request(self.services) as request:
+        request = Request(environ)
+        with request(self.services) as scoped_request:
             try:
-                return self.endpoint(request)
+                return self.endpoint(scoped_request)
             except HTTPError as err:
                 logger.debug(err, exc_info=True)
                 raise

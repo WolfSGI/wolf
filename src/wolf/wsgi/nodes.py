@@ -3,8 +3,8 @@ import typing as t
 from pathlib import PurePosixPath
 from abc import ABC, abstractmethod
 from collections import UserDict
-from kettu.http.exceptions import HTTPError
-from wolf.wsgi.response import WSGIResponse
+from kettu.exceptions import HTTPError
+from wolf.wsgi.response import Response
 from wolf.wsgi.types import (
     WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
 )
@@ -32,7 +32,7 @@ class Node(ABC, WSGICallable):
             iterable = self.resolve(environ)
             yield from iterable(environ, start_response)
         except HTTPError as exc:
-            iterable = WSGIResponse(exc.status, body=exc.body)
+            iterable = Response(exc.status, body=exc.body)
             yield from iterable(environ, start_response)
         except Exception:
             iterable = self.handle_exception(sys.exc_info(), environ)

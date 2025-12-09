@@ -2,10 +2,9 @@ import colander
 import deform
 from models import Person
 from wolf.form import Form, trigger
-from kettu.routing import Router
+from wolf.abc.resolvers.routing import Router
 from wolf.services.flash import SessionMessages
-from wolf.wsgi.request import WSGIRequest
-from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.request import Request
 from sqlalchemy.sql import exists
 from sqlmodel import Session
 
@@ -14,7 +13,7 @@ routes = Router()
 
 
 def UniqueEmail(node, value):
-    request: WSGIRequest = node.bindings['request']
+    request: Request = node.bindings['request']
     sqlsession = request.get(Session)
     if sqlsession.query(exists().where(Person.email == value)).scalar():
         raise colander.Invalid(node, "Email already in use.")
@@ -69,4 +68,4 @@ class Register(Form):
 
         flash = request.get(SessionMessages)
         flash.add('Account created.', type="info")
-        return WSGIResponse.redirect(request.application_uri)
+        return request.response_cls.redirect(request.application_uri)

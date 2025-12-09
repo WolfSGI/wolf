@@ -3,7 +3,7 @@ import jwt
 import structlog
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from kettu.pluggability import Installable
+from wolf.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.services.token")
