@@ -3,7 +3,7 @@ import deform
 from wolf.form import Form, trigger
 from wolf.abc.auth import Authenticator
 from wolf.abc.resolvers.routing import Router
-from wolf.services.flash import SessionMessages
+from wolf.app.services.flash import SessionMessages
 
 
 routes = Router()

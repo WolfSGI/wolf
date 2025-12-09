@@ -4,11 +4,11 @@ from annotated_types import Len
 from typing import NewType, Annotated
 from vernacular import Translations
 from vernacular.translate import Translator
-from wolf.wsgi.request import Request
+from wolf.app.request import Request
 from wolf.pluggability import Installable
 
 
-logger = structlog.get_logger("wolf.services.translation")
+logger = structlog.get_logger("wolf.app.services.translation")
 
 Locale = NewType("Locale", str)
 

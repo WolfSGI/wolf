@@ -1,6 +1,6 @@
 from typing import Iterable
 from wolf.abc.response import ResponseProtocol, FileResponseProtocol
-from wolf.wsgi.types import WSGIEnviron, WSGICallable, StartResponse, Finisher
+from wolf.app.types import WSGIEnviron, WSGICallable, StartResponse, Finisher
 
 
 class Response(WSGICallable, ResponseProtocol[Finisher]):

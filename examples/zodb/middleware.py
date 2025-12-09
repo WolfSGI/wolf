@@ -6,8 +6,8 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
 from wolf.pluggability import Installable
-from wolf.wsgi.request import Request
-from wolf.wsgi.response import Response
+from wolf.app.request import Request
+from wolf.app.response import Response
 from ZODB import DB, Connection
 from transaction import Transaction, TransactionManager
 

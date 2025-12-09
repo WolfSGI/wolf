@@ -5,9 +5,9 @@ from wolf.abc.identity import User
 from wolf.abc.resolvers import Params
 from wolf.abc.resolvers.routing import Router
 from wolf.form import Form, trigger
-from wolf.rendering import html, renderer
-from wolf.services.flash import SessionMessages
-from wolf.wsgi.app import Application
+from wolf.app.render import html, renderer
+from wolf.app.services.flash import SessionMessages
+from wolf.app import Application
 from models import Document
 
 

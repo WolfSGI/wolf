@@ -3,14 +3,14 @@ import pathlib
 import logging.config
 import structlog
 from wolf.abc.resolvers.traversing import PublicationRoot
-from wolf.resources import CSSResource, JSResource
-from wolf.wsgi.app import Application
-from wolf.wsgi.resolvers import TraversingResolver
-from wolf.middlewares import HTTPSession
-from wolf.services.flash import Flash
-from wolf.services.resources import ResourceManager
-from wolf.templates import Templates
-from wolf.ui import UI
+from wolf.app import Application
+from wolf.app.middlewares import HTTPSession
+from wolf.app.resolvers import TraversingResolver
+from wolf.app.services.flash import Flash
+from wolf.app.services.resources import ResourceManager
+from wolf.rendering.resources import CSSResource, JSResource
+from wolf.rendering.templates import Templates
+from wolf.rendering.ui import UI
 from ZODB.FileStorage import FileStorage
 from ZODB import Connection, DB
 

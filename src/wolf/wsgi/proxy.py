@@ -1,6 +1,6 @@
 import typing as t
 from kettu.headers import parse_list_header, parse_host
-from wolf.wsgi.types import WSGICallable, WSGIEnviron, StartResponse
+from wolf.app.types import WSGICallable, WSGIEnviron, StartResponse
 
 
 class ProxyMiddleware:

@@ -1,9 +1,9 @@
 import wrapt
 import functools
-from wolf.ui import UI
-from wolf.wsgi.request import Request
-from wolf.wsgi.response import Response
-from wolf.services.translation import Locale, Translator
+from wolf.rendering.ui import UI
+from wolf.app.request import Request
+from wolf.app.response import Response
+from wolf.app.services.translation import Locale, Translator
 from chameleon.zpt.template import PageTemplate
 
 

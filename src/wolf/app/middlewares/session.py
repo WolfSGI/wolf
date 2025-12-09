@@ -7,7 +7,7 @@ from http_session import Store, Session
 import svcs
 
 
-logger = structlog.get_logger("wolf.middlewares.session")
+logger = structlog.get_logger("wolf.app.middlewares.session")
 
 
 @dataclass(kw_only=True)

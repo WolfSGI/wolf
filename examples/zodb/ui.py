@@ -1,10 +1,10 @@
 from typing import Any
 from collections import deque
 from wolf.abc.resolvers import Located
-from wolf.wsgi.request import Request
-from wolf.rendering import renderer
-from wolf.services.flash import SessionMessages
-from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
+from wolf.app.request import Request
+from wolf.app.render import renderer
+from wolf.app.services.flash import SessionMessages
+from wolf.rendering.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
 
 
 slots = SlotRegistry()

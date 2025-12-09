@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from wolf.pluggability import Installable
 
 
-logger = structlog.get_logger("wolf.services.token")
+logger = structlog.get_logger("wolf.app.services.jwt")
 
 
 class InvalidSignature(Exception):

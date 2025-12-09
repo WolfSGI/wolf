@@ -12,7 +12,7 @@ from mailbox import Maildir
 from wolf.pluggability import Installable
 
 
-logger = structlog.get_logger("wolf.services.post")
+logger = structlog.get_logger("wolf.app.services.post")
 
 
 class Mailman(list[Message]):

@@ -8,11 +8,11 @@ from http_session import Session
 from wolf.abc.identity import User, anonymous
 from wolf.abc.auth import SourceAction, Source, Authenticator, Preflight
 from wolf.abc.source import Challenge
-from wolf.wsgi.request import Request
+from wolf.app.request import Request
 from wolf.pluggability import Installable
 
 
-logger = structlog.get_logger("wolf.services")
+logger = structlog.get_logger("wolf.app.services.auth")
 
 
 class AuthenticationInfo(t.TypedDict):

@@ -6,7 +6,7 @@ from wolf.abc.resolvers import URIResolver, Params, Extra
 from wolf.abc.resolvers.routing import Router, MatchedRoute
 
 
-logger = structlog.get_logger("wolf.wsgi.resolvers")
+logger = structlog.get_logger("wolf.app.resolvers")
 
 
 @dataclass(kw_only=True, repr=False)

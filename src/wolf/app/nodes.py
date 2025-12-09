@@ -4,8 +4,8 @@ from pathlib import PurePosixPath
 from abc import ABC, abstractmethod
 from collections import UserDict
 from kettu.exceptions import HTTPError
-from wolf.wsgi.response import Response
-from wolf.wsgi.types import (
+from wolf.app.response import Response
+from wolf.app.types import (
     WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
 )
 

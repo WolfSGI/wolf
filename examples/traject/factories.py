@@ -1,6 +1,6 @@
 from sqlmodel import Session as SQLSession, select
-from wolf.wsgi.app import Application
-from wolf.wsgi.request import Request
+from wolf.app import Application
+from wolf.app.request import Request
 from kettu.exceptions import HTTPError
 from wolf.abc.resolvers import Extra
 from wolf.abc.resolvers.traject import ContextRegistry

@@ -7,9 +7,9 @@ from typing import Sequence
 from pathlib import PurePosixPath, Path
 from mimetypes import guess_type
 from autoroutes import Routes
-from wolf.wsgi.nodes import Node
-from wolf.wsgi.response import Response, FileWrapperResponse
-from wolf.resources import Resource, known_extensions, NeededResources
+from wolf.app.nodes import Node
+from wolf.app.response import Response, FileWrapperResponse
+from wolf.rendering.resources import Resource, known_extensions, NeededResources
 from wolf.pluggability import Installable
 
 

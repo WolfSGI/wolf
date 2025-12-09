@@ -1,5 +1,5 @@
 import wrapt
-from wolf.wsgi.response import Response
+from wolf.app.response import Response
 
 
 @wrapt.decorator

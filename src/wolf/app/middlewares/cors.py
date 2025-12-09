@@ -6,7 +6,7 @@ from wolf.abc.request import RequestProtocol
 from wolf.abc.response import ResponseProtocol
 
 
-logger = structlog.get_logger("wolf.middlewares.cors")
+logger = structlog.get_logger("wolf.app.middlewares.cors")
 
 
 @dataclass(kw_only=True)

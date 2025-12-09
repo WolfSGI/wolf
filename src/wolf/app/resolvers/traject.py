@@ -5,13 +5,13 @@ from autorouting import MatchedRoute
 from autorouting.url import RouteURL
 from kettu.exceptions import HTTPError
 from wolf.pipeline import Wrapper, chain_wrap
-from wolf.wsgi.app import Application
+from wolf.app import Application
 from wolf.abc.resolvers import URIResolver
 from wolf.abc.resolvers.traject import ContextRegistry, ViewRegistry
 from wolf.abc.resolvers import Located, Params, Extra
 
 
-logger = structlog.get_logger("wolf.wsgi.resolvers")
+logger = structlog.get_logger("wolf.app.resolvers")
 
 
 class PathFragment(str):

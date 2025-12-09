@@ -1,6 +1,6 @@
 from typing import Any, NamedTuple
 from prejudice.errors import ConstraintError
-from wolf.wsgi.request import Request
+from wolf.app.request import Request
 from wolf.abc.identity import User, anonymous
 from signature_registries import TypedRegistry
 

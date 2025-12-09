@@ -5,11 +5,11 @@ from hamcrest import equal_to
 from sqlmodel import Session as SQLSession, select
 
 from wolf import matchers
-from wolf.wsgi.app import Application
+from wolf.app import Application
 from wolf.abc.resolvers import URIResolver
 from wolf.abc.resolvers.traject import ViewRegistry
 from wolf.form import Form, trigger
-from wolf.rendering import html, renderer
+from wolf.app.render import html, renderer
 from wolf.decorators import ondemand
 from models import Folder, Document
 from store import Stores, SchemaKey

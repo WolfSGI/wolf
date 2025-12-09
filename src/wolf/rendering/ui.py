@@ -5,10 +5,10 @@ from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
 from signature_registries import TypedRegistry, Registry
-from wolf.resources import JSResource, CSSResource
 from wolf.abc.request import RequestProtocol
 from wolf.pluggability import Installable
-from wolf.templates import Templates, EXPRESSION_TYPES
+from wolf.rendering.resources import JSResource, CSSResource
+from wolf.rendering.templates import Templates, EXPRESSION_TYPES
 
 
 class SlotRegistry(TypedRegistry):

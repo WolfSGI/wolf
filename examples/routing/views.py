@@ -5,12 +5,12 @@ from rq import Queue
 from wolf.abc.identity import User
 from wolf.abc.resolvers.routing import Router
 from wolf.decorators import ondemand
-from wolf.rendering import html, json, renderer
-from wolf.services.flash import SessionMessages
-from wolf.services.post import Mailman
-from wolf.wsgi.app import Application
-from wolf.wsgi.request import Request
-from wolf.wsgi.response import Response
+from wolf.app.render import html, json, renderer
+from wolf.app.services.flash import SessionMessages
+from wolf.app.services.post import Mailman
+from wolf.app import Application
+from wolf.app.request import Request
+from wolf.app.response import Response
 
 
 class request_content_type(BaseMatcher):

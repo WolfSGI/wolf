@@ -4,15 +4,15 @@ from dataclasses import dataclass, field
 from kettu.exceptions import HTTPError
 from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
-from wolf.wsgi.nodes import Mapping, Node
-from wolf.wsgi.response import Response
-from wolf.wsgi.request import Request
-from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from wolf.app.nodes import Mapping, Node
+from wolf.app.response import Response
+from wolf.app.request import Request
+from wolf.app.types import WSGIEnviron, WSGICallable, ExceptionInfo
 from wolf.utils import immutable_cached_property
 from wolf.pluggability import Installable
 
 
-logger = structlog.get_logger("wolf.wsgi.app")
+logger = structlog.get_logger("wolf.app")
 
 
 @dataclass(kw_only=True, repr=False)
@@ -56,9 +56,9 @@ class Application(Node):
                     raise err
 
         request = Request(environ)
-        with request(self.services) as scoped_request:
+        with request(self.services):
             try:
-                return self.endpoint(scoped_request)
+                return self.endpoint(request)
             except HTTPError as err:
                 logger.debug(err, exc_info=True)
                 raise

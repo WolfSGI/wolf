@@ -2,7 +2,7 @@ from wolf.abc.identity import User
 from wolf.abc.auth import Source
 from wolf.abc.source import Challenge
 from wolf.json import JSONSchema
-from wolf.wsgi.request import Request
+from wolf.app.request import Request
 from sqlmodel import Session
 from sqlalchemy import select, func
 from models import Person

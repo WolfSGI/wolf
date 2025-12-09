@@ -2,20 +2,20 @@ import wrapt
 import structlog
 from typing import Sequence
 from functools import partial
-from wolf.ui import UI
-from wolf.resources import Resource, NeededResources
-from wolf.wsgi.response import Response
+from wolf.rendering.ui import UI
+from wolf.rendering.resources import Resource, NeededResources
+from wolf.app.response import Response, FileWrapperResponse
 
 
-logger = structlog.get_logger("wolf.rendering.html")
+logger = structlog.get_logger("wolf.app.render")
 
 
 def html(func=None, *, resources: Sequence[Resource] | None = None):
     @wrapt.decorator
-    def html_wrapper(wrapped, instance, args, kwargs) -> Response:
+    def html_wrapper(wrapped, instance, args, kwargs) -> Response | FileWrapperResponse:
         content = wrapped(*args, **kwargs)
 
-        if isinstance(content, Response):
+        if isinstance(content, (Response, FileWrapperResponse)):
             return content
 
         if not isinstance(content, str):

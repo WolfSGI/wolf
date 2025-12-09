@@ -7,9 +7,9 @@ from abc import ABC, abstractmethod
 from kettu.datastructures import Data
 from kettu.exceptions import HTTPError
 from wolf.annotations import annotation
-from wolf.resources import NeededResources
+from wolf.rendering.resources import NeededResources
 from wolf.abc.resolvers import APIView
-from wolf.rendering import html, renderer
+from wolf.app.render import html, renderer
 
 
 class trigger(annotation):
