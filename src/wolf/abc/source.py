@@ -5,6 +5,13 @@ from wolf.abc.auth import Source, SourceAction
 from wolf.abc.identity import User, UserID
 
 
+class Preflight(SourceAction):
+
+    @abc.abstractmethod
+    def preflight(self):
+        pass
+
+
 class Create(SourceAction):
 
     @abc.abstractmethod
