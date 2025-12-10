@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from http_session import Session
 from wolf.abc.identity import User, anonymous
 from wolf.abc.auth import SourceAction, Source, Authenticator, Preflight
-from wolf.abc.source import Challenge
+from wolf.abc.source import Challenge, Preflight
 from wolf.app.request import Request
 from wolf.pluggability import Installable
 
@@ -57,14 +57,9 @@ class Sources(t.Iterable[Source]):
 class BaseAuthenticator(Installable, Authenticator):
 
     sources: dict[str, Source]
-    preflights: list[Preflight]
 
-    def __init__(self,
-                 sources: t.Mapping[str, Source] | None = None,
-                 preflights: t.Iterable[Preflight] | None = None
-                 ):
+    def __init__(self, sources: t.Mapping[str, Source] | None = None):
         self.sources = Sources(sources is not None and sources or {})
-        self.preflights = preflights is not None and list(preflights) or []
 
     def install(self, application):
         application.services.register_value(Authenticator, self)
@@ -91,14 +86,15 @@ class BaseAuthenticator(Installable, Authenticator):
         return None, None
 
     def identify(self, request) -> User | None:
-        if self.preflights:
-            logger.info(f'Authentication preflight found.')
-            for resolver in self.preflights:
-                if (user := resolver(request)) is not None:
+        for source in sources.values():
+            if Preflight in source.actions:
+                logger.info(f'Preflight found: {source.title}')
+                user = source.actions[Preflight].preflight(request)
+                if user is not None:
                     logger.info(
-                        f'Preflight user found by {resolver}: {user}.')
+                        f'Preflight user found by {source.title}: {user}.')
                     return user
-            logger.info(f'Authentication preflight unsuccessful.')
+                logger.info(f'Authentication preflight unsuccessful.')
 
         logger.info(f'Authentication initiated.')
         if (info := self.get_stored_info(request)) is not None:
@@ -125,12 +121,10 @@ class BaseAuthenticator(Installable, Authenticator):
 class SessionAuthenticator(BaseAuthenticator):
     user_key: str
 
-    def __init__(self, *, user_key,
-                 sources: t.Mapping[str, Source] | None = None,
-                 preflights: t.Iterable[Preflight] | None = None
-                 ):
+    def __init__(self, *,
+                 user_key, sources: t.Mapping[str, Source] | None = None):
         self.user_key = user_key
-        super().__init__(sources=sources, preflights=preflights)
+        super().__init__(sources=sources)
 
     def get_stored_info(self, request: Request) -> AuthenticationInfo:
         session = request.get(Session)
