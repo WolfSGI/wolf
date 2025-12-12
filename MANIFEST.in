@@ -1,6 +1,5 @@
 recursive-include src *.py
 graft examples
-graft tests
 
 include *.rst
 include *.txt
