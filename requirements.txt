@@ -1,4 +1,4 @@
--e git+ssh://github.com/WolfSGI/kettu.git@httplib#egg=kettu
+-e git+ssh://github.com/WolfSGI/kettu.git#egg=kettu
 -e git+ssh://github.com/WolfSGI/autorouting.git#egg=autorouting
 -e git+ssh://github.com/WolfSGI/signature_registries.git#egg=signature_registries
 -e .
