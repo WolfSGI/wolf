@@ -35,6 +35,10 @@ class TranslationService(Installable):
         )
 
     def translator_factory(self, locale: Locale) -> Translator:
+        if locale is None:
+            # fallback
+            locale = Locale(self.accepted_languages[0])
+            logger.warn(f'locale was not found. Using Fallback: {locale}.')
         return Translator(
             self.translations,
             self.default_domain,
