@@ -1,10 +1,8 @@
 import structlog
-import svcs
 from dataclasses import dataclass, field
 from autorouting import MatchedRoute
 from autorouting.url import RouteURL
 from kettu.exceptions import HTTPError
-from wolf.pipeline import Wrapper, chain_wrap
 from wolf.app import Application
 from wolf.abc.resolvers import URIResolver
 from wolf.abc.resolvers.traject import ContextRegistry, ViewRegistry

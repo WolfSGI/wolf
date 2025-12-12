@@ -2,7 +2,6 @@ import urllib.parse
 from typing import TypeVar, Generic, Any
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from kettu.exceptions import HTTPError
 from kettu.headers import Query, Cookies, ContentType
 from wolf.abc.response import ResponseProtocol
 from wolf.utils import immutable_cached_property

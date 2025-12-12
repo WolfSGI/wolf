@@ -4,7 +4,6 @@ from functools import wraps
 from dataclasses import dataclass
 from http_session.cookie import SameSite, HashAlgorithm, SignedCookieManager
 from http_session import Store, Session
-import svcs
 
 
 logger = structlog.get_logger("wolf.app.middlewares.session")

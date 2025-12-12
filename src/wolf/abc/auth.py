@@ -1,5 +1,4 @@
 import abc
-import uuid
 import typing as t
 from wolf.abc.identity import User, UserID
 from wolf.abc.request import RequestProtocol

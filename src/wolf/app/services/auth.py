@@ -1,4 +1,3 @@
-import abc
 import typing as t
 import structlog
 from wrapt import ObjectProxy
@@ -6,7 +5,7 @@ from types import MappingProxyType
 from dataclasses import dataclass
 from http_session import Session
 from wolf.abc.identity import User, anonymous
-from wolf.abc.auth import SourceAction, Source, Authenticator, Preflight
+from wolf.abc.auth import Source, Authenticator
 from wolf.abc.source import Challenge, Preflight
 from wolf.app.request import Request
 from wolf.pluggability import Installable
@@ -18,7 +17,6 @@ logger = structlog.get_logger("wolf.app.services.auth")
 class AuthenticationInfo(t.TypedDict):
     source_id: str
     user_id: str
-
 
 
 class SourceProxy(ObjectProxy):
@@ -94,15 +92,15 @@ class BaseAuthenticator(Installable, Authenticator):
                     logger.info(
                         f'Preflight user found by {source.title}: {user}.')
                     return user
-                logger.info(f'Authentication preflight unsuccessful.')
+                logger.info('Authentication preflight unsuccessful.')
 
-        logger.info(f'Authentication initiated.')
+        logger.info('Authentication initiated.')
         if (info := self.get_stored_info(request)) is not None:
             source = self.sources[info['source_id']]
             user = source.get(request, info['user_id'])
             if user is not None:
                 logger.info(
-                    f"Authentication by {info['source_id']} successful: {user}")
+                    f"Source {info['source_id']} found: {user}")
                 return user
 
         return anonymous

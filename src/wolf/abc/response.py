@@ -1,11 +1,10 @@
 import orjson
 from pathlib import Path
-from typing import Generic, TypeVar, AnyStr, Any
-from collections.abc import Mapping, Iterable, Iterator, Callable, MutableMapping, Sequence
+from typing import Generic, TypeVar, AnyStr
+from collections.abc import Mapping, Iterable, Iterator, Callable
 from http import HTTPStatus
 from collections import deque
-from kettu.headers import Cookies, ContentType, ETag, Links
-from kettu.headers.utils import serialize_http_datetime, encode_uri
+from kettu.headers import Cookies
 from kettu.response import ResponseHeaders
 from kettu.constants import EMPTY_STATUSES, REDIRECT_STATUSES
 from kettu.types import HTTPCode
@@ -24,11 +23,11 @@ class FileResponseProtocol:
     __slots__ = ("status", "block_size", "headers", "filepath")
 
     def __init__(
-        self,
-        filepath: Path,
-        status: HTTPCode = 200,
-        block_size: int = 4096,
-        headers: HeadersT | None = None,
+            self,
+            filepath: Path,
+            status: HTTPCode = 200,
+            block_size: int = 4096,
+            headers: HeadersT | None = None,
     ):
         self.status = HTTPStatus(status)
         self.filepath = filepath

@@ -1,7 +1,6 @@
 import abc
 import typing as t
-from wolf.abc.request import RequestProtocol
-from wolf.abc.auth import Source, SourceAction
+from wolf.abc.auth import SourceAction
 from wolf.abc.identity import User, UserID
 
 
@@ -42,7 +41,6 @@ class Search(SourceAction):
         pass
 
     @abc.abstractmethod
-
     def count(self, criterions: dict) -> int:
         pass
 

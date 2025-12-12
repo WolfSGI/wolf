@@ -12,7 +12,9 @@ logger = structlog.get_logger("wolf.app.render")
 
 def html(func=None, *, resources: Sequence[Resource] | None = None):
     @wrapt.decorator
-    def html_wrapper(wrapped, instance, args, kwargs) -> Response | FileWrapperResponse:
+    def html_wrapper(
+            wrapped, instance, args, kwargs
+    ) -> Response | FileWrapperResponse:
         content = wrapped(*args, **kwargs)
 
         if isinstance(content, (Response, FileWrapperResponse)):

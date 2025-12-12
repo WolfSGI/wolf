@@ -2,7 +2,6 @@ from wolf.abc.auth import Source
 from wolf.abc.identity import User, UserID
 from wolf.abc.source import Challenge
 from wolf.json import JSONSchema
-from signature_registries import TypedValue
 
 
 class Login(Challenge):

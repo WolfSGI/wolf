@@ -1,7 +1,6 @@
 import structlog
 from dataclasses import dataclass, field
 from kettu.exceptions import HTTPError
-from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
 from wolf.abc.resolvers.routing import Router, MatchedRoute
 

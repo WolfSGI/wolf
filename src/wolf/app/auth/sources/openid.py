@@ -70,7 +70,6 @@ class Search(source.Search):
             yield KeycloakUser(user['username'], data=user)
 
 
-
 class Challenge(source.Challenge):
 
     schema = JSONSchema({
@@ -145,7 +144,7 @@ class Create(source.Challenge):
         pwd = data.pop("password")
         data["credentials"] = [{"value": pwd, "type": "password"}]
         new_user = self.source.admin.create_user(data, exist_ok=False)
-        return True
+        return new_user
 
 
 class Update(source.Update):
@@ -170,7 +169,7 @@ class Update(source.Update):
             return None
 
         if kuid := self.source.admin.get_user_id(uid):
-            response = self.admin.update_user(
+            self.admin.update_user(
                 user_id=kuid,
                 payload=data
             )
@@ -184,7 +183,7 @@ class Delete(source.Delete):
 
     def delete(self, uid: UserID) -> bool:
         if kuid := self.source.admin.get_user_id(uid):
-            response = self.source.admin.delete_user(user_id=kuid)
+            self.source.admin.delete_user(user_id=kuid)
             return True
         return False
 

@@ -4,12 +4,9 @@ import urllib.parse
 from contextlib import contextmanager
 from datetime import datetime
 from svcs.exceptions import ServiceNotFoundError
-
 from kettu.datastructures import Data
 from kettu.exceptions import HTTPError
 from kettu import headers
-
-from typing import TypeVar, Generic, Any
 from wolf.utils import immutable_cached_property
 from wolf.abc.request import RequestProtocol
 from wolf.app.parsers import parser

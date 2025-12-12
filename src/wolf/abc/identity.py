@@ -1,6 +1,5 @@
 import abc
 import uuid
-import typing as t
 
 
 UserID = str | int | uuid.UUID
