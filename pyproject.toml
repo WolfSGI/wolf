@@ -11,27 +11,32 @@ authors = [
 requires-python = ">=3.10"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
-  "beartype",
+  "annotated-types",
   "autoroutes",
-  "chameleon",
-  "orjson",
-  "svcs",
-  "wrapt",
-  "sqlmodel",
-  "itsdangerous",
-  "http_session",
-  "vernacular",
   "autorouting",
+  "beartype",
+  "chameleon",
+  "frozendict",
+  "http_session",
+  "itsdangerous",
+  "jsonschema_rs",
+  "kettu",
+  "orderedsets",
+  "orjson",
   "plum-dispatch",
   "pyhamcrest",
+  "rich",
+  "signature_registries",
+  "sqlmodel",
+  "structlog",
+  "svcs",
+  "vernacular",
+  "wrapt",
+
   # following the soon-to-be excised from the package
   "deform",
   "colander",
   "pyjwt",
-  "kettu",
-  "structlog",
-  "rich",
-  "signature_registries",
 ]
 
 [project.optional-dependencies]
