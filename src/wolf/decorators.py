@@ -24,8 +24,6 @@ def ondemand(func):
 
     @wraps(func)
     def dispatch(request: RequestProtocol, *args, **kwargs):
-        nonlocal dependencies
-
         mapper = {}
         for dependency in dependencies:
             if dependency.name in kwargs:

@@ -85,7 +85,7 @@ class ResponseProtocol(Generic[F]):
             code: HTTPCode = 200,
             body: BodyT | None = None,
             headers: HeadersT | None = None,
-    ) -> "Response":
+    ) -> "ResponseProtocol":
         data = orjson.dumps(body)
         if headers is None:
             headers = {"Content-Type": "application/json"}
@@ -100,7 +100,7 @@ class ResponseProtocol(Generic[F]):
             code: HTTPCode = 200,
             body: AnyStr = b"",
             headers: HeadersT | None = None,
-    ) -> "Response":
+    ) -> "ResponseProtocol":
         response = cls(code, body, headers=headers)
         response.headers.content_type = "text/html; charset=utf-8"
         return response
@@ -112,7 +112,7 @@ class ResponseProtocol(Generic[F]):
             code: HTTPCode = 303,
             body: BodyT | None = None,
             headers: HeadersT | None = None,
-    ) -> "Response":
+    ) -> "ResponseProtocol":
         if code not in REDIRECT_STATUSES:
             raise ValueError(f"{code}: unknown redirection code.")
 

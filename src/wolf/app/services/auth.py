@@ -86,7 +86,7 @@ class BaseAuthenticator(Installable, Authenticator):
         return None, None
 
     def identify(self, request) -> User | None:
-        for source in sources.values():
+        for source in self.sources.values():
             if Preflight in source.actions:
                 logger.info(f'Preflight found: {source.title}')
                 user = source.actions[Preflight].preflight(request)

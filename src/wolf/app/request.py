@@ -187,7 +187,7 @@ class Request(RequestProtocol[WSGIEnviron]):
         try:
             value = self.environ["HTTP_IF_RANGE"]
             if '"' in value:
-                return ETag.from_string(value)
+                return headers.ETag.from_string(value)
             return headers.parse_http_datetime(value)
         except KeyError:
             return None

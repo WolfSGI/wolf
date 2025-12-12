@@ -142,5 +142,4 @@ __all__ = [
     "Factory",
     "ViewRegistry",
     "ContextRegistry",
-    "Traverser",
 ]

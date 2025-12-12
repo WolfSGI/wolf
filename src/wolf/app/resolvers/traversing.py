@@ -41,7 +41,7 @@ class TraversingResolver(URIResolver):
         raise NotImplementedError("Unavailable for Traversing")
 
     def __or__(self, other: "TraversingResolver"):
-        return TrajectResolver(
+        return TraversingResolver(
             publisher=(self.publisher | other.publisher),
             views=(self.views | other.views)
         )

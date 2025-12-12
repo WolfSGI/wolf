@@ -187,17 +187,17 @@ class ResourceManager(Installable, Node, StaticAccessor):
     def resolve(self, environ):
         match, _ = self.resources.match(environ["PATH_INFO"])
         if not match:
-            return WSGIResponse(status=404)
+            return Response(status=404)
 
         headers = {
             "Content-Length": str(match["size"]),
             "Content-Type": match["content_type"],
         }
         if environ["REQUEST_METHOD"] == "HEAD":
-            return WSGIResponse(200, headers=headers)
+            return Response(200, headers=headers)
 
         if "wsgi.file_wrapper" not in environ:
-            return WSGIResponse.from_file_path(
+            return Response.from_file_path(
                 match["filepath"], headers=headers
             )
         return FileWrapperResponse(match["filepath"], headers=headers)
