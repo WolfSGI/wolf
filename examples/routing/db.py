@@ -4,7 +4,7 @@ from wolf.abc.source import Challenge
 from wolf.json import JSONSchema
 from wolf.app.request import Request
 from sqlmodel import Session
-from sqlalchemy import select, func
+from sqlalchemy import select
 from models import Person
 
 

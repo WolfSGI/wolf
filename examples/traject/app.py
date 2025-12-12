@@ -13,7 +13,8 @@ from wolf.app.services.token import JWTService
 from wolf.rendering.resources import CSSResource, JSResource
 from wolf.rendering.templates import Templates
 from wolf.rendering.ui import UI
-import ui, views, store, factories, resources
+
+import ui, views, store, factories, resources  # noqa
 
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -71,31 +72,32 @@ app.use(
             CSSResource(
                 "/bootstrap@5.0.2/dist/css/bootstrap.min.css",
                 root="https://cdn.jsdelivr.net/npm",
-                integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC",
+                integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC",  # noqa
                 crossorigin="anonymous"
             ),
             CSSResource(
                 "/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
                 root="https://cdn.jsdelivr.net/npm",
-                integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd",
+                integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd",  # noqa
                 crossorigin="anonymous"
             ),
             JSResource(
                 "/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
                 root="https://cdn.jsdelivr.net/npm",
                 bottom=True,
-                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM",
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM",  # noqa
                 crossorigin="anonymous"
             ),
             JSResource(
                 "/jquery-3.7.1.min.js",
                 root="https://code.jquery.com",
-                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=",
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=",  # noqa
                 crossorigin="anonymous"
             )
         }
     )
 )
+
 
 # Run once at startup:
 def extract_from_record(_, __, event_dict):
@@ -106,6 +108,7 @@ def extract_from_record(_, __, event_dict):
     event_dict["thread_name"] = record.threadName
     event_dict["process_name"] = record.processName
     return event_dict
+
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
 pre_chain = [

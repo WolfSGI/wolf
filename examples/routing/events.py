@@ -33,7 +33,6 @@ class UserEvent(ObjectEvent):
         self.obj = obj
 
 
-
 class Events(Registry):
 
     def register(self, event_type: Type[Event], *args, name=None, **kwargs):
@@ -60,6 +59,7 @@ events2 = Events()
 @events1.register(Event)
 def very_simple_handler(event):
     print("Some event occured", event)
+
 
 @events1.register(ObjectEvent, object, order=2)
 def handler_for_all(event):

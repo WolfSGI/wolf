@@ -16,7 +16,6 @@ class Actions(TypedRegistry):
 actions = Actions()
 
 
-
 def is_not_anonymous(request, view, context):
     if request.get(User) is anonymous:
         raise ConstraintError('User is anonymous.')

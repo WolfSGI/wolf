@@ -14,7 +14,8 @@ subslots = SubSlotRegistry()
 
 @layouts.register(..., name="")
 @renderer(template='layout', layout_name=None)
-def default_layout(request: Request, view: Any, context: Any, name: str, content: str):
+def default_layout(
+        request: Request, view: Any, context: Any, name: str, content: str):
     return {'content': content, 'view': view, 'context': context}
 
 
@@ -22,7 +23,8 @@ def default_layout(request: Request, view: Any, context: Any, name: str, content
 class AboveContent:
 
     @renderer(template='slots/above', layout_name=None)
-    def __call__(self, request: Request, view: Any, context: Any, *, items):
+    def __call__(
+            self, request: Request, view: Any, context: Any, *, items):
         return {
             'items': [item(request, self, view, context) for item in items]
         }
@@ -30,7 +32,8 @@ class AboveContent:
 
 @subslots.register({"manager": AboveContent}, name='messages')
 @renderer(template='slots/messages', layout_name=None)
-def messages(request: Request, manager: AboveContent, view: Any, context: Any):
+def messages(
+        request: Request, manager: AboveContent, view: Any, context: Any):
     flash = request.get(SessionMessages)
     return {
         'messages': list(flash)
@@ -39,7 +42,8 @@ def messages(request: Request, manager: AboveContent, view: Any, context: Any):
 
 @subslots.register({'manager': AboveContent}, name='crumbs')
 @renderer(template='slots/breadcrumbs', layout_name=None)
-def breadcrumbs(request: Request, manager: AboveContent, view: Any, context: Any):
+def breadcrumbs(
+        request: Request, manager: AboveContent, view: Any, context: Any):
     node = context
     parents = deque()
     while node is not None:

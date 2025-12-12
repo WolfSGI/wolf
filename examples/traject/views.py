@@ -38,7 +38,8 @@ def root_index(request, *, context: Application):
 @html
 @renderer(template='views/folder')
 @ondemand
-def folder_index(resolver: URIResolver, sqlsession: SQLSession, *, context: Folder):
+def folder_index(
+        resolver: URIResolver, sqlsession: SQLSession, *, context: Folder):
     query = select(Document).filter(Document.folder_id == context.id)
     documents = sqlsession.exec(query).all()
     return {

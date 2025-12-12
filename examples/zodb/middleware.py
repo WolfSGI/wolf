@@ -1,7 +1,6 @@
 import typing as t
 import structlog
 from functools import wraps
-from dataclasses import dataclass, field
 from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
@@ -16,7 +15,7 @@ logger = structlog.get_logger("wolf.examples.zodb")
 
 
 @dataclass(kw_only=True)
-class Transaction:
+class TransactionMiddleware:
 
     factory: t.Callable[[], TransactionManager] = (
         lambda: TransactionManager(explicit=True)
@@ -37,11 +36,12 @@ class Transaction:
             try:
                 response = handler(request, *args, **kwargs)
                 if txn.isDoomed():
-                    logger.info('Transaction aborted: transaction is doomed.')
+                    logger.info('Aborted: transaction is doomed.')
                     txn.abort()
                 elif (isinstance(response, Response)
                       and response.status >= 400):
-                    logger.info(f'Transaction aborted: response has code {response.status}')
+                    logger.info(
+                        f'Aborted: response has code {response.status}')
                     txn.abort()
                 else:
                     txn.commit()

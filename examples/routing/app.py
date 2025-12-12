@@ -6,8 +6,7 @@ import http_session_file
 from redis import Redis
 from rq import Queue
 from wolf.rendering.ui import UI
-from wolf.rendering.resources import JSResource, CSSResource
-from wolf.rendering.templates import Templates
+from wolf.rendering.resources import JSResource, CSSResource, Templates
 from wolf.app import Application
 from wolf.app.auth.sources.openid import KeycloakSource
 from wolf.app.middlewares import HTTPSession, NoAnonymous
@@ -18,17 +17,19 @@ from wolf.app.services.post import PostOffice
 from wolf.app.services.resources import ResourceManager
 from wolf.app.services.sqldb import SQLDatabase
 from wolf.app.services.translation import TranslationService
-import register, login, views, actions, ui, folder, document, db
-from keycloak import KeycloakOpenIDConnection, KeycloakOpenID
+from keycloak import KeycloakOpenIDConnection
+
+import register, login, views, actions, ui, folder, document, db  # noqa
 
 
 keycloak_connection = KeycloakOpenIDConnection(
     server_url="http://localhost:9090",
     realm_name="novareto.de",
-    client_id = "novareto_de",
-    client_secret_key = "JcVTUM6IGK4CR51yw4Qg1K6WL1XAeblt",
-    verify=False, # BBB attention
+    client_id="novareto_de",
+    client_secret_key="JcVTUM6IGK4CR51yw4Qg1K6WL1XAeblt",
+    verify=False,  # BBB attention
 )
+
 keycloak_source = KeycloakSource(
     keycloak_connection,
     title="Keycloak source",
@@ -70,8 +71,6 @@ app = Application(
     )
 )
 
-
-
 app.use(
     libraries,
     PostOffice(
@@ -91,26 +90,26 @@ app.use(
             CSSResource(
                 "/bootstrap@5.0.2/dist/css/bootstrap.min.css",
                 root="https://cdn.jsdelivr.net/npm",
-                integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC",
+                integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC",  # noqa
                 crossorigin="anonymous"
             ),
             CSSResource(
                 "/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
                 root="https://cdn.jsdelivr.net/npm",
-                integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd",
+                integrity="sha384-4LISF5TTJX/fLmGSxO53rV4miRxdg84mZsxmO8Rx5jGtp/LbrixFETvWa5a6sESd",  # noqa
                 crossorigin="anonymous"
             ),
             JSResource(
                 "/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
                 root="https://cdn.jsdelivr.net/npm",
                 bottom=True,
-                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM",
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM",  # noqa
                 crossorigin="anonymous"
             ),
             JSResource(
                 "/jquery-3.7.1.min.js",
                 root="https://code.jquery.com",
-                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=",
+                integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=",  # noqa
                 crossorigin="anonymous"
             )
         }
@@ -152,6 +151,7 @@ def extract_from_record(_, __, event_dict):
     event_dict["thread_name"] = record.threadName
     event_dict["process_name"] = record.processName
     return event_dict
+
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
 pre_chain = [
