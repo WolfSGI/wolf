@@ -116,10 +116,11 @@ class EditDocument(Form):
     @trigger('save', 'Update document')
     def save(self, request, data, *, context):
         form = self.get_form(request, context=context)
+        resolver = request.get(URIResolver)
         appstruct = form.validate(data)
         context.content = appstruct
-        resolver = path_for(request, context)
-        return request.response_cls.redirect(resolver(context, 'view'))
+        uri = resolver.path_for(context, 'view')
+        return request.response_cls.redirect(uri)
 
 
 @registry.register(
