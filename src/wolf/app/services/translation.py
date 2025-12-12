@@ -23,7 +23,7 @@ class TranslationService(Installable):
         application.services.register_value(Translations, self.translations)
         application.services.register_factory(
             Translator,
-            lambda svcs_container: self.translator(
+            lambda svcs_container: self.translator_factory(
                 svcs_container.get(Locale)
             )
         )
