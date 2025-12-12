@@ -2,7 +2,7 @@ from functools import wraps, cache
 from inspect import Signature
 from types import FunctionType
 from typing import NamedTuple
-from kettu.http.request import Request
+from wolf.abc.request import RequestProtocol
 
 
 class Dependency(NamedTuple):
@@ -23,11 +23,8 @@ def ondemand(func):
     dependencies = method_dependencies(func)
 
     @wraps(func)
-    def dispatch(request: Request, *args, **kwargs):
+    def dispatch(request: RequestProtocol, *args, **kwargs):
         nonlocal dependencies
-
-        if request.context is None:
-            raise AssertionError('Request does not provide a context.')
 
         mapper = {}
         for dependency in dependencies:

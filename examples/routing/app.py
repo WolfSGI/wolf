@@ -5,20 +5,35 @@ import vernacular
 import http_session_file
 from redis import Redis
 from rq import Queue
-from aioinject import Object
-from wolf.ui import UI
-from wolf.wsgi.app import WSGIApplication
-from wolf.wsgi.resolvers import RouteResolver
-from wolf.templates import Templates
-from wolf.middlewares import HTTPSession, NoAnonymous
-from kettu.resources import JSResource, CSSResource
-from wolf.services.resources import ResourceManager
-from wolf.services.auth import SessionAuthenticator
-from wolf.services.flash import Flash
-from wolf.services.sqldb import SQLDatabase
-from wolf.services.translation import TranslationService
-from wolf.services.post import PostOffice
+from wolf.rendering.ui import UI
+from wolf.rendering.resources import JSResource, CSSResource
+from wolf.rendering.templates import Templates
+from wolf.app import Application
+from wolf.app.auth.sources.openid import KeycloakSource
+from wolf.app.middlewares import HTTPSession, NoAnonymous
+from wolf.app.resolvers import RouteResolver
+from wolf.app.services.auth import SessionAuthenticator
+from wolf.app.services.flash import Flash
+from wolf.app.services.post import PostOffice
+from wolf.app.services.resources import ResourceManager
+from wolf.app.services.sqldb import SQLDatabase
+from wolf.app.services.translation import TranslationService
 import register, login, views, actions, ui, folder, document, db
+from keycloak import KeycloakOpenIDConnection, KeycloakOpenID
+
+
+keycloak_connection = KeycloakOpenIDConnection(
+    server_url="http://localhost:9090",
+    realm_name="novareto.de",
+    client_id = "novareto_de",
+    client_secret_key = "JcVTUM6IGK4CR51yw4Qg1K6WL1XAeblt",
+    verify=False, # BBB attention
+)
+keycloak_source = KeycloakSource(
+    keycloak_connection,
+    title="Keycloak source",
+    description="Keycloak users on the novareto.de realm"
+)
 
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -35,7 +50,7 @@ for translation in vernacular.translations(pathlib.Path('translations')):
     i18Catalog.add(translation)
 
 
-app = WSGIApplication(
+app = Application(
     resolver=RouteResolver(),
     middlewares=(
         HTTPSession(
@@ -54,6 +69,7 @@ app = WSGIApplication(
         )
     )
 )
+
 
 
 app.use(
@@ -103,7 +119,10 @@ app.use(
         url="sqlite:///database.db"
     ),
     SessionAuthenticator(
-        sources=(db.DBSource(),),
+        sources={
+            "sql": db.DBSource(),
+            "keycloak": keycloak_source
+        },
         user_key="user"
     ),
     Flash()

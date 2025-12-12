@@ -2,24 +2,24 @@ import pytest
 import webtest
 from unittest.mock import Mock
 from http import HTTPStatus
-from wolf.wsgi.response import WSGIResponse
+from wolf.wsgi.response import Response
 
 
 def test_can_set_status_from_numeric_value():
-    response = WSGIResponse(202)
+    response = Response(202)
     assert response.status == HTTPStatus.ACCEPTED
 
 
 def test_raises_if_code_is_unknown():
     with pytest.raises(ValueError):
-        WSGIResponse(999)
+        Response(999)
 
 
 def test_wrong_body_type():
     environ = {
         'PATH_INFO': '/'
     }
-    response = WSGIResponse(200, body=object())
+    response = Response(200, body=object())
     start_response = Mock()
     with pytest.raises(TypeError):
         list(response(environ, start_response))
@@ -29,7 +29,7 @@ def test_wrong_body_type():
 
 def test_bytes_representation_bodyless():
     app = webtest.TestApp(
-        WSGIResponse(HTTPStatus.ACCEPTED)
+        Response(HTTPStatus.ACCEPTED)
     )
     response = app.get('/')
     assert response.status_int == 202
@@ -41,7 +41,7 @@ def test_bytes_representation_bodyless():
 
 def test_representation_with_body():
     app = webtest.TestApp(
-        WSGIResponse(HTTPStatus.OK, body="Super")
+        Response(HTTPStatus.OK, body="Super")
     )
     response = app.get('/')
     assert response.status_int == 200
@@ -51,7 +51,7 @@ def test_representation_with_body():
 
 def test_representation_bodyless_with_body():
     app = webtest.TestApp(
-        WSGIResponse(
+        Response(
             HTTPStatus.NO_CONTENT, body="Super")
     )
     response = app.get('/')
@@ -62,7 +62,7 @@ def test_representation_bodyless_with_body():
 
 def test_304_no_content_type():
     app = webtest.TestApp(
-        WSGIResponse(HTTPStatus.NOT_MODIFIED)
+        Response(HTTPStatus.NOT_MODIFIED)
     )
     response = app.get('/')
     assert response.status_int == 304
@@ -72,7 +72,7 @@ def test_304_no_content_type():
 
 def test_1XX_no_content_type():
     app = webtest.TestApp(
-        WSGIResponse(HTTPStatus.CONTINUE)
+        Response(HTTPStatus.CONTINUE)
     )
     response = app.get('/', status=100)
     assert response.status_int == 100
@@ -81,7 +81,7 @@ def test_1XX_no_content_type():
 
 
 def test_response_cookies():
-    response = WSGIResponse()
+    response = Response()
     assert response.cookies == {}
     assert response.cookies is response.headers.cookies
 
@@ -89,7 +89,7 @@ def test_response_cookies():
 def test_finishers():
     from collections import deque
 
-    response = WSGIResponse()
+    response = Response()
     assert response._finishers is None
     assert response.close() is None
 
@@ -113,7 +113,7 @@ def test_finishers_order():
             calls.append(num)
         return task
 
-    response = WSGIResponse()
+    response = Response()
     response.add_finisher(tasker(1))
     response.add_finisher(tasker(2))
     response.add_finisher(tasker(3))
@@ -139,7 +139,7 @@ def test_exception_finisher():
             calls.append(num)
         return task
 
-    response = WSGIResponse()
+    response = Response()
     response.add_finisher(tasker(1))
     response.add_finisher(tasker(2))
     response.add_finisher(tasker(3))

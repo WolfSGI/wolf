@@ -1,6 +1,6 @@
 from uuid import uuid4
 from typing import Any, Type
-from kettu.registries import Registry, Proxy
+from signature_registries import Registry, Proxy
 from plum import Signature
 
 

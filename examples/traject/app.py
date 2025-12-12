@@ -2,18 +2,17 @@ import structlog
 import http_session_file
 import pathlib
 import logging.config
-from aioinject import Object
-from kettu.resources import CSSResource, JSResource
-from wolf.wsgi.app import WSGIApplication
-from wolf.wsgi.resolvers import TrajectResolver
-from wolf.middlewares import HTTPSession
-from wolf.services.flash import Flash
-from wolf.services.post import PostOffice
-from wolf.services.resources import ResourceManager
-from wolf.services.sqldb import SQLDatabase
-from wolf.services.token import JWTService
-from wolf.templates import Templates
-from wolf.ui import UI
+from wolf.app import Application
+from wolf.app.middlewares import HTTPSession
+from wolf.app.resolvers import TrajectResolver
+from wolf.app.services.flash import Flash
+from wolf.app.services.post import PostOffice
+from wolf.app.services.resources import ResourceManager
+from wolf.app.services.sqldb import SQLDatabase
+from wolf.app.services.token import JWTService
+from wolf.rendering.resources import CSSResource, JSResource
+from wolf.rendering.templates import Templates
+from wolf.rendering.ui import UI
 import ui, views, store, factories, resources
 
 
@@ -28,7 +27,7 @@ libraries.add_library(resources.my_lib)
 libraries.finalize()
 
 
-app = WSGIApplication(
+app = Application(
     resolver=TrajectResolver(
         contexts=factories.registry,
         views=views.registry

@@ -1,5 +1,5 @@
 import pathlib
-from wolf.services.resources import Library, DiscoveryLibrary
+from wolf.app.services.resources import Library, DiscoveryLibrary
 
 here = pathlib.Path(__file__).parent.resolve()
 

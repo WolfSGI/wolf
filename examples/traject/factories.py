@@ -1,18 +1,18 @@
 from sqlmodel import Session as SQLSession, select
-from wolf.wsgi.app import WSGIApplication
-from kettu.http.request import Request
-from kettu.http.exceptions import HTTPError
-from kettu.routing import Extra
-from kettu.traject import ContextRegistry
+from wolf.app import Application
+from wolf.app.request import Request
+from kettu.exceptions import HTTPError
+from wolf.abc.resolvers import Extra
+from wolf.abc.resolvers.traject import ContextRegistry
 from models import Folder, Document
 
 
 registry = ContextRegistry()
 
 
-@registry.register(WSGIApplication, '/folders/{folder_id}')
+@registry.register(Application, '/folders/{folder_id}')
 def folder_factory(
-        request: Request, parent: WSGIApplication,  *,
+        request: Request, parent: Application,  *,
         folder_id: str) -> Folder:
 
     sqlsession = request.get(SQLSession)

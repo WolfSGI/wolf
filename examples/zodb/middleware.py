@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
-from kettu.pluggability import Installable
-from kettu.http.request import Request
-from kettu.http.response import Response
+from wolf.pluggability import Installable
+from wolf.app.request import Request
+from wolf.app.response import Response
 from ZODB import DB, Connection
 from transaction import Transaction, TransactionManager
 

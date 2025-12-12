@@ -1,8 +1,10 @@
 from typing import Any
-from wolf.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
-from wolf.rendering import renderer
-from wolf.wsgi.request import WSGIRequest
-from wolf.services.flash import SessionMessages
+from wolf.rendering.ui import SlotRegistry, LayoutRegistry, SubSlotRegistry
+from wolf.app.render import renderer
+from wolf.decorators import ondemand
+from wolf.app.request import Request
+from wolf.app.services.flash import SessionMessages
+from wolf.abc.identity import User, anonymous
 from actions import Actions
 from login import Login
 
@@ -15,7 +17,7 @@ subslots = SubSlotRegistry()
 @layouts.register(..., name="")
 @renderer(template='layout', layout_name=None)
 def default_layout(
-        request: WSGIRequest,
+        request: Request,
         view: Any,
         context: Any,
         name: str,
@@ -25,7 +27,7 @@ def default_layout(
 
 @slots.register(..., name='actions')
 @renderer(template='slots/actions', layout_name=None)
-def actions(request: WSGIRequest, view: Any, context: Any, *, items):
+def actions(request: Request, view: Any, context: Any, *, items):
     registry = request.get(Actions)
     matching = registry.match_grouped(request, view, context)
     evaluated = []
@@ -46,7 +48,7 @@ class AboveContent:
 
     @renderer(template='slots/above', layout_name=None)
     def __call__(self,
-                 request: WSGIRequest,
+                 request: Request,
                  view: Any,
                  context: Any,
                  *,
@@ -59,21 +61,21 @@ class AboveContent:
 
 @subslots.register({"manager": AboveContent}, name='messages')
 @renderer(template='slots/messages', layout_name=None)
-def messages(request: WSGIRequest, manager: AboveContent, view: Any, context: Any):
+def messages(request: Request, manager: AboveContent, view: Any, context: Any):
     flash = request.get(SessionMessages)
     return {'messages': list(flash), 'view': view, 'context': context, 'manager': manager}
 
 
-# @subslots.register({"manager": AboveContent}, name='identity')
-# @ondemand
-# def identity(who_am_i: User):
-#     if who_am_i is anonymous:
-#         return "<div class='container alert alert-secondary'>Not logged in.</div>"
-#     return f"<div class='container alert alert-info'>You are logged in as {who_am_i.id}</div>"
+@subslots.register({"manager": AboveContent}, name='identity')
+@ondemand
+def identity(who_am_i: User):
+    if who_am_i is anonymous:
+        return "<div class='container alert alert-secondary'>Not logged in.</div>"
+    return f"<div class='container alert alert-info'>You are logged in as {who_am_i.id}</div>"
 
 
 @slots.register({"view": Login}, name='sneaky')
-def sneaky(request: WSGIRequest,
+def sneaky(request: Request,
            view: Login,
            context: Any,
            *,
