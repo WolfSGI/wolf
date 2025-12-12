@@ -38,7 +38,7 @@ class TranslationService(Installable):
         return Translator(
             self.translations,
             self.default_domain,
-            self.locale
+            locale
         )
 
     def locale_factory(self, request: Request) -> Locale:
