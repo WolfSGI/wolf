@@ -20,7 +20,13 @@ class TranslationService(Installable):
     default_domain: str = "default"
 
     def install(self, application):
-        application.services.register_value(Translator, self.translator)
+        application.services.register_value(Translations, self.translations)
+        application.services.register_factory(
+            Translator,
+            lambda svcs_container: self.translator(
+                svcs_container.get(Locale)
+            )
+        )
         application.services.register_factory(
             Locale,
             lambda svcs_container: self.locale_factory(
@@ -28,12 +34,11 @@ class TranslationService(Installable):
             )
         )
 
-    @property
-    def translator(self) -> Translator:
+    def translator_factory(self, locale: Locale) -> Translator:
         return Translator(
             self.translations,
             self.default_domain,
-            self.accepted_languages[0]
+            self.locale
         )
 
     def locale_factory(self, request: Request) -> Locale:
