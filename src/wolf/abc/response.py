@@ -1,4 +1,5 @@
 import orjson
+from io import BytesIO
 from pathlib import Path
 from typing import Generic, TypeVar, AnyStr
 from collections.abc import Mapping, Iterable, Iterator, Callable
@@ -20,17 +21,17 @@ UNSET = object()
 
 class FileResponseProtocol:
 
-    __slots__ = ("status", "block_size", "headers", "filepath")
+    __slots__ = ("status", "block_size", "headers", "file_")
 
     def __init__(
             self,
-            filepath: Path,
+            file_: Path | BytesIO,
             status: HTTPCode = 200,
             block_size: int = 4096,
             headers: HeadersT | None = None,
     ):
         self.status = HTTPStatus(status)
-        self.filepath = filepath
+        self.file_ = file_
         self.headers = ResponseHeaders(headers)  # idempotent.
         self.block_size = block_size
 
