@@ -35,6 +35,10 @@ class FileResponseProtocol:
         self.headers = ResponseHeaders(headers)  # idempotent.
         self.block_size = block_size
 
+    @property
+    def cookies(self) -> Cookies:
+        return self.headers.cookies
+
 
 class ResponseProtocol(Generic[F]):
     __slots__ = ("status", "body", "headers", "_finishers")
