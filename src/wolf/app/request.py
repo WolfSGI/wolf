@@ -11,7 +11,7 @@ from wolf.utils import immutable_cached_property
 from wolf.abc.request import RequestProtocol
 from wolf.app.parsers import parser
 from wolf.app.response import Response, FileWrapperResponse
-from wolf.app.types import WSGIEnviron
+from wolf.wsgi.types import WSGIEnviron
 
 
 T = t.TypeVar("T")

@@ -2,12 +2,13 @@ import structlog
 import svcs
 from dataclasses import dataclass, field
 from kettu.exceptions import HTTPError
+
 from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
 from wolf.app.nodes import Mapping, Node
 from wolf.app.response import Response
 from wolf.app.request import Request
-from wolf.app.types import WSGIEnviron, WSGICallable, ExceptionInfo
+from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
 from wolf.utils import immutable_cached_property
 from wolf.pluggability import Installable
 
@@ -55,7 +56,7 @@ class Application(Node):
                 if err.status != 404:
                     raise err
 
-        request = Request(environ)
+        request: Request = Request(environ)
         with request(self.services):
             try:
                 return self.endpoint(request)
