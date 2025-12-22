@@ -9,7 +9,7 @@ from email.mime.application import MIMEApplication
 from email.mime.text import MIMEText
 from email.message import Message
 from mailbox import Maildir
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app.services.post")

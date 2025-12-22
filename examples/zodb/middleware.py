@@ -4,7 +4,7 @@ from functools import wraps
 from contextlib import contextmanager
 from dataclasses import dataclass
 from collections.abc import Iterator
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 from wolf.app.request import Request
 from wolf.app.response import Response
 from ZODB import DB, Connection

@@ -6,7 +6,8 @@ import http_session_file
 from redis import Redis
 from rq import Queue
 from wolf.rendering.ui import UI
-from wolf.rendering.resources import JSResource, CSSResource, Templates
+from wolf.rendering.resources import JSResource, CSSResource
+from wolf.rendering.templates import Templates
 from wolf.app import Application
 from wolf.app.auth.sources.openid import KeycloakSource
 from wolf.app.middlewares import HTTPSession, NoAnonymous

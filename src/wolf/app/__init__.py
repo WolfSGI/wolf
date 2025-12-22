@@ -10,7 +10,7 @@ from wolf.app.response import Response
 from wolf.app.request import Request
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
 from wolf.utils import immutable_cached_property
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app")

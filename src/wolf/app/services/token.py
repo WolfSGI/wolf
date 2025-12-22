@@ -3,7 +3,7 @@ import jwt
 import structlog
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app.services.jwt")

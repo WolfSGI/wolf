@@ -8,7 +8,7 @@ from wolf.abc.identity import User, anonymous
 from wolf.abc.auth import Source, Authenticator
 from wolf.abc.source import Challenge, Preflight
 from wolf.app.request import Request
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app.services.auth")
