@@ -3,10 +3,10 @@
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <tal:crumbs repeat="(path, crumb) crumbs">
       <li class="breadcrumb-item active"
-          tal:condition="repeat[('path', 'crumb')].end">${crumb.__name__}</li>
+          tal:condition="repeat[('path', 'crumb')].end">${crumb.__id__}</li>
       <li class="breadcrumb-item"
           tal:condition="not repeat[('path', 'crumb')].end">
-        <a href="${path}">${crumb.__name__}</a>
+        <a href="${path}">${crumb.__id__}</a>
       </li>
     </tal:crumbs>
   </ol>

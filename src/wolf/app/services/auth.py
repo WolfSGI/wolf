@@ -42,6 +42,9 @@ class Sources(t.Iterable[Source]):
     def __iter__(self):
         yield from self._sources.values()
 
+    def values(self):
+        yield from self._sources.values()
+
     def items(self):
         return self._sources.items()
 
@@ -97,7 +100,7 @@ class BaseAuthenticator(Installable, Authenticator):
         logger.info('Authentication initiated.')
         if (info := self.get_stored_info(request)) is not None:
             source = self.sources[info['source_id']]
-            user = source.get(request, info['user_id'])
+            user = source.get(info['user_id'])
             if user is not None:
                 logger.info(
                     f"Source {info['source_id']} found: {user}")

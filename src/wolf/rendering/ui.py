@@ -45,7 +45,7 @@ def query_slot(econtext, name):
 
     try:
         manager = ui.slots.fetch(request, view, context, name=name)
-        if manager.__evaluate__(request, view, context):
+        if manager.__evaluate__(request, view=view, context=context):
             return None
 
         if manager.__metadata__.isclass:
@@ -56,9 +56,10 @@ def query_slot(econtext, name):
             for subslot in ui.subslots.match_grouped(
                 request, manager, view, context
             ).values()
-            if not subslot.__evaluate__(request, manager, view, context)
+            if not subslot.__evaluate__(
+                request, manager=manager, view=view, context=context)
         ]
-        return manager(request, view, context, items=subslots)
+        return manager(request, view=view, context=context, items=subslots)
 
     except LookupError:
         # No slot found. We don't render anything.
@@ -78,7 +79,7 @@ class SlotExpr:
         value = template(
             "query_slot(econtext, name)",
             query_slot=Symbol(query_slot),  # ast of query_slot
-            name=ast.Str(s=slot_name),  # our name parameter to query_slot
+            name=ast.Constant(slot_name),  # our name parameter to query_slot
             mode="eval",
         )
         return [ast.Assign(targets=[target], value=value)]
