@@ -8,7 +8,7 @@ from wolf.abc.identity import User, anonymous
 from wolf.abc.auth import Source, Authenticator
 from wolf.abc.source import Challenge, Preflight
 from wolf.app.request import Request
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app.services.auth")
@@ -40,6 +40,9 @@ class Sources(t.Iterable[Source]):
         return self._sources.__getitem__(name)
 
     def __iter__(self):
+        yield from self._sources.values()
+
+    def values(self):
         yield from self._sources.values()
 
     def items(self):
@@ -97,7 +100,7 @@ class BaseAuthenticator(Installable, Authenticator):
         logger.info('Authentication initiated.')
         if (info := self.get_stored_info(request)) is not None:
             source = self.sources[info['source_id']]
-            user = source.get(request, info['user_id'])
+            user = source.get(info['user_id'])
             if user is not None:
                 logger.info(
                     f"Source {info['source_id']} found: {user}")

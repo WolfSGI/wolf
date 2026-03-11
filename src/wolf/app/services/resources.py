@@ -11,7 +11,7 @@ from wolf.app.nodes import Node
 from wolf.app.response import Response, FileWrapperResponse
 from wolf.rendering.resources import (
     Resource, known_extensions, NeededResources)
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 class HashAlgorithm(enum.Enum):

@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from collections import UserDict
 from kettu.exceptions import HTTPError
 from wolf.app.response import Response
-from wolf.app.types import (
+from wolf.wsgi.types import (
     WSGICallable, WSGIEnviron, StartResponse, ExceptionInfo
 )
 

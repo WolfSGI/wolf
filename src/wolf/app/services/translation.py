@@ -5,7 +5,7 @@ from typing import NewType, Annotated
 from vernacular import Translations
 from vernacular.translate import Translator
 from wolf.app.request import Request
-from wolf.pluggability import Installable
+from wolf.app.pluggability import Installable
 
 
 logger = structlog.get_logger("wolf.app.services.translation")

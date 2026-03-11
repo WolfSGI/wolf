@@ -2,7 +2,7 @@ import structlog
 from wolf.annotations import annotation
 
 
-logger = structlog.get_logger("wolf.pluggability")
+logger = structlog.get_logger("wolf.app.pluggability")
 
 
 class install_method(annotation):

@@ -2,7 +2,7 @@ from functools import wraps, cache
 from inspect import Signature
 from types import FunctionType
 from typing import NamedTuple
-from wolf.abc.request import RequestProtocol
+from wolf.app.request import Request
 
 
 class Dependency(NamedTuple):
@@ -20,10 +20,10 @@ def method_dependencies(
 
 def ondemand(func):
 
-    dependencies = method_dependencies(func)
+    dependencies: list[Dependency] = method_dependencies(func)
 
     @wraps(func)
-    def dispatch(request: RequestProtocol, *args, **kwargs):
+    def dispatch(request: Request, *args, **kwargs):
         mapper = {}
         for dependency in dependencies:
             if dependency.name in kwargs:

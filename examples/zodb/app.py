@@ -3,8 +3,10 @@ import pathlib
 import logging.config
 import structlog
 from wolf.abc.resolvers.traversing import PublicationRoot
+from wolf.app.services.auth import SessionAuthenticator
+from wolf.app.auth.sources.mapping import DictSource
+from wolf.app.middlewares import HTTPSession, NoAnonymous
 from wolf.app import Application
-from wolf.app.middlewares import HTTPSession
 from wolf.app.resolvers import TraversingResolver
 from wolf.app.services.flash import Flash
 from wolf.app.services.resources import ResourceManager
@@ -30,7 +32,7 @@ libraries.finalize()
 
 app = Application(
     resolver=TraversingResolver(views=views.views),
-    middlewares=[
+    middlewares=(
         middleware.TransactionMiddleware(),
         HTTPSession(
             store=http_session_file.FileStore(
@@ -41,14 +43,26 @@ app = Application(
             cookie_name="cookie_name",
             secure=False,
             TTL=3000
+        ),
+        NoAnonymous(
+            login_url='/login',
+            allowed_urls={'/public'}
         )
-    ]
+    )
 )
 
 app.use(
     middleware.ZODB(db=DB(FileStorage("example.fs"))),
     libraries,
     Flash(),
+    SessionAuthenticator(
+        sources={
+            "example": DictSource({
+                "christopher": "test"
+            }),
+        },
+        user_key="user"
+    ),
     UI(
         slots=ui.slots,
         subslots=ui.subslots,
@@ -157,8 +171,13 @@ def zodb_root(svcs_container):
     root = connection.root()
     if "app" not in root:
         app = models.ApplicationRoot()
-        folder = app["folder"] = models.Folder()
-        folder["doc1"] = models.Document(
+        folder1 = app["folder"] = models.Folder()
+        folder2 = app["chris_folder"] = models.Folder(editors=('christopher',))
+        folder1["doc1"] = models.Document(
+            name="whatever",
+            content="This is document 1"
+        )
+        folder2["doc2"] = models.Document(
             name="whatever",
             content="This is document 1"
         )

@@ -1,5 +1,5 @@
 <article>
-  <h2>Folder: ${getattr(context, '__name__', 'Root')}</h2>
+  <h2>Folder: ${getattr(context, '__id__', 'Root')}</h2>
   <section>
     <h3>Content</h3>
     <div class="list-group">

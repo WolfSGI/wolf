@@ -4,7 +4,7 @@ from kettu.headers import Query
 from rq import Queue
 from wolf.abc.identity import User
 from wolf.abc.resolvers.routing import Router
-from wolf.decorators import ondemand
+from wolf.app.decorators import ondemand
 from wolf.app.render import html, json, renderer
 from wolf.app.services.flash import SessionMessages
 from wolf.app.services.post import Mailman
