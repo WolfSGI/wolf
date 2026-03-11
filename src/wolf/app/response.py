@@ -32,9 +32,15 @@ class FileWrapperResponse(WSGICallable, FileResponseProtocol):
 
         if isinstance(self.file_, Path):
             filelike = self.file_.open("rb")
-            return environ["wsgi.file_wrapper"](filelike, self.block_size)
         elif isinstance(self.file_, BytesIO):
-            return environ["wsgi.file_wrapper"](self.file_, self.block_size)
+            filelike = self.file_
+        else:
+            raise TypeError(
+                "Response file should be a Path or a BytesIO object.")
 
-        raise TypeError(
-            "Response file should be a Path or a BytesIO object.")
+        import pdb
+        pdb.set_trace()
+        if 'wsgi.file_wrapper' in environ:
+            return environ['wsgi.file_wrapper'](filelike, self.block_size)
+        else:
+            return iter(lambda: filelike.read(block_size), '')
