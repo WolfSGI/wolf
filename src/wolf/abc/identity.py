@@ -1,16 +1,9 @@
-import abc
-import uuid
-
-
-UserID = str | int | uuid.UUID
-
-
-class User(abc.ABC):
-    id: UserID
+from authsources.identity import User
 
 
 class AnonymousUser(User):
-    id: int = -1
+    id = -1
+    data = None
 
 
 anonymous = AnonymousUser()

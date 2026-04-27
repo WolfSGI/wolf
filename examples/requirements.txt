@@ -1,4 +1,4 @@
-deform@git+https://github.com/novareto/deform.git
+deform == 3.0.1
 jsonschema_colander@git+https://github.com/novareto/jsonschema_colander.git
 http_session_file
 colander
@@ -10,3 +10,4 @@ rq
 redis == 5.1.1
 transaction
 ZODB
+authsources_keycloak

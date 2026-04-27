@@ -1,11 +1,11 @@
 import colander
 import deform
+from authsources.authenticator import Authenticator
+from wolf.abc.resolvers.routing import Router
 from wolf.abc.resolvers.traject import ViewRegistry
 from wolf.app.render import html, renderer
-from wolf.form import Form, trigger
-from wolf.abc.auth import Authenticator
-from wolf.abc.resolvers.routing import Router
 from wolf.app.services.flash import SessionMessages
+from wolf.form import Form, trigger
 
 import models
 from resources import somejs

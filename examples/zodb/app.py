@@ -2,9 +2,9 @@ import http_session_file
 import pathlib
 import logging.config
 import structlog
+from authsources.sources.mapping import DictSource, Login, Fetch
 from wolf.abc.resolvers.traversing import PublicationRoot
 from wolf.app.services.auth import SessionAuthenticator
-from wolf.app.auth.sources.mapping import DictSource
 from wolf.app.middlewares import HTTPSession, NoAnonymous
 from wolf.app import Application
 from wolf.app.resolvers import TraversingResolver
@@ -57,9 +57,16 @@ app.use(
     Flash(),
     SessionAuthenticator(
         sources={
-            "example": DictSource({
-                "christopher": "test"
-            }),
+            "example": DictSource(
+                {
+                    "christopher": {
+                        "password": "test"
+                    }
+                },
+                title="Basic auth source",
+                description="Basic auth source",
+                actions=(Login, Fetch)
+            ),
         },
         user_key="user"
     ),

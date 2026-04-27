@@ -75,7 +75,7 @@ def messages(
 @subslots.register({"manager": AboveContent}, name='identity')
 @ondemand
 def identity(who_am_i: User):
-    if who_am_i is anonymous:
+    if who_am_i is None:
         return ("<div class='container alert alert-secondary'>"
                 "Not logged in.</div>")
     return ("<div class='container alert alert-info'>"

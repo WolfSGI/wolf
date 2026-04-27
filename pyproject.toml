@@ -11,6 +11,7 @@ authors = [
 requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
+  "authsources",
   "annotated-types",
   "autoroutes",
   "autorouting",
@@ -25,7 +26,6 @@ dependencies = [
   "orjson",
   "plum-dispatch",
   "pyhamcrest",
-  "rich",
   "signature_registries",
   "sqlmodel",
   "structlog",

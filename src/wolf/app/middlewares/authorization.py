@@ -1,10 +1,10 @@
 from pathlib import PurePosixPath
 from functools import wraps
 from dataclasses import dataclass, field
+from authsources.identity import User
 from kettu.exceptions import HTTPError
 from wolf.abc.request import RequestProtocol
 from wolf.abc.response import ResponseProtocol
-from wolf.abc.identity import anonymous, User
 
 
 @dataclass(kw_only=True)
@@ -29,8 +29,8 @@ class NoAnonymous:
                 if path.is_relative_to(bypass):
                     return handler(request, *args, **kwargs)
 
-            user = request.get(User, default=anonymous)
-            if user is anonymous:
+            user = request.get(User, default=None)
+            if user is None:
                 if self.login_url is None:
                     raise HTTPError(401)
                 return request.response_cls.redirect(

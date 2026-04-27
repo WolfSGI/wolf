@@ -1,5 +1,6 @@
 import urllib.parse
 from typing import TypeVar, Generic, Any
+from authsources.protocols import RequestProtocol as BaseRequestProtocol
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from kettu.headers import Query, Cookies, ContentType
@@ -11,7 +12,7 @@ E = TypeVar("E", bound=Mapping)
 T = TypeVar('T')
 
 
-class RequestProtocol(ABC, Generic[E]):
+class RequestProtocol(ABC, BaseRequestProtocol, Generic[E]):
     environ: E
     response_cls: type[ResponseProtocol]
 

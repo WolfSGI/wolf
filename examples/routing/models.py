@@ -1,21 +1,24 @@
 from pydantic import computed_field
 from sqlmodel import Field, SQLModel, Relationship
-from wolf.abc.identity import User
+from typing import Mapping
 
 
-class Person(User, SQLModel, table=True):
+class Person(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     email: str = Field(unique=True)
     name: str | None = None
     age: int
     password: str
-
     folders: list["Folder"] = Relationship(back_populates="author")
 
     @computed_field
     @property
     def folders_count(self) -> int:
         return len(self.folders)
+
+    @property
+    def data(self) -> Mapping:
+        return self.model_dump()
 
 
 class Folder(SQLModel, table=True):

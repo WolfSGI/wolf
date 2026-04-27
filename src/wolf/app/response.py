@@ -38,8 +38,6 @@ class FileWrapperResponse(WSGICallable, FileResponseProtocol):
             raise TypeError(
                 "Response file should be a Path or a BytesIO object.")
 
-        import pdb
-        pdb.set_trace()
         if 'wsgi.file_wrapper' in environ:
             return environ['wsgi.file_wrapper'](filelike, self.block_size)
         else:
