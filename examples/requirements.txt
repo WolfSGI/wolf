@@ -1,13 +1,14 @@
-deform == 3.0.1
-jsonschema_colander@git+https://github.com/novareto/jsonschema_colander.git
-http_session_file
-colander
-sqlmodel
-waitress
-websockets
-pydantic
-rq
-redis == 5.1.1
-transaction
 ZODB
 authsources_keycloak
+colander
+deform == 3.0.1
+http_session_file
+jsonschema_colander@git+https://github.com/novareto/jsonschema_colander.git
+pydantic
+redis == 5.1.1
+rq
+sqlmodel
+transaction
+waitress
+websockets
+wolf_sql@git+https://github.com/WolfSGI/wolf_sql.git

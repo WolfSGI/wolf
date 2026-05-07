@@ -38,12 +38,12 @@ class JWTManager:
         try:
             decoded = jwt.decode(token, self.public_key, algorithms=["RS256"])
             return decoded
-        except jwt.exceptions.InvalidSignatureError:
-            raise InvalidSignature()
-        except jwt.ExpiredSignatureError:
-            raise ExpiredToken()
-        except jwt.exceptions.InvalidTokenError:
-            raise InvalidToken()
+        except jwt.exceptions.InvalidSignatureError as exc:
+            raise InvalidSignature() from exc
+        except jwt.ExpiredSignatureError as exc:
+            raise ExpiredToken() from exc
+        except jwt.exceptions.InvalidTokenError as exc:
+            raise InvalidToken() from exc
 
 
 @dataclass(kw_only=True)

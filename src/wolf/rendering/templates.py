@@ -18,6 +18,9 @@ EXPRESSION_TYPES = {}
 
 
 class Templates(Mapping[str, template.PageTemplate]):
+    """Template registry as a mapping.
+    """
+
     registry: MutableMapping[str, Path]
     cache: MutableMapping[str, template.PageTemplate]
     extensions = {

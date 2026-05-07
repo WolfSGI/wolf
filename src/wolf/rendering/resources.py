@@ -97,11 +97,11 @@ class NeededResources(Hashable, MutableSet[JSResource | CSSResource]):
         self.data |= other
         return self
 
-    def add(self, item):
-        self.data.add(item)
+    def add(self, value):
+        self.data.add(value)
 
-    def discard(self, item):
-        self.data.discard(item)
+    def discard(self, value):
+        self.data.discard(value)
 
     def update(self, other: set):
         self.data.update(other)
@@ -143,7 +143,7 @@ class NeededResources(Hashable, MutableSet[JSResource | CSSResource]):
         return final
 
     def apply(self, body: str | bytes, application_uri: str = "") -> bytes:
-        if not len(self):
+        if len(self) == 0:
             return body
 
         if isinstance(body, str):

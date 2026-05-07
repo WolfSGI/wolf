@@ -27,7 +27,6 @@ dependencies = [
   "plum-dispatch",
   "pyhamcrest",
   "signature_registries",
-  "sqlmodel",
   "structlog",
   "svcs",
   "vernacular",

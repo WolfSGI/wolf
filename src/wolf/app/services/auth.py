@@ -7,9 +7,8 @@ from http_session import Session
 from authsources.authenticator import Authenticator
 from authsources.protocols import Challenge, Preflight, Getter
 from authsources.source import Source
-from kettu.datastructures import Container
 from authsources.identity import User
-from wolf.abc.identity import User
+from wolf.container import Container
 from wolf.app.pluggability import Installable
 from wolf.app.request import Request
 
@@ -47,7 +46,7 @@ class BaseAuthenticator(Installable, Authenticator):
                 action = bound.get(Challenge)
                 user = action.challenge(credentials)
                 if user is not None:
-                    return source.__name__, user
+                    return source.__uri__, user
         return None, None
 
     def identify(self, request) -> User | None:

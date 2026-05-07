@@ -3,11 +3,13 @@ import structlog
 import logging.config
 import vernacular
 import http_session_file
+
 from redis import Redis
 from rq import Queue
-from wolf.rendering.ui import UI
-from wolf.rendering.resources import JSResource, CSSResource
-from wolf.rendering.templates import Templates
+
+from authsources_keycloak.actions import Challenge, Fetch
+from authsources_keycloak.source import KeycloakSource
+from keycloak import KeycloakOpenIDConnection
 from wolf.app import Application
 from wolf.app.middlewares import HTTPSession, NoAnonymous
 from wolf.app.resolvers import RouteResolver
@@ -15,11 +17,11 @@ from wolf.app.services.auth import SessionAuthenticator
 from wolf.app.services.flash import Flash
 from wolf.app.services.post import PostOffice
 from wolf.app.services.resources import ResourceManager
-from wolf.app.services.sqldb import SQLDatabase
 from wolf.app.services.translation import TranslationService
-from keycloak import KeycloakOpenIDConnection
-from authsources_keycloak.source import KeycloakSource
-from authsources_keycloak.actions import Challenge, Fetch
+from wolf.rendering.resources import JSResource, CSSResource
+from wolf.rendering.templates import Templates
+from wolf.rendering.ui import UI
+from wolf_sql import SQLDatabase
 
 import register, login, views, actions, ui, folder, document, db, models  # noqa
 
