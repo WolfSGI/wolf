@@ -12,3 +12,4 @@ transaction
 waitress
 websockets
 wolf_sql@git+https://github.com/WolfSGI/wolf_sql.git
+wolf_jwt@git+https://github.com/WolfSGI/wolf_jwt.git

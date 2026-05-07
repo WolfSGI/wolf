@@ -9,10 +9,10 @@ from wolf.app.resolvers import TrajectResolver
 from wolf.app.services.flash import Flash
 from wolf.app.services.post import PostOffice
 from wolf.app.services.resources import ResourceManager
-from wolf.app.services.token import JWTService
 from wolf.rendering.resources import CSSResource, JSResource
 from wolf.rendering.templates import Templates
 from wolf.rendering.ui import UI
+from wolf_jwt import JWTService
 from wolf_sql import SQLDatabase
 
 import ui, views, store, factories, resources  # noqa
