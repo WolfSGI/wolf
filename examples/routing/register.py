@@ -58,7 +58,7 @@ class Register(Form):
     def get_schema(self, request, *, context):
         return RegistrationSchema()
 
-    @trigger('login', 'Login')
+    @trigger(name='login', title='Login')
     def save(self, request, data, *, context):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)

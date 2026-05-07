@@ -4,17 +4,16 @@
 import deform
 import colander
 from abc import ABC, abstractmethod
+from fct_annotate import annotation
 from kettu.datastructures import Data
 from kettu.exceptions import HTTPError
-from wolf.annotations import annotation
 from wolf.rendering.resources import NeededResources
 from wolf.abc.resolvers import APIView
 from wolf.app.render import html, renderer
-from fct_annotate import annotation
 
 
 @annotation('form_trigger')
-class trigger(annotation):
+class trigger:
     name: str
     title: str
     order: int = 0

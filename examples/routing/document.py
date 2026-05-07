@@ -32,7 +32,7 @@ class CreateDocument(Form):
         schema['text'].widget = deform.widget.TextAreaWidget()
         return schema
 
-    @trigger('add', 'Add new document')
+    @trigger(name='add', title='Add new document')
     def add(self, request, data, *, context):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)

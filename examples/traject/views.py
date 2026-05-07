@@ -55,7 +55,7 @@ class CreateFolder(Form):
     def get_schema(self, request, *, context=None):
         return Folder.get_schema(exclude=("id",))
 
-    @trigger('save', 'Create new folder')
+    @trigger(name='save', title='Create new folder')
     def save(self, request, data, *, context: Application):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)
@@ -88,7 +88,7 @@ class CreateDocument(Form):
         schema['type'].widget = deferred_choices_widget
         return schema
 
-    @trigger('save', 'Create new document')
+    @trigger(name='save', title='Create new document')
     def save(self, request, data, *, context):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)
@@ -114,7 +114,7 @@ class EditDocument(Form):
     def get_initial_data(self, request, *, context=None):
         return context.content
 
-    @trigger('save', 'Update document')
+    @trigger(name='save', title='Update document')
     def save(self, request, data, *, context):
         form = self.get_form(request, context=context)
         resolver = request.get(URIResolver)

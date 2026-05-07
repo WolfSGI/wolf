@@ -28,7 +28,7 @@ class CreateFolder(Form):
     def get_schema(self, request, *, context=None):
         return folder_schema()
 
-    @trigger('add', 'Add new folder')
+    @trigger(name='add', title='Add new folder')
     def add(self, request, data, *, context):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)

@@ -1,15 +1,13 @@
 import structlog
-from wolf.annotations import annotation
+from fct_annotate import annotation
 
 
 logger = structlog.get_logger("wolf.app.pluggability")
 
 
-class install_method(annotation):
-    name = "__install_method__"
-
-    def __init__(self, _for: type | tuple[type]):
-        self.annotation = _for
+@annotation("install_method")
+class install_method:
+    _for: type | tuple[type]
 
 
 class Installable:

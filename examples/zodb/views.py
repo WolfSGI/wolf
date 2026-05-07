@@ -61,7 +61,7 @@ class Login(Form):
     def get_schema(self, request, *, context=None):
         return LoginSchema()
 
-    @trigger('login', 'Login')
+    @trigger(name='login', title='Login')
     def save(self, request, data, *, context):
         form = self.get_form(request, context=context)
         appstruct = form.validate(data)
