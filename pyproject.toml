@@ -32,6 +32,7 @@ dependencies = [
   "svcs",
   "vernacular",
   "wrapt",
+  "fct_annotate",
 
   # following the soon-to-be excised from the package
   "deform",

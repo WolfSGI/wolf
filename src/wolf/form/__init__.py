@@ -10,13 +10,14 @@ from wolf.annotations import annotation
 from wolf.rendering.resources import NeededResources
 from wolf.abc.resolvers import APIView
 from wolf.app.render import html, renderer
+from fct_annotate import annotation
 
 
+@annotation('form_trigger')
 class trigger(annotation):
-    name = "__form_trigger__"
-
-    def __init__(self, name: str, title: str, order: int = 0):
-        super().__init__(name=name, title=title, order=order)
+    name: str
+    title: str
+    order: int = 0
 
 
 class Form(ABC, APIView):
