@@ -17,12 +17,12 @@ actions = Actions()
 
 
 def is_not_anonymous(request, view, context):
-    if request.get(User) is anonymous:
+    if request.get(User) is None:
         raise ConstraintError('User is anonymous.')
 
 
 def is_anonymous(request, view, context):
-    if request.get(User) is not anonymous:
+    if request.get(User) is not None:
         raise ConstraintError('User is not anonymous.')
 
 
