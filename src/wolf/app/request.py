@@ -146,6 +146,12 @@ class Request(RequestProtocol[WSGIEnviron]):
         default=ACCEPT_ALL
     )
 
+    authorization: headers.Authorization = header_property(
+        "HTTP_AUTHORIZATION",
+        caster=headers.Authorization.from_string,
+        default=None
+    )
+
     accept_language: headers.Languages = header_property(
         "HTTP_ACCEPT_LANGUAGE",
         caster=headers.Languages.from_string,

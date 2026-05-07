@@ -21,7 +21,7 @@ dependencies = [
   "http_session",
   "itsdangerous",
   "jsonschema_rs",
-  "kettu",
+  "kettu >= 0.2",
   "orderedsets",
   "orjson",
   "plum-dispatch",

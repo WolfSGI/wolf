@@ -1,7 +1,7 @@
 import pytest
 from webtest.app import TestRequest as EnvironBuilder
 from kettu.datastructures import Data
-from kettu.headers import Query
+from kettu.headers import Query, Authorization, DigestAuthParams
 from wolf.app.request import Request
 
 
@@ -32,3 +32,27 @@ def test_request_immutability():
     del request.path
     request.environ['PATH_INFO'] = '/test'
     assert request.path == '/test'
+
+
+def test_request_authorization():
+    environ = EnvironBuilder.blank(
+        '/',
+        authorization="Bearer Whatever"
+    ).environ
+    request = Request(environ)
+    assert request.authorization == Authorization(
+        scheme='bearer',
+        credentials="Whatever"
+    )
+
+    environ = EnvironBuilder.blank(
+        '/',
+        authorization='Digest uri="/?a=b"'
+    ).environ
+    request = Request(environ)
+    assert request.authorization == (
+        'digest',
+        DigestAuthParams(
+            uri="/?a=b"
+        )
+    )
