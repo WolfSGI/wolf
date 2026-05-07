@@ -197,8 +197,4 @@ class ResourceManager(Installable, Node, StaticAccessor):
         if environ["REQUEST_METHOD"] == "HEAD":
             return Response(200, headers=headers)
 
-        if "wsgi.file_wrapper" not in environ:
-            return Response.from_file_path(
-                match["filepath"], headers=headers
-            )
         return FileWrapperResponse(match["filepath"], headers=headers)
