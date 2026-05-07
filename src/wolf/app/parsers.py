@@ -39,7 +39,7 @@ class BodyParser(dict[MIMEType, Parser]):
         try:
             return parser(body, header.mimetype, **header.options)
         except ValueError as exc:
-            raise HTTPError(HTTPStatus.BAD_REQUEST, str(exc))
+            raise HTTPError(HTTPStatus.BAD_REQUEST, str(exc)) from exc
 
 
 parser = BodyParser()
@@ -57,8 +57,8 @@ def json_parser(
     try:
         jsondata = orjson.loads(data.decode(charset))
         return Data(json=jsondata)
-    except orjson.JSONDecodeError:
-        raise ValueError("Unparsable JSON body.")
+    except orjson.JSONDecodeError as exc:
+        raise ValueError("Unparsable JSON body.") from exc
 
 
 @parser.register("multipart/form-data")

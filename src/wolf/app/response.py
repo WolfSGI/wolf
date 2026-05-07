@@ -40,5 +40,5 @@ class FileWrapperResponse(WSGICallable, FileResponseProtocol):
 
         if 'wsgi.file_wrapper' in environ:
             return environ['wsgi.file_wrapper'](filelike, self.block_size)
-        else:
-            return iter(lambda: filelike.read(self.block_size), '')
+
+        return iter(lambda: filelike.read(self.block_size), '')

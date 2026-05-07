@@ -120,7 +120,7 @@ class StaticAccessor:
     def __init__(self, path: str):
         self.path = path
         self.resources = None
-        self.libraries = dict()
+        self.libraries = {}
 
     def finalize(self):
         self.resources = Routes()

@@ -38,9 +38,9 @@ def header_property(
             value = request.environ[name]
             if caster is not None:
                 value = caster(value)
-        except KeyError:
+        except KeyError as exc:
             if default is UNSET:
-                raise HTTPError(on_missing)
+                raise HTTPError(on_missing) from exc
             value = default
         return value
 
