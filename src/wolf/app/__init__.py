@@ -30,15 +30,20 @@ class Application(Node):
         self.services.register_factory(Extra, Extra)
 
     def handle_exception(self, exc_info: ExceptionInfo, environ: WSGIEnviron):
+        """Override from the Node class to handle errors are 500 responses.
+        """
         typ, err, tb = exc_info
         logger.critical(err, exc_info=False)
         return Response(500, str(err))
 
     def use(self, *components: Installable):
+        logger.info(f"Installing new components on {self}.")
         for component in components:
+            logger.info(f"Installing {component}.")
             component.install(self)
 
     def finalize(self):
+        logger.info(f"Finalizing app for {self}. Ready to serve.")
         self.resolver.finalize()
 
     @immutable_cached_property
@@ -49,6 +54,7 @@ class Application(Node):
         )
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
+        logger.debug(f"{self} got a request.")
         if self.sinks:
             try:
                 return self.sinks.resolve(environ)
@@ -60,6 +66,7 @@ class Application(Node):
         with request(self.services):
             try:
                 response = self.endpoint(request)
+                logger.debug(f"{self} responds with a {response.status}.")
                 return response
             except HTTPError as err:
                 logger.debug(err, exc_info=True)

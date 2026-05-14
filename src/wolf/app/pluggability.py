@@ -13,6 +13,9 @@ class install_method:
 class Installable:
 
     def install(self, application):
+        """Default method for `Installable`. All methods decorated by the
+        `install_method` decorator will be called on the application object.
+        """
         for restrict, func in install_method.find(self):
             if not isinstance(application, restrict):
                 logger.warning(
@@ -21,4 +24,5 @@ class Installable:
                 )
                 pass
             else:
+                logger.debug(f"Installation calls {self} on {application}.")
                 func(application)
