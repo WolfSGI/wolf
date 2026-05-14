@@ -78,7 +78,7 @@ class ContextRegistry(TypedRouter):
             for matcher in self.lookup(root.__class__):
                 found = matcher.get(stub, method)
                 if found:
-                    obj = found.routed(request, root, **found.params)
+                    obj = found.component(request, root, **found.params)
                     if obj is None:
                         raise LookupError(stub)
                     located = Located(obj, parent=root, path=stub)

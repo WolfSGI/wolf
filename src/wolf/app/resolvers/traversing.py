@@ -33,7 +33,7 @@ class TraversingResolver(URIResolver):
         params = request.get(Params)
         params.update(view.params)
         request.context.register_local_value(MatchedRoute, view)
-        return view.routed(request, context=leaf)
+        return view.component(request, context=leaf)
 
     def path_for(self, *args, **kwargs):
         raise NotImplementedError("Unavailable for Traversing")

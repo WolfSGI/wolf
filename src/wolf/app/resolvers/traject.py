@@ -53,7 +53,7 @@ class TrajectResolver(URIResolver):
         params = request.get(Params)
         params |= view.params
         request.context.register_local_value(MatchedRoute, view)
-        return view.routed(request, context=leaf)
+        return view.component(request, context=leaf)
 
     def path_for(
             self,
