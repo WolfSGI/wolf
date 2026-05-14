@@ -151,7 +151,7 @@ def test_nested_mapping():
     node = Mapping({"/some":  Mapping({'/thing': basic_app})})
     node(environ, start_response)
     start_response.assert_called_with('404 Not Found', [])
-    assert environ == {'SCRIPT_NAME': '', 'PATH_INFO': '/some'}
+    assert environ == {'SCRIPT_NAME': '/some', 'PATH_INFO': '/'}
     start_response.reset()
 
     environ = {'SCRIPT_NAME': '', 'PATH_INFO': '/some/thing'}

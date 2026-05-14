@@ -27,29 +27,16 @@ class Node(ABC, WSGICallable):
         pass
 
     def __call__(self, environ: WSGIEnviron, start_response: StartResponse):
-        iterable = None
+        wsgicallable = None
         try:
-            iterable = self.resolve(environ)
-            yield from iterable(environ, start_response)
+            wsgicallable = self.resolve(environ)
         except HTTPError as exc:
-            iterable = Response(exc.status, body=exc.body)
-            yield from iterable(environ, start_response)
+            wsgicallable = Response(exc.status, body=exc.body)
         except Exception:
-            iterable = self.handle_exception(sys.exc_info(), environ)
-            if iterable is None:
+            wsgicallable = self.handle_exception(sys.exc_info(), environ)
+            if wsgicallable is None:
                 raise
-            yield from iterable(environ, start_response)
-        finally:
-            if iterable is not None:
-                close: t.Callable[[], None] | None = getattr(
-                    iterable, "close", None
-                )
-                if close is not None:
-                    try:
-                        close()
-                    except Exception:
-                        self.handle_exception(sys.exc_info(), environ)
-                        raise
+        return wsgicallable(environ, start_response)
 
 
 class Mapping(Node, UserDict[str, WSGICallable]):

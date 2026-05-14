@@ -223,3 +223,11 @@ logging.config.dictConfig({
 app.finalize()
 
 wsgi_app = app
+
+from granian import Granian
+
+def my_hook():
+    print("I am starting!")
+
+server = Granian(target=app)
+server.on_startup(my_hook)

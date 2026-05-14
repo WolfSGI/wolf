@@ -59,7 +59,8 @@ class Application(Node):
         request: Request = Request(environ)
         with request(self.services):
             try:
-                return self.endpoint(request)
+                response = self.endpoint(request)
+                return response
             except HTTPError as err:
                 logger.debug(err, exc_info=True)
                 raise
