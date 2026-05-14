@@ -8,9 +8,9 @@ from autorouting import matchers
 from wolf.app import Application
 from wolf.abc.resolvers import URIResolver
 from wolf.abc.resolvers.traject import ViewRegistry
-from wolf.form import Form, trigger
 from wolf.app.render import html, renderer
 from wolf.app.decorators import ondemand
+from wolf_form import Form, trigger
 from models import Folder, Document
 from store import Stores, SchemaKey
 from resources import somejs

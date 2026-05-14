@@ -1,9 +1,9 @@
 import colander
 import deform
 from authsources.authenticator import Authenticator
-from wolf.form import Form, trigger
 from wolf.abc.resolvers.routing import Router
 from wolf.app.services.flash import SessionMessages
+from wolf_form import Form, trigger
 
 
 routes = Router()

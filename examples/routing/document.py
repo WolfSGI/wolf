@@ -4,10 +4,10 @@ from sqlmodel import Session
 from wolf.abc.identity import User
 from wolf.abc.resolvers import Params
 from wolf.abc.resolvers.routing import Router
-from wolf.form import Form, trigger
 from wolf.app.render import html, renderer
 from wolf.app.services.flash import SessionMessages
 from wolf.app import Application
+from wolf_form import Form, trigger
 from models import Document
 
 
@@ -19,7 +19,6 @@ document_schema = jsonschema_colander.types.Object.from_json(
         "": {
             "exclude": ("id", "author_id", "folder_id")
         },
-
     }
 )
 

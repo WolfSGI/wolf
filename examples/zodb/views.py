@@ -5,7 +5,7 @@ from wolf.abc.resolvers.routing import Router
 from wolf.abc.resolvers.traject import ViewRegistry
 from wolf.app.render import html, renderer
 from wolf.app.services.flash import SessionMessages
-from wolf.form import Form, trigger
+from wolf_form import Form, trigger
 
 import models
 from resources import somejs

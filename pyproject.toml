@@ -11,12 +11,13 @@ authors = [
 requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
-  "authsources",
   "annotated-types",
+  "authsources",
   "autoroutes",
-  "autorouting",
+  "autorouting >= 0.2",
   "beartype",
   "chameleon",
+  "fct_annotate",
   "frozendict",
   "http_session",
   "itsdangerous",
@@ -31,11 +32,6 @@ dependencies = [
   "svcs",
   "vernacular",
   "wrapt",
-  "fct_annotate",
-
-  # following the soon-to-be excised from the package
-  "deform",
-  "colander",
 ]
 
 [project.optional-dependencies]

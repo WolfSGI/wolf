@@ -1,1 +1,2 @@
+-e git+https://github.com/WolfSGI/autorouting.git#egg=autorouting
 -e .[test]
