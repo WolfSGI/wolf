@@ -81,7 +81,7 @@ def breadcrumbs(
 @subslots.register({"manager": AboveContent}, name='identity')
 @ondemand
 def identity(who_am_i: User, *, context):
-    if who_am_i is anonymous:
+    if who_am_i is None:
         return ("<div class='container alert alert-secondary'>"
                 "Not logged in.</div>")
     permissions = gather_permissions(who_am_i, context)

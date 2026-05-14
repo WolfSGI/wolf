@@ -126,7 +126,7 @@ class EditDocument(Form):
 
 @registry.register(
     Document, '/', name="view",
-    requirements={"type": matchers.match_wildcards('schema2.1.2*')})
+    requirements={"type": matchers.Wildcard('schema2.1.2*')})
 @html
 @renderer
 def schema2_document_index(request, *, context: Document):

@@ -1,5 +1,5 @@
 ZODB
-authsources_keycloak
+authsources_keycloak >= 0.3
 colander
 deform == 3.0.1
 http_session_file

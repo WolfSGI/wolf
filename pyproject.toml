@@ -12,7 +12,7 @@ requires-python = ">=3.11"
 classifiers = ["License :: OSI Approved :: MIT License"]
 dependencies = [
   "annotated-types",
-  "authsources",
+  "authsources >= 0.4",
   "autoroutes",
   "autorouting >= 0.2",
   "beartype",
