@@ -32,7 +32,7 @@ class RouteResolver(URIResolver):
         # No need to guess the type. For optimization purposes,
         # we provide it.
         request.context.register_local_value(MatchedRoute, route)
-        return route.routed(request)
+        return route.component(request)
 
     def path_for(self, name: str, **namespace):
         return self.router.path_for(name, **namespace)

@@ -9,8 +9,10 @@ redis == 5.1.1
 rq
 sqlmodel
 transaction
-waitress
 websockets
 wolf_sql@git+https://github.com/WolfSGI/wolf_sql.git
 wolf_jwt@git+https://github.com/WolfSGI/wolf_jwt.git
 wolf_form@git+https://github.com/WolfSGI/wolf_form.git
+autorouting@git+https://github.com/WolfSGI/autorouting.git
+granian
+-e ..
