@@ -85,14 +85,15 @@ def test_blank_context():
 
     context = Registry()
     with request(context):
+        assert request.context.registry is context
         assert request.get(Cookies) is request.cookies
         assert request.get(Query) is request.query
         assert request.get(Request) is request
-
-        data = request.get(Data)
-        assert isinstance(data, Data)
+        assert request.get(Data) is request.data
 
         with pytest.raises(ServiceNotFoundError):
             assert request.get(MockService)
 
         assert request.get(MockService, default=None) is None
+
+    assert request.context is None
