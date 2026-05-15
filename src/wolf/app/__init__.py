@@ -48,9 +48,11 @@ class Application(Node):
         self.hooks[name].append(func)
 
     def hook(self, __hook__: str, **kwargs):
-        logger.debug(f"Triggering hook: {name} with {kwargs} as args.")
-        for func in self.hooks[__hook__]:
-            result = func(**kwargs)
+        logger.info(f"Fire hook: '{__hook__}' with {kwargs} as kwargs.")
+        if __hook__ in self.hooks:
+            for func in self.hooks[__hook__]:
+                logger.debug(f"Hook '{__hook__}': {func}.")
+                result = func(**kwargs)
 
     @immutable_cached_property
     def endpoint(self):

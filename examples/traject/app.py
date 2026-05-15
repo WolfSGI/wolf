@@ -56,7 +56,7 @@ app.use(
     PostOffice(
         path=pathlib.Path('test.mail')
     ),
-    SQLDatabase.from_url(url="sqlite:///database.db"),
+    SQLDatabase(url="sqlite:///database.db"),
     Flash(),
     UI(
         slots=ui.slots,
@@ -92,3 +92,4 @@ app.use(
         }
     )
 )
+app.hook('init')

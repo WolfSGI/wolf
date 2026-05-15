@@ -122,7 +122,7 @@ app.use(
             )
         }
     ),
-    SQLDatabase.from_url(url="sqlite:///database.db"),
+    SQLDatabase(url="sqlite:///database.db", echo=True),
     SessionAuthenticator(
         sources={
             "sql": database_source,
@@ -146,3 +146,5 @@ app.services.register_value(actions.Actions, actions.actions)
 # Jobs queue
 q = Queue(connection=Redis())
 app.services.register_value(Queue, q)
+
+app.hook('init')

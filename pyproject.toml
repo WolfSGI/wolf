@@ -14,7 +14,7 @@ dependencies = [
   "annotated-types",
   "authsources >= 0.4",
   "autoroutes",
-  "autorouting >= 0.2",
+  "autorouting >= 0.3",
   "beartype",
   "chameleon",
   "fct_annotate",
