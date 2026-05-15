@@ -10,10 +10,6 @@ class TypedRouter(TypedValue[t.Any, Router], defaultdict):
     def __init__(self):
         defaultdict.__init__(self, Router)
 
-    def finalize(self):
-        for router in self.values():
-            router.finalize()
-
     def add(
             self,
             root: t.Type[t.Any],

@@ -13,9 +13,6 @@ class RouteResolver(URIResolver):
 
     router: Router = field(default_factory=Router)
 
-    def finalize(self):
-        self.router.finalize()
-
     def resolve(self, request):
         extra = request.get(Extra)
         extra['request'] = request

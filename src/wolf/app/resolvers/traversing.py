@@ -12,9 +12,6 @@ class TraversingResolver(URIResolver):
     publisher: Publisher = field(default_factory=Publisher)
     views: ViewRegistry = field(default_factory=ViewRegistry)
 
-    def finalize(self):
-        self.views.finalize()
-
     def resolve(self, request):
         root = request.get(PublicationRoot)
         leaf, view_path = self.publisher.publish(request, root)

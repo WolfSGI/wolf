@@ -29,10 +29,6 @@ class TrajectResolver(URIResolver):
     contexts: ContextRegistry = field(default_factory=ContextRegistry)
     views: ViewRegistry = field(default_factory=ViewRegistry)
 
-    def finalize(self) -> None:
-        self.contexts.finalize()
-        self.views.finalize()
-
     def resolve(self, request):
         app = request.get(Application)
         leaf, view_path = self.contexts.resolve(

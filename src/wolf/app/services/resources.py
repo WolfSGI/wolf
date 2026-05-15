@@ -119,34 +119,33 @@ class StaticAccessor:
 
     def __init__(self, path: str):
         self.path = path
-        self.resources = None
+        self.resources = Routes()
         self.libraries = {}
 
-    def finalize(self):
-        self.resources = Routes()
-        for name, library in self.libraries.items():
-            for uri, full_path in iter(library):
-                stats = os.stat(full_path)
-                content_type, encoding = guess_type(full_path)
-                if not content_type:
-                    content_type = "octet/steam"
-                elif (
-                    content_type.startswith("text/")
-                    or content_type == "application/javascript"
-                ):
-                    content_type += "; charset=utf-8"
-                info = {
-                    "filepath": full_path,
-                    "size": stats.st_size,
-                    "last_modified": stats.st_mtime,
-                    "content_type": content_type,
-                }
-                self.resources.add(str("/" / PurePosixPath(uri)), **info)
+    def feed(self, library: Library):
+        for uri, full_path in iter(library):
+            stats = os.stat(full_path)
+            content_type, encoding = guess_type(full_path)
+            if not content_type:
+                content_type = "octet/steam"
+            elif (
+                content_type.startswith("text/")
+                or content_type == "application/javascript"
+            ):
+                content_type += "; charset=utf-8"
+            info = {
+                "filepath": full_path,
+                "size": stats.st_size,
+                "last_modified": stats.st_mtime,
+                "content_type": content_type,
+            }
+            self.resources.add(str("/" / PurePosixPath(uri)), **info)
 
     def add_library(self, library: Library, override: bool = False):
         if library.name in self.libraries and not override:
             raise KeyError(f"Library {library.name!r} already exists.")
         self.libraries[library.name] = library
+        self.feed(library)
 
     def add_static(
             self,

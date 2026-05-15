@@ -1,8 +1,8 @@
 import structlog
 import svcs
+from collections import defaultdict
 from dataclasses import dataclass, field
 from kettu.exceptions import HTTPError
-
 from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
 from wolf.app.nodes import Mapping, Node
@@ -22,6 +22,7 @@ class Application(Node):
     services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
+    hooks: dict[str, list] = field(default_factory=lambda: defaultdict(list))
 
     def __post_init__(self):
         self.services.register_value(Application, self)
@@ -42,9 +43,14 @@ class Application(Node):
             logger.info(f"Installing {component}.")
             component.install(self)
 
-    def finalize(self):
-        logger.info(f"Finalizing app for {self}. Ready to serve.")
-        self.resolver.finalize()
+    def listen(self, name: str, func):
+        logger.debug(f"Added hook handler for {name}: {func}.")
+        self.hooks[name].append(func)
+
+    def hook(self, __hook__: str, **kwargs):
+        logger.debug(f"Triggering hook: {name} with {kwargs} as args.")
+        for func in self.hooks[__hook__]:
+            result = func(**kwargs)
 
     @immutable_cached_property
     def endpoint(self):

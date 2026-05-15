@@ -37,10 +37,6 @@ class Params(dict):
 
 class URIResolver(Protocol):
 
-    def finalize(self) -> None:
-        pass
-
-    @abstractmethod
     def resolve(
             self, request: RequestProtocol
     ) -> ResponseProtocol | FileResponseProtocol:

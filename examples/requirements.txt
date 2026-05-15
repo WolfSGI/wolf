@@ -6,13 +6,11 @@ http_session_file
 jsonschema_colander@git+https://github.com/novareto/jsonschema_colander.git
 pydantic
 redis == 5.1.1
+granian
 rq
 sqlmodel
 transaction
-websockets
-wolf_sql@git+https://github.com/WolfSGI/wolf_sql.git
-wolf_jwt@git+https://github.com/WolfSGI/wolf_jwt.git
-wolf_form@git+https://github.com/WolfSGI/wolf_form.git
-autorouting@git+https://github.com/WolfSGI/autorouting.git
-granian
+-e git+https://github.com/WolfSGI/wolf_sql.git#egg=wolf_sql
+-e git+https://github.com/WolfSGI/wolf_jwt.git#egg=wolf_jwt
+-e git+https://github.com/WolfSGI/wolf_form.git#egg=wolf_form
 -e ..
