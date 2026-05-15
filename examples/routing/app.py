@@ -39,6 +39,14 @@ import register, login, views, actions, ui, folder, document, db, models  # noqa
 #     actions=(Challenge, Fetch)
 # )
 
+# COMPILE PO FILES
+vernacular.COMPILE = True
+
+# HELPER
+HERE = pathlib.Path(__file__).parent.resolve()
+
+
+#### CONFIG OF THE APP
 database_source = db.DBSource(
     title="SQL source",
     description="SQL users",
@@ -46,25 +54,17 @@ database_source = db.DBSource(
     usertype=models.Person
 )
 
-here = pathlib.Path(__file__).parent.resolve()
 
 libraries = ResourceManager('/static')
 libraries.add_package_static('deform:static')
-libraries.add_static('example', here / 'static', restrict=('*.jpg', '*.ico'))
-
-
-vernacular.COMPILE = True
-i18Catalog = vernacular.Translations()
-for translation in vernacular.translations(pathlib.Path('translations')):
-    i18Catalog.add(translation)
-
+libraries.add_static('example', HERE / 'static', restrict=('*.jpg', '*.ico'))
 
 app = Application(
     resolver=RouteResolver(),
     middlewares=(
         HTTPSession(
             store=http_session_file.FileStore(
-                pathlib.Path('sessions'), 3000
+                HERE / 'sessions', 3000
             ),
             secret="secret",
             salt="salt",
@@ -82,10 +82,10 @@ app = Application(
 app.use(
     libraries,
     PostOffice(
-        path=pathlib.Path('test.mail')
+        path=HERE / 'test.mail'
     ),
-    TranslationService(
-        translations=i18Catalog,
+    TranslationService.from_paths(
+        paths=[HERE / 'translations'],
         default_domain="routing",
         accepted_languages=["fr", "en", "de"]
     ),

@@ -15,7 +15,7 @@ from wolf_sql import SQLDatabase
 import ui, views, store, factories, resources  # noqa
 
 
-here = pathlib.Path(__file__).parent.resolve()
+HERE = pathlib.Path(__file__).parent.resolve()
 
 
 libraries = ResourceManager('/static')
@@ -33,7 +33,7 @@ app = Application(
     middlewares=[
         HTTPSession(
             store=http_session_file.FileStore(
-                pathlib.Path('sessions'), 3000
+                HERE / 'sessions', 3000
             ),
             secret="secret",
             salt="salt",
@@ -50,11 +50,11 @@ app.services.register_value(store.Stores, store.stores)
 app.use(
     libraries,
     JWTService(
-        private_key=here / 'identities' / 'jwt.priv',
-        public_key=here / 'identities' / 'jwt.pub'
+        private_key=HERE / 'identities' / 'jwt.priv',
+        public_key=HERE / 'identities' / 'jwt.pub'
     ),
     PostOffice(
-        path=pathlib.Path('test.mail')
+        path=HERE / 'test.mail'
     ),
     SQLDatabase(url="sqlite:///database.db"),
     Flash(),

@@ -17,9 +17,6 @@ from ZODB import Connection, DB
 import ui, views, resources, middleware, models  # noqa
 
 
-here = pathlib.Path(__file__).parent.resolve()
-
-
 libraries = ResourceManager('/static')
 libraries.add_package_static('deform:static')
 libraries.add_library(resources.static)

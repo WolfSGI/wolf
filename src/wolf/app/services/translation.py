@@ -1,8 +1,9 @@
 import structlog
+from pathlib import Path
 from dataclasses import dataclass
 from annotated_types import Len
-from typing import NewType, Annotated
-from vernacular import Translations
+from typing import NewType, Annotated, Iterable
+from vernacular import Translations, translations
 from vernacular.translate import Translator
 from wolf.app.request import Request
 from wolf.app.pluggability import Installable
@@ -18,6 +19,23 @@ class TranslationService(Installable):
     translations: Translations
     accepted_languages: Annotated[list[str], Len(min_length=1)]
     default_domain: str = "default"
+
+    @classmethod
+    def from_paths(
+            cls, *,
+            paths: Iterable[Path],
+            accepted_languages: list[str],
+            default_domain: str = "default"
+    ) -> 'TranslationService':
+        i18Catalog = Translations()
+        for path in paths:
+            for translation in translations(path):
+                i18Catalog.add(translation)
+        return cls(
+            translations=i18Catalog,
+            accepted_languages=accepted_languages,
+            default_domain=default_domain
+        )
 
     def install(self, application):
         application.services.register_value(Translations, self.translations)
