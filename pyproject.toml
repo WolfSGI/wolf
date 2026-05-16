@@ -16,6 +16,7 @@ dependencies = [
   "autoroutes",
   "autorouting >= 0.3",
   "beartype",
+  "blinker",
   "chameleon",
   "fct_annotate",
   "frozendict",
@@ -30,7 +31,7 @@ dependencies = [
   "signature_registries",
   "structlog",
   "svcs",
-  "vernacular",
+  "vernacular >= 0.4",
   "wrapt",
 ]
 

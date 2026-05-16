@@ -1,7 +1,10 @@
-import structlog
-import svcs
 from collections import defaultdict
 from dataclasses import dataclass, field
+from typing import NamedTuple
+
+import svcs
+import structlog
+from blinker import signal
 from kettu.exceptions import HTTPError
 from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
@@ -16,13 +19,20 @@ from wolf.app.pluggability import Installable
 logger = structlog.get_logger("wolf.app")
 
 
+class LifecycleEvents(NamedTuple):
+    on_init: signal = signal('initialize')
+    on_request: signal = signal('on_request')
+    on_response: signal = signal('on_response')
+    on_error: signal = signal('on_error')
+
+
 @dataclass(kw_only=True, repr=False)
 class Application(Node):
     resolver: URIResolver
+    lifecycle: LifecycleEvents = field(default_factory= LifecycleEvents)
     services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
-    hooks: dict[str, list] = field(default_factory=lambda: defaultdict(list))
 
     def __post_init__(self):
         self.services.register_value(Application, self)
@@ -35,6 +45,7 @@ class Application(Node):
         """
         typ, err, tb = exc_info
         logger.critical(err, exc_info=False)
+        self.lifecycle.on_error.send(self, exc_info=exc_info)
         return Response(500, str(err))
 
     def use(self, *components: Installable):
@@ -42,17 +53,6 @@ class Application(Node):
         for component in components:
             logger.info(f"Installing {component}.")
             component.install(self)
-
-    def listen(self, name: str, func):
-        logger.debug(f"Added hook handler for {name}: {func}.")
-        self.hooks[name].append(func)
-
-    def hook(self, __hook__: str, **kwargs):
-        logger.info(f"Fire hook: '{__hook__}' with {kwargs} as kwargs.")
-        if __hook__ in self.hooks:
-            for func in self.hooks[__hook__]:
-                logger.debug(f"Hook '{__hook__}': {func}.")
-                result = func(**kwargs)
 
     @immutable_cached_property
     def endpoint(self):
@@ -62,7 +62,6 @@ class Application(Node):
         )
 
     def resolve(self, environ: WSGIEnviron) -> WSGICallable:
-        logger.debug(f"{self} got a request.")
         if self.sinks:
             try:
                 return self.sinks.resolve(environ)
@@ -71,10 +70,11 @@ class Application(Node):
                     raise err
 
         request: Request = Request(environ)
+        self.lifecycle.on_request.send(self, request=request)
         with request(self.services):
             try:
                 response = self.endpoint(request)
-                logger.debug(f"{self} responds with a {response.status}.")
+                self.lifecycle.on_response.send(self, response=response)
                 return response
             except HTTPError as err:
                 logger.debug(err, exc_info=True)

@@ -2,6 +2,7 @@ import pathlib
 import vernacular
 import http_session_file
 
+import structlog
 from redis import Redis
 from rq import Queue
 
@@ -22,6 +23,9 @@ from wolf.rendering.ui import UI
 from wolf_sql import SQLDatabase
 
 import register, login, views, actions, ui, folder, document, db, models  # noqa
+
+
+logger = structlog.get_logger("example.routing")
 
 
 # keycloak_connection = KeycloakOpenIDConnection(
@@ -147,4 +151,17 @@ app.services.register_value(actions.Actions, actions.actions)
 q = Queue(connection=Redis())
 app.services.register_value(Queue, q)
 
-app.hook('init')
+app.lifecycle.on_init.send(
+    'startup',
+    config={"example": "Config on startup"}
+)
+
+#### Example of lifecycle events
+@app.lifecycle.on_request.connect
+def echo_request(app, *, request):
+    logger.info(f"Request created: {request}")
+
+
+@app.lifecycle.on_response.connect
+def echo_response(app, *, response):
+    logger.info(f"Response returned: {response}")
