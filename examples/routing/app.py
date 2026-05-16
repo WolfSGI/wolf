@@ -151,17 +151,17 @@ app.services.register_value(actions.Actions, actions.actions)
 q = Queue(connection=Redis())
 app.services.register_value(Queue, q)
 
-app.lifecycle.on_init.send(
+app.events.lifecycle.on_init.send(
     'startup',
     config={"example": "Config on startup"}
 )
 
 #### Example of lifecycle events
-@app.lifecycle.on_request.connect
+@app.events.lifecycle.on_request.connect
 def echo_request(app, *, request):
     logger.info(f"Request created: {request}")
 
 
-@app.lifecycle.on_response.connect
+@app.events.lifecycle.on_response.connect
 def echo_response(app, *, response):
     logger.info(f"Response returned: {response}")
