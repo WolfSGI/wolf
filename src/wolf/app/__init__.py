@@ -1,10 +1,8 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import NamedTuple
 
 import svcs
 import structlog
-from blinker import signal
 from kettu.exceptions import HTTPError
 from wolf.pipeline import Wrapper, chain_wrap
 from wolf.abc.resolvers import URIResolver, Params, Extra
@@ -14,22 +12,16 @@ from wolf.app.request import Request
 from wolf.wsgi.types import WSGIEnviron, WSGICallable, ExceptionInfo
 from wolf.utils import immutable_cached_property
 from wolf.app.pluggability import Installable
+from wolf.app.events import Events
 
 
 logger = structlog.get_logger("wolf.app")
 
 
-class LifecycleEvents(NamedTuple):
-    on_init: signal = signal('initialize')
-    on_request: signal = signal('on_request')
-    on_response: signal = signal('on_response')
-    on_error: signal = signal('on_error')
-
-
 @dataclass(kw_only=True, repr=False)
 class Application(Node):
     resolver: URIResolver
-    lifecycle: LifecycleEvents = field(default_factory= LifecycleEvents)
+    events: Events = field(default_factory=Events)
     services: svcs.Registry = field(default_factory=svcs.Registry)
     middlewares: tuple[Wrapper, ...] = field(default_factory=tuple)
     sinks: Mapping = field(default_factory=Mapping)
@@ -45,7 +37,7 @@ class Application(Node):
         """
         typ, err, tb = exc_info
         logger.critical(err, exc_info=False)
-        self.lifecycle.on_error.send(self, exc_info=exc_info)
+        self.events.lifecycle.on_error.send(self, exc_info=exc_info)
         return Response(500, str(err))
 
     def use(self, *components: Installable):
@@ -70,11 +62,12 @@ class Application(Node):
                     raise err
 
         request: Request = Request(environ)
-        self.lifecycle.on_request.send(self, request=request)
+        self.events.lifecycle.on_request.send(self, request=request)
         with request(self.services):
             try:
                 response = self.endpoint(request)
-                self.lifecycle.on_response.send(self, response=response)
+                self.events.lifecycle.on_response.send(
+                    self, response=response)
                 return response
             except HTTPError as err:
                 logger.debug(err, exc_info=True)
