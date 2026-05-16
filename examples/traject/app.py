@@ -92,4 +92,18 @@ app.use(
         }
     )
 )
-app.hook('init')
+
+app.events.lifecycle.on_init.send(
+    'startup',
+    config={"example": "Config on startup"}
+)
+
+#### Example of lifecycle events
+@app.events.lifecycle.on_request.connect
+def echo_request(app, *, request):
+    logger.info(f"Request created: {request}")
+
+
+@app.events.lifecycle.on_response.connect
+def echo_response(app, *, response):
+    logger.info(f"Response returned: {response}")
