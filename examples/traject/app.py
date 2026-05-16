@@ -15,6 +15,7 @@ from wolf_sql import SQLDatabase
 import ui, views, store, factories, resources  # noqa
 
 
+logger = structlog.get_logger("example.traject")
 HERE = pathlib.Path(__file__).parent.resolve()
 
 
