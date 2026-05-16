@@ -1,4 +1,0 @@
-<div tal:repeat="message messages"
-     class="alert alert-${message.type}">
-  ${message.body}
-</div>
