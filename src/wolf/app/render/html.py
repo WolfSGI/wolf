@@ -24,12 +24,12 @@ def html(func=None, *, resources: Sequence[Resource] | None = None):
             raise TypeError(f"Unable to render type: {type(content)}.")
 
         request = args[0]
-        ui = request.get(UI)
         needed_resources = request.get(NeededResources, default=None)
         if needed_resources is None:
             logger.warning("No resource injection.")
         else:
-            if ui.resources:
+            ui = request.get(UI, default=None)
+            if ui is not None and ui.resources:
                 needed_resources.precede(ui.resources)
             if resources:
                 needed_resources.update(resources)

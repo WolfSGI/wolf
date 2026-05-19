@@ -22,11 +22,11 @@ def renderer(
             return content
 
         request: Request = args[0]
-        ui = request.get(UI)
+        ui = request.get(UI, default=None)
         namespace = {
             "request": request,
             "ui": ui,
-            "macros": ui.macros,
+            "macros": ui.macros if ui is not None else None,
             "view": instance or wrapped,
             "context": kwargs.get("context", object()),
         }
@@ -35,6 +35,9 @@ def renderer(
             if not isinstance(content, dict):
                 raise TypeError("Template defined but no namespace returned.")
             if isinstance(template, str):
+                if ui is None:
+                    raise ValueError(
+                        'Template URI can only be used if you have a UI.')
                 tpl = ui.templates[template]
             else:
                 tpl = template
@@ -57,6 +60,9 @@ def renderer(
             raise TypeError(f"Unable to render type: {type(content)}.")
 
         if layout_name is not None:
+            if ui is None:
+                raise ValueError(
+                    'Layout can only be used if you have a UI.')
             view = namespace["view"]
             context = namespace["context"]
             layout = ui.layouts.fetch(
