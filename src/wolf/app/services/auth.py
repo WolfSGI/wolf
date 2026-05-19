@@ -1,9 +1,6 @@
 import typing as t
 import structlog
-
-from dataclasses import dataclass
 from http_session import Session
-
 from authsources.authenticator import Authenticator
 from authsources.protocols import Challenge, Preflight, Getter
 from authsources.source import Source
@@ -87,7 +84,6 @@ class BaseAuthenticator(Installable, Authenticator):
         pass
 
 
-@dataclass(kw_only=True)
 class SessionAuthenticator(BaseAuthenticator):
     user_key: str
 
