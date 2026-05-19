@@ -1,5 +1,4 @@
 import typing as t
-from dataclasses import dataclass
 from http_session import Session
 from wolf.app.pluggability import Installable
 
@@ -33,10 +32,10 @@ class SessionMessages:
         self.session.save()
 
 
-@dataclass(kw_only=True)
 class Flash(Installable):
 
-    key: str = "flashmessages"
+    def __init__(self, key: str = "flashmessages"):
+        self.key = key
 
     def install(self, application):
         application.services.register_factory(

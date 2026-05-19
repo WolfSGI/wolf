@@ -1,6 +1,6 @@
 from io import IOBase
 import structlog
-from dataclasses import dataclass
+from collections import deque
 from pathlib import Path
 from contextlib import contextmanager
 from collections.abc import Iterator
@@ -15,7 +15,7 @@ from wolf.app.pluggability import Installable
 logger = structlog.get_logger("wolf.app.services.post")
 
 
-class Mailman(list[Message]):
+class Mailman(deque[Message]):
 
     @staticmethod
     def create_message(
@@ -61,12 +61,11 @@ class Mailman(list[Message]):
         self.append(msg)
 
 
-@dataclass(kw_only=True)
 class PostOffice(Installable):
-    path: Path
+    mailbox: Maildir
 
-    def __post_init__(self):
-        self.mailbox = Maildir(self.path)
+    def __init__(self, path: Path):
+        self.mailbox = Maildir(path)
 
     def install(self, application):
         application.services.register_factory(Mailman, self.mailer)
@@ -77,10 +76,11 @@ class PostOffice(Installable):
         try:
             yield mailman
         except Exception:
-            # maybe log.
+            logger.error('PostOffice is aborting the email sending.')
             raise
         else:
-            for message in mailman:
+            while mailman:
+                message = mailman.popleft()
                 self.mailbox.add(message)
         finally:
             mailman.clear()
