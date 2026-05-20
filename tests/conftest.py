@@ -1,5 +1,6 @@
 import uuid
 import pytest
+from copy import deepcopy
 from unittest.mock import Mock, patch
 from http_session.meta import Store
 
