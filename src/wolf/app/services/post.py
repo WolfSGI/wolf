@@ -1,4 +1,5 @@
 from io import IOBase
+from typing import Iterable
 import structlog
 from collections import deque
 from pathlib import Path
@@ -20,7 +21,7 @@ class Mailman(deque[Message]):
     @staticmethod
     def create_message(
             origin: str,
-            targets: list[str],
+            targets: Iterable[str],
             subject: str,
             text: str,
             html: str | None = None,
