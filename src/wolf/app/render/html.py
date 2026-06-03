@@ -3,8 +3,10 @@ import structlog
 from typing import Sequence
 from functools import partial
 from wolf.rendering.ui import UI
-from wolf.rendering.resources import Resource, NeededResources
 from wolf.app.response import Response, FileWrapperResponse
+from wolf.app. import Response, FileWrapperResponse
+from html_resources.resources import Resource
+from html_resources.needed import NeededResources
 
 
 logger = structlog.get_logger("wolf.app.render")
