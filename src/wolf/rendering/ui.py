@@ -5,9 +5,9 @@ from beartype import beartype
 from chameleon.codegen import template
 from chameleon.astutil import Symbol
 from signature_registries import TypedRegistry, Registry
+from html_resources.resources import JSResource, CSSResource
 from wolf.abc.request import RequestProtocol
 from wolf.app.pluggability import Installable
-from wolf.rendering.resources import JSResource, CSSResource
 from wolf.rendering.templates import Templates, EXPRESSION_TYPES
 
 
