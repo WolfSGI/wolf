@@ -1,13 +1,42 @@
 import wrapt
 import structlog
+from pathlib import PurePosixPath
 from typing import Sequence
 from functools import partial
 from wolf.rendering.ui import UI
-from wolf.rendering.resources import Resource, NeededResources
 from wolf.app.response import Response, FileWrapperResponse
+from html_resources.resources import Resource
+from html_resources.needed import NeededResources
 
 
 logger = structlog.get_logger("wolf.app.render")
+
+
+class BoundResources(NeededResources):
+
+    def __init__(self, path: str | PurePosixPath, *args, **kwargs):
+        self.path = PurePosixPath(path)
+        super().__init__(*args, **kwargs)
+
+    def apply(self, body: str | bytes, base_uri: str = "") -> bytes:
+        if len(self.data) == 0:
+            return body
+
+        if isinstance(body, str):
+            body = body.encode()
+
+        top = b""
+        bottom = b""
+        for resource in self.unfold():
+            if resource.bottom:
+                bottom += resource.render(base_uri / self.path)
+            else:
+                top += resource.render(base_uri / self.path)
+        if top:
+            body = body.replace(b"</head>", top + b"</head>", 1)
+        if bottom:
+            body = body.replace(b"</body>", bottom + b"</body>", 1)
+        return body
 
 
 def html(func=None, *, resources: Sequence[Resource] | None = None):
@@ -24,7 +53,7 @@ def html(func=None, *, resources: Sequence[Resource] | None = None):
             raise TypeError(f"Unable to render type: {type(content)}.")
 
         request = args[0]
-        needed_resources = request.get(NeededResources, default=None)
+        needed_resources = request.get(BoundResources, default=None)
         if needed_resources is None:
             logger.warning("No resource injection.")
         else:
