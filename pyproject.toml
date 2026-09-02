@@ -20,6 +20,7 @@ dependencies = [
   "chameleon",
   "fct_annotate",
   "frozendict",
+  "html_resources",
   "http_session",
   "itsdangerous",
   "jsonschema_rs",
