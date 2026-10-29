@@ -3,7 +3,7 @@ import typing as t
 from pathlib import Path
 from types import MappingProxyType
 from collections.abc import Mapping, MutableMapping
-from chameleon.zpt import template
+from chameleon_rs.zpt import template
 
 
 def scan_templates(path: Path, allowed_suffixes=(".pt", ".cpt")):

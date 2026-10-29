@@ -4,7 +4,7 @@ from wolf.rendering.ui import UI
 from wolf.app.request import Request
 from wolf.app.response import Response
 from wolf.app.services.translation import Locale, Translator
-from chameleon.zpt.template import PageTemplate
+from chameleon_rs.zpt.template import PageTemplate
 
 
 def renderer(

@@ -2,8 +2,8 @@ import ast
 from dataclasses import dataclass, field
 from typing import Any, NamedTuple
 from beartype import beartype
-from chameleon.codegen import template
-from chameleon.astutil import Symbol
+from chameleon_rs.codegen import template
+from chameleon_rs.astutil import Symbol
 from signature_registries import TypedRegistry, Registry
 from html_resources.resources import JSResource, CSSResource
 from wolf.abc.request import RequestProtocol

@@ -17,7 +17,7 @@ dependencies = [
   "autorouting >= 0.3",
   "beartype",
   "blinker",
-  "chameleon",
+  "chameleon_rs",
   "fct_annotate",
   "frozendict",
   "html_resources",
